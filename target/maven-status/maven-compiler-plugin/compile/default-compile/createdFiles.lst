@@ -1,0 +1,9 @@
+edu\brown\cs\student\stars\Starrunner.class
+edu\brown\cs\student\stars\Starfinder.class
+edu\brown\cs\student\stars\Command.class
+edu\brown\cs\student\stars\UpdateFile.class
+edu\brown\cs\student\stars\NaiveRadius.class
+edu\brown\cs\student\stars\Main.class
+edu\brown\cs\student\stars\Star.class
+edu\brown\cs\student\stars\Main$FrontHandler.class
+edu\brown\cs\student\stars\Main$ExceptionPrinter.class
