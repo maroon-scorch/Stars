@@ -7,9 +7,9 @@ import java.util.Optional;
 import java.util.Random;
 
 public class NaiveNeighbors implements Command{
-    private ArrayList<Star> starsList;
-    private StringBuilder currentFile;
-    private ArgValidator validator = new ArgValidator();
+    private final ArrayList<Star> starsList;
+    private final StringBuilder currentFile;
+    private final ArgValidator validator = new ArgValidator();
     private final Number[] acceptArgs = {2, 4};
 
     public NaiveNeighbors(ArrayList<Star> starsList, StringBuilder currentFile) {
@@ -148,11 +148,11 @@ public class NaiveNeighbors implements Command{
 
         // Testing for Valid Args Size
         if (!Arrays.asList(acceptArgs).contains(argSize)) {
-            System.out.println("ERROR: Incorrect Number of Arguments for \"naive_radius\"");
+            System.out.println("ERROR: Incorrect Number of Arguments for \"naive_neighbors\"");
             return false;
         }
 
-        // Testing for Valid Radius - Must be Numeric and >= 0
+        // Testing for Valid Neighbor Numbers - Must be Numeric and >= 0
         String sNeighbors = args.get(0);
         if (validator.isArgInteger(sNeighbors)) {
             int intNeighbors = Integer.parseInt(sNeighbors);

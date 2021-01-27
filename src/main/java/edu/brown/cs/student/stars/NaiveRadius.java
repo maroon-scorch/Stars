@@ -1,17 +1,14 @@
 package edu.brown.cs.student.stars;
 
-import jdk.swing.interop.SwingInterOpUtils;
-
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 public class NaiveRadius implements Command{
-    private ArrayList<Star> starsList;
-    private StringBuilder currentFile;
-    private ArgValidator validator = new ArgValidator();
+    private final ArrayList<Star> starsList;
+    private final StringBuilder currentFile;
+    private final ArgValidator validator = new ArgValidator();
     private final Number[] acceptArgs = {2, 4};
 
     public NaiveRadius(ArrayList<Star> starsList, StringBuilder currentFile) {
