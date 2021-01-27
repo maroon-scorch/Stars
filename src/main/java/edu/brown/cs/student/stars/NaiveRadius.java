@@ -10,10 +10,13 @@ import java.util.Optional;
 
 public class NaiveRadius implements Command{
     private ArrayList<Star> starsList;
+    private StringBuilder currentFile;
     private ArgValidator validator = new ArgValidator();
     private final Number[] acceptArgs = {2, 4};
-    public NaiveRadius(ArrayList<Star> starsList) {
+
+    public NaiveRadius(ArrayList<Star> starsList, StringBuilder currentFile) {
         this.starsList = starsList;
+        this.currentFile = currentFile;
     }
 
     public void execute(ArrayList<String> args) {
@@ -28,7 +31,7 @@ public class NaiveRadius implements Command{
                 String sName = args.get(1);
                 String sStarNoQuotes = sName.substring(1, sName.length() - 1);
                 ArrayList<Star> starsInRange2 = performNaiveRadius(radius, sStarNoQuotes, starsList);
-                System.out.println(starsInRange2);
+                starsInRange2.forEach(System.out::println);
                 break;
             case 4:
                 double dRadius = Double.parseDouble(args.get(0));
@@ -36,7 +39,7 @@ public class NaiveRadius implements Command{
                 double dPosY = Double.parseDouble(args.get(2));
                 double dPosZ = Double.parseDouble(args.get(3));
                 ArrayList<Star> starsInRange4 = performNaiveRadius(dRadius, dPosX, dPosY, dPosZ, starsList);
-                System.out.println(starsInRange4);
+                starsInRange4.forEach(System.out::println);
                 break;
         }
 
@@ -104,9 +107,9 @@ public class NaiveRadius implements Command{
         boolean result = true;
 
         // Testing if the Stars CSV File has been loaded yet - NEED TO CORRECT LATER
-        if (starsList.size() == 0) {
-            result = false;
+        if (currentFile.length() == 0) {
             System.out.println("ERROR: No file has been loaded yet");
+            return false;
         }
 
         // Testing for Valid Args Size

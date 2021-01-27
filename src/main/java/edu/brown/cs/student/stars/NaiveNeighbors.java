@@ -8,10 +8,13 @@ import java.util.Random;
 
 public class NaiveNeighbors implements Command{
     private ArrayList<Star> starsList;
+    private StringBuilder currentFile;
     private ArgValidator validator = new ArgValidator();
     private final Number[] acceptArgs = {2, 4};
-    public NaiveNeighbors(ArrayList<Star> starsList) {
+
+    public NaiveNeighbors(ArrayList<Star> starsList, StringBuilder currentFile) {
         this.starsList = starsList;
+        this.currentFile = currentFile;
     }
 
     public void execute(ArrayList<String> args) {
@@ -26,7 +29,7 @@ public class NaiveNeighbors implements Command{
                 String sName = args.get(1);
                 String sStarNoQuotes = sName.substring(1, sName.length() - 1);
                 ArrayList<Star> starsInRange2 = performNaiveNeighbors(neighbors, sStarNoQuotes, starsList);
-                System.out.println(starsInRange2);
+                starsInRange2.forEach(System.out::println);
                 break;
             case 4:
                 int intNeighbors = Integer.parseInt(args.get(0));
@@ -34,7 +37,7 @@ public class NaiveNeighbors implements Command{
                 double dPosY = Double.parseDouble(args.get(2));
                 double dPosZ = Double.parseDouble(args.get(3));
                 ArrayList<Star> starsInRange4 = performNaiveNeighbors(intNeighbors, dPosX, dPosY, dPosZ, starsList);
-                System.out.println(starsInRange4);
+                starsInRange4.forEach(System.out::println);
                 break;
         }
     }
@@ -138,9 +141,9 @@ public class NaiveNeighbors implements Command{
         boolean result = true;
 
         // Testing if the Stars CSV File has been loaded yet - NEED TO CORRECT LATER
-        if (starsList.size() == 0) {
-            result = false;
+        if (currentFile.length() == 0) {
             System.out.println("ERROR: No file has been loaded yet");
+            return false;
         }
 
         // Testing for Valid Args Size

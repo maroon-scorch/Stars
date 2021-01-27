@@ -7,16 +7,18 @@ import java.util.ArrayList;
 import java.util.Map;
 import static java.util.Map.entry;
 
-public class Starrunner {
+public class REPLRunner {
 
     private ArrayList<Star> starsList = new ArrayList<>();
+    StringBuilder currentFile = new StringBuilder();
     private final Map<String, Command> commandMap = Map.ofEntries(
-            entry("stars", new UpdateFile(starsList)),
-            entry("naive_radius", new NaiveRadius(starsList)),
-            entry("naive_neighbors", new NaiveNeighbors(starsList))
+            entry("stars", new UpdateFile(starsList, currentFile)),
+            entry("naive_radius", new NaiveRadius(starsList, currentFile)),
+            entry("naive_neighbors", new NaiveNeighbors(starsList, currentFile)),
+            entry("mock", new MockCSV())
     );
 
-    public Starrunner() { }
+    public REPLRunner() { }
 
     public void run() {
 
@@ -38,11 +40,9 @@ public class Starrunner {
                     }
                 }
                 catch (Exception e) {
-                    e.printStackTrace();
                     System.out.println("ERROR: Invalid input for entry");
                 }
             }
-            reader.close();
         } catch (Exception e) {
             System.out.println("ERROR: Exception has occurred, please re-run the program");
         }

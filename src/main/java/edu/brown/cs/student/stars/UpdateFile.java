@@ -7,23 +7,30 @@ import java.io.FileNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class UpdateFile implements Command{
     private ArrayList<Star> starsList;
+    private StringBuilder currentFile;
     private boolean isSuccessful = false;
-    private Number[] acceptArgs = {1};
 
-    public UpdateFile(ArrayList<Star> starsList) {
+    private Number[] acceptArgs = {1};
+    private CSVParser parser = new CSVParser();
+    private final String[] expectedHeaders = {"StarID", "ProperName", "X", "Y", "Z"};
+
+    public UpdateFile(ArrayList<Star> starsList, StringBuilder currentFile) {
         this.starsList = starsList;
+        this.currentFile = currentFile;
     }
 
     public void execute(ArrayList<String> args) {
         if (areArgsValid(args)) {
             String filepath = args.get(0);
-            changeFile(filepath);
-            if (isSuccessful)
+            isSuccessful = parser.parse(filepath, starsList, expectedHeaders, this::lineToStar);
+            if (isSuccessful) {
                 System.out.printf("Read %d stars from %s\n", starsList.size(), filepath);
-            isSuccessful = false;
+                currentFile.replace(0, currentFile.length(), filepath);
+            }
         }
     }
 
@@ -46,10 +53,13 @@ public class UpdateFile implements Command{
                 starsList.add(lineToStar(line));
             }
             isSuccessful = true;
+            currentFile.replace(0, currentFile.length(), filepath);
         } catch (FileNotFoundException e) {
             System.out.println("ERROR: File does not exist.");
         } catch (IOException e) {
             System.out.println("ERROR: File Name/Path/Content is not valid");
+        } catch (Exception e) {
+            System.out.println("ERROR: Unable to parse file, please check if content is formatted properly.");
         }
     }
 

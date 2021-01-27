@@ -59,11 +59,8 @@ public final class Main {
       runSparkServer((int) options.valueOf("port"));
     }
 
-
-    // TODO: Process commands in a REPL
-     Starrunner runner = new Starrunner();
+     REPLRunner runner = new REPLRunner();
      runner.run();
-    // TODO: Error Handling Incorrect Commands
   }
 
   private static FreeMarkerEngine createEngine() {
