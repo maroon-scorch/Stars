@@ -5,6 +5,8 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.util.Map.entry;
 
@@ -28,15 +30,13 @@ public class REPLRunner {
       String input;
       while ((input = reader.readLine()) != null) {
         try {
-          String regex = " (?=(([^'\"]*['\"]){2})*[^'\"]*$)";
-          ArrayList<String> separatedCommand
-              = new ArrayList<>(Arrays.asList(input.split(regex)));
-          System.out.println(separatedCommand);
-          // https://stackoverflow.com/questions/21627866/java-regex-to-split-a-string-using-spaces-but-not-considering-double-quotes-or
-          //  (?<=") *(?=")
-          // naive_neighbors 5 "So"l"
-          //" (?=(([^'\"]*['\"]){2})*[^'\"]*$)"
-          // Ask about this whether to raise an error for multiple space or handle it here
+          ArrayList<String> separatedCommand = new ArrayList<>();
+          Pattern pattern = Pattern.compile("(\"[^\"]*\"|[\\S]+)+");
+          Matcher matcher = pattern.matcher(input);
+          while (matcher.find()) {
+            separatedCommand.add(matcher.group());
+          }
+          
           separatedCommand.removeIf(String::isEmpty);
           String commandTitle = separatedCommand.remove(0);
 

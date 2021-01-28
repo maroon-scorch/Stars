@@ -6,88 +6,88 @@ import java.util.Map;
 import static java.util.Map.entry;
 
 interface StringValidator {
-    void validate(String input);
+  void validate(String input);
 }
 
 public class ArgsValidator {
 
-    private Map<String, StringValidator> validateMap = Map.ofEntries(
-            entry("non-negative", this::isArgNonNegative),
-            entry("number", this::isArgNumeric),
-            entry("integer", this::isArgInteger),
-            entry("name", this::isArgString)
-    );
+  private final Map<String, StringValidator> validateMap = Map.ofEntries(
+      entry("non-negative", this::testArgNonNegative),
+      entry("number", this::testArgNumeric),
+      entry("integer", this::testArgInteger),
+      entry("name", this::testArgString),
+      entry("any", (input -> { }))
+  );
 
-    private String commandName;
-    private Integer[] possibleArgNumbers;
-    // private Map<Integer, String[][]> requirementMaps;
+  private String commandName;
+  private Integer[] possibleArgNumbers;
+  // private Map<Integer, String[][]> requirementMaps;
 
-    public ArgsValidator(String commandName) {
-        this.commandName = commandName;
+  public ArgsValidator(String commandName) {
+    this.commandName = commandName;
+  }
+
+  public void testArgs(ArrayList<String> args, String[][] requirements) {
+    int argSize = args.size();
+    if (argSize != requirements.length) {
+      // Shouldn't Reach Here
+      throw new RuntimeException("The number of arguments do not match "
+          + "the number indicated by requirements");
     }
 
-    public void testArgs(ArrayList<String> args, ArrayList<ArrayList<String>> requirements) {
-        int argSize = args.size();
-        if (argSize != requirements.size()) {
-            // Shouldn't Reach Here
-            throw new RuntimeException("The number of arguments do not match " +
-                "the number indicated by requirements");
-        }
-
-        for (int i = 0; i < argSize; i++) {
-            String currentArg = args.get(i);
-            ArrayList<String> currentReq = requirements.get(i);
-            for (String eachReq : currentReq) {
-                satisfyReq(currentArg, eachReq);
-            }
-        }
+    for (int i = 0; i < argSize; i++) {
+      String currentArg = args.get(i);
+      String[] currentReq = requirements[i];
+      for (String eachReq : currentReq) {
+        satisfyReq(currentArg, eachReq);
+      }
     }
+  }
 
-    public void satisfyReq(String arg, String req) {
-        if (validateMap.containsKey(req)) {
-            validateMap.get(req).validate(arg);
-        } else {
-            throw new RuntimeException(String.format("The following " +
-                "requirement %s is not defined in the validator yet", req));
-        }
+  public void satisfyReq(String arg, String req) {
+    if (validateMap.containsKey(req)) {
+      validateMap.get(req).validate(arg);
+    } else {
+      throw new RuntimeException(String.format("The following "
+          + "requirement %s is not defined in the validator yet", req));
     }
+  }
 
-    public void isArgNonNegative(String input) {
-        isArgNumeric(input);
-        double numIn = Double.parseDouble(input);
-        if (numIn < 0) {
-            throw new RuntimeException(
-                String.format("The argument %s must be nonnegative.", input));
-        }
+  public void testArgNonNegative(String input) {
+    testArgNumeric(input);
+    double numIn = Double.parseDouble(input);
+    if (numIn < 0) {
+      throw new RuntimeException(
+          String.format("The argument %s must be non-negative.", input));
     }
+  }
 
-    public void isArgNumeric(String input) {
-        try {
-            Double.parseDouble(input);
-        } catch(NumberFormatException e){
-            throw new RuntimeException(
-                String.format("The argument %s is not numeric.", input));
-        }
+  public void testArgNumeric(String input) {
+    try {
+      Double.parseDouble(input);
+    } catch (NumberFormatException e) {
+      throw new RuntimeException(
+          String.format("The argument %s is not numeric.", input));
     }
+  }
 
-    public void isArgInteger(String input) {
-        try {
-            Integer.parseInt(input);
-        } catch(NumberFormatException e){
-            throw new RuntimeException(
-                String.format("The argument %s is not an integer.", input));
-        }
+  public void testArgInteger(String input) {
+    try {
+      Integer.parseInt(input);
+    } catch (NumberFormatException e) {
+      throw new RuntimeException(
+          String.format("The argument %s is not an integer.", input));
     }
+  }
 
-    public void isArgString(String input) {
-        char[] charInputs = input.toCharArray();
-        if ((charInputs[0] != '"') || (charInputs[input.length() - 1] != '"')) {
-            throw new RuntimeException(
-                String.format("The argument %s is not a proper name, " +
-                    "it needs to be put into double quotes.", input));
-        }
+  public void testArgString(String input) {
+    char[] charInputs = input.toCharArray();
+    if ((charInputs[0] != '"') || (charInputs[input.length() - 1] != '"')) {
+      throw new RuntimeException(
+          String.format("The argument %s is not a proper name, "
+              + "it needs to be put into double quotes.", input));
     }
-
+  }
 
 
 //    public ArgsValidator(
@@ -118,34 +118,4 @@ public class ArgsValidator {
 //        // System.out.println("ERROR: ");
 //    }
 //
-//    public
-//
-//    public boolean isArgNonNegative(String input) {
-//        if (isArgNumeric(input)) {
-//
-//        }
-//    }
-//
-//    public boolean isArgNumeric(String input) {
-//        try {
-//            Double.parseDouble(input);
-//            return true;
-//        } catch(NumberFormatException e){
-//            return false;
-//        }
-//    }
-//
-//    public boolean isArgInteger(String input) {
-//        try {
-//            Integer.parseInt(input);
-//            return true;
-//        } catch(NumberFormatException e){
-//            return false;
-//        }
-//    }
-//
-//    public boolean isArgString(String input) {
-//        char[] charInputs = input.toCharArray();
-//        return ((charInputs[0] == '"') && (charInputs[input.length() - 1] == '"'));
-//    }
 }

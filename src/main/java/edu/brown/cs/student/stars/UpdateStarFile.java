@@ -19,10 +19,13 @@ public class UpdateStarFile implements Command {
   public void execute(ArrayList<String> args) {
     if (areArgsValid(args)) {
       String filepath = args.get(0);
-      boolean isSuccessful = parser.parse(filepath, starsList, expectedHeaders, this::lineToStar);
+      ArrayList<Star> tempStarsList = new ArrayList<Star>();
+      boolean isSuccessful = parser.parse(filepath, tempStarsList, expectedHeaders, this::lineToStar);
       if (isSuccessful) {
-        System.out.printf("Read %d stars from %s\n", starsList.size(), filepath);
+        starsList.clear();
+        starsList.addAll(tempStarsList);
         currentFile.replace(0, currentFile.length(), filepath);
+        System.out.printf("Read %d stars from %s\n", starsList.size(), filepath);
       }
     }
   }
