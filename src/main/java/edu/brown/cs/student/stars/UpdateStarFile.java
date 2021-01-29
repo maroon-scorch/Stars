@@ -20,7 +20,8 @@ public class UpdateStarFile implements Command {
     if (areArgsValid(args)) {
       String filepath = args.get(0);
       ArrayList<Star> tempStarsList = new ArrayList<Star>();
-      boolean isSuccessful = parser.parse(filepath, tempStarsList, expectedHeaders, this::lineToStar);
+      boolean isSuccessful =
+          parser.parse(filepath, tempStarsList, expectedHeaders, this::lineToStar);
       if (isSuccessful) {
         starsList.clear();
         starsList.addAll(tempStarsList);

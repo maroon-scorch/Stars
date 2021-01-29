@@ -3,7 +3,10 @@ package edu.brown.cs.student.stars;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
+
+import static java.util.Map.entry;
 
 public class NaiveRadius implements Command {
   private final ArrayList<Star> starsList;
@@ -11,11 +14,30 @@ public class NaiveRadius implements Command {
   private final ArgValidator validator = new ArgValidator();
   private final Number[] acceptArgs = {2, 4};
 
-  private final String[][] requirement1 = {{"non-negative", "number"}, {"name"}};
-  private final String[] names1 = {"radius", "name"};
-  private final String[][] requirement2 =
-        {{"non-negative", "number"}, {"number"}, {"number"}, {"number"}};
-  private final String[] names2 = {"radius", "x-coordinate", "y-coordinate", "z-coordinate"};
+  private final Map<Integer, ArgsInformation[]> reqInfoMaps
+      = Map.ofEntries(
+      entry(2, new ArgsInformation[] {new ArgsInformation(
+          "naive_radius_2",
+          new String[] {"radius >= 0", "\"name\""},
+          new String[] {"(\\d+(\\.\\d+)?)", "\"|[\\w\\W]+\""},
+          new String[] {"ERROR: Radius must be non-negative.",
+              "ERROR: Name must be surrounded by double quotes"}
+      )}),
+      entry(4, new ArgsInformation[] {new ArgsInformation(
+          "naive_radius_4",
+          new String[] {"radius >= 0", "x: number", "y: number", "z: number"},
+          new String[] {"(\\d+(\\.\\d+)?)", "(\\-)?(\\d+(\\.\\d+)?)",
+              "(\\-)?(\\d+(\\.\\d+)?)", "(\\-)?(\\d+(\\.\\d+)?)"},
+          new String[] {"ERROR: Radius must be non-negative.",
+              "ERROR: Coordinate X must be numeric",
+              "ERROR: Coordinate Y must be numeric",
+              "ERROR: Coordinate Z must be numeric"
+          }
+      )})
+  );
+
+  private final ArgsValidator argsValidator
+      = new ArgsValidator("naive_radius", reqInfoMaps);
 
   public NaiveRadius(ArrayList<Star> starsList, StringBuilder currentFile) {
     this.starsList = starsList;
@@ -24,19 +46,27 @@ public class NaiveRadius implements Command {
 
   public void execute(ArrayList<String> args) {
     int argSize = args.size();
-    if (!areArgsValid(args)) {
+
+    if (currentFile.length() == 0) {
+      System.out.println("ERROR: No file has been loaded yet");
       return;
     }
 
-    switch (argSize) {
-      case 2:
+    Optional<String> opMethodName = argsValidator.testArgs(args);
+    if (opMethodName.isEmpty()) {
+      return;
+    }
+
+    String methodName = opMethodName.get();
+    switch (methodName) {
+      case "naive_radius_2":
         double radius = Double.parseDouble(args.get(0));
         String sName = args.get(1);
         String sStarNoQuotes = sName.substring(1, sName.length() - 1);
         ArrayList<Star> starsInRange2 = performNaiveRadius(radius, sStarNoQuotes, starsList);
         starsInRange2.forEach(System.out::println);
         break;
-      case 4:
+      case "naive_radius_4":
         double dRadius = Double.parseDouble(args.get(0));
         double dPosX = Double.parseDouble(args.get(1));
         double dPosY = Double.parseDouble(args.get(2));
@@ -44,15 +74,22 @@ public class NaiveRadius implements Command {
         ArrayList<Star> starsInRange4 = performNaiveRadius(dRadius, dPosX, dPosY, dPosZ, starsList);
         starsInRange4.forEach(System.out::println);
         break;
+      default:
+        System.out.println("ERROR: Hashmap reqInfoMaps has unregistered names, "
+            + "shouldn't have reached here");
+        break;
     }
-
-    // System.out.println(starsList.size());
   }
 
   public ArrayList<Star> performNaiveRadius(double r, String name, ArrayList<Star> alos) {
-    Optional<Star> selectedStar = findStarWithName(name);
+    if (name.isEmpty()) {
+      System.out.println("ERROR: Empty String is not a valid name for stars");
+      return new ArrayList<>();
+    }
 
+    Optional<Star> selectedStar = findStarWithName(name);
     if (selectedStar.isEmpty()) {
+      System.out.printf("ERROR: No Stars with name \"%s\"is found%n", name);
       return new ArrayList<>();
     } else {
       Star presentStar = selectedStar.get();
@@ -110,10 +147,7 @@ public class NaiveRadius implements Command {
     boolean result = true;
 
     // Testing if the Stars CSV File has been loaded yet - NEED TO CORRECT LATER
-    if (currentFile.length() == 0) {
-      System.out.println("ERROR: No file has been loaded yet");
-      return false;
-    }
+
 
     // Testing for Valid Args Size
     if (!Arrays.asList(acceptArgs).contains(argSize)) {

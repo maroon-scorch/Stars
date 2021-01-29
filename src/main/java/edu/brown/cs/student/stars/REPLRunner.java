@@ -21,8 +21,7 @@ public class REPLRunner {
       entry("mock", new MockCSV())
   );
 
-  public REPLRunner() {
-  }
+  public REPLRunner() { }
 
   public void run() {
     try (BufferedReader reader = new BufferedReader(
@@ -36,7 +35,8 @@ public class REPLRunner {
           while (matcher.find()) {
             separatedCommand.add(matcher.group());
           }
-          
+          //  ./cs32-test tests/ta/stars/stars1/*.test --timeout 20
+          // 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
           separatedCommand.removeIf(String::isEmpty);
           String commandTitle = separatedCommand.remove(0);
 
