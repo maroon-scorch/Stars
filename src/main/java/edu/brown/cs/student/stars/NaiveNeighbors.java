@@ -1,200 +1,243 @@
 package edu.brown.cs.student.stars;
 
+import edu.brown.cs.student.command.Command;
+import edu.brown.cs.student.validations.ArgsInformation;
+import edu.brown.cs.student.validations.ArgsValidator;
+import edu.brown.cs.student.validations.StringValFunctions;
+import edu.brown.cs.student.validations.StringValidation;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
-public class NaiveNeighbors implements Command{
-    private final ArrayList<Star> starsList;
-    private final StringBuilder currentFile;
-    private final ArgValidator validator = new ArgValidator();
-    private final Number[] acceptArgs = {2, 4};
+import static java.util.Map.entry;
 
-    public NaiveNeighbors(ArrayList<Star> starsList, StringBuilder currentFile) {
-        this.starsList = starsList;
-        this.currentFile = currentFile;
+/**
+ * Naive Neighbors Command Object for executing the "naive_neighbors ..." command.
+ */
+public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctions {
+  /**
+   * The list of Stars to store the converted lines to stars in.
+   */
+  private final ArrayList<Star> starsList;
+  /**
+   * The name of the current file the Command is operating on.
+   */
+  private final StringBuilder currentFile;
+
+  /**
+   * Specifications on the requirements on the argument passed to the command.
+   * 2 Arguments:
+   * - neighbors: non-negative integer
+   * - name: surrounded by double quotes
+   * 4 Arguments:
+   * - neighbors: non-negative integer
+   * - x: number
+   * - y: number
+   * - z: number
+   * See custome StringValidation Method at the Bottom
+   */
+  private final Map<Integer, ArgsInformation[]> reqInfoMaps
+      = Map.ofEntries(
+      entry(2, new ArgsInformation[] {new ArgsInformation(
+          "naive_neighbors_2",
+          new String[] {"neighbors: int >= 0", "\"name\""},
+          new StringValidation[] {this::isNonNegInt, this::isName},
+          new String[] {"ERROR: Number of Neighbors must be a Positive Integer.",
+              "ERROR: Name must be surrounded by double quotes."}
+      )}),
+      entry(4, new ArgsInformation[] {new ArgsInformation(
+          "naive_neighbors_4",
+          new String[] {"radius >= 0", "x: number", "y: number", "z: number"},
+          new StringValidation[] {this::isNonNegInt, this::isNumeric,
+              this::isNumeric, this::isNumeric},
+          new String[] {"ERROR: Number of Neighbors must be a Positive Integer.",
+              "ERROR: Coordinate X must be numeric.",
+              "ERROR: Coordinate Y must be numeric.",
+              "ERROR: Coordinate Z must be numeric."
+          }
+      )})
+  );
+
+  /**
+   * The argument validator for the arguments of the mock <csv> command.
+   */
+  private final ArgsValidator argsValidator
+      = new ArgsValidator("naive_neighbors", reqInfoMaps);
+
+  /**
+   * Creates a NaiveNeighbors object.
+   *
+   * @param starsList   - the list of stars the current File has
+   * @param currentFile - the name of the current File
+   */
+  public NaiveNeighbors(ArrayList<Star> starsList, StringBuilder currentFile) {
+    this.starsList = starsList;
+    this.currentFile = currentFile;
+  }
+
+  /**
+   * Creates a NaiveRadius object.
+   */
+  public NaiveNeighbors() {
+    this.starsList = new ArrayList<Star>();
+    this.currentFile = new StringBuilder();
+  }
+
+  public void execute(ArrayList<String> args) {
+    int argSize = args.size();
+
+    if (currentFile.length() == 0) {
+      System.out.println("ERROR: No file has been loaded yet");
+      return;
     }
 
-    public void execute(ArrayList<String> args) {
-        int argSize = args.size();
-        if (!areArgsValid(args)) {
-            return;
-        }
-
-        switch(argSize) {
-            case 2:
-                int neighbors = Integer.parseInt(args.get(0));
-                String sName = args.get(1);
-                String sStarNoQuotes = sName.substring(1, sName.length() - 1);
-                ArrayList<Star> starsInRange2 = performNaiveNeighbors(neighbors, sStarNoQuotes, starsList);
-                starsInRange2.forEach(System.out::println);
-                break;
-            case 4:
-                int intNeighbors = Integer.parseInt(args.get(0));
-                double dPosX = Double.parseDouble(args.get(1));
-                double dPosY = Double.parseDouble(args.get(2));
-                double dPosZ = Double.parseDouble(args.get(3));
-                ArrayList<Star> starsInRange4 = performNaiveNeighbors(intNeighbors, dPosX, dPosY, dPosZ, starsList);
-                starsInRange4.forEach(System.out::println);
-                break;
-        }
+    Optional<String> opMethodName = matchArgsToMethod(args);
+    if (opMethodName.isEmpty()) {
+      return;
     }
 
-    public ArrayList<Star> performNaiveNeighbors(int count, String name, ArrayList<Star> alos) {
-        Optional<Star> selectedStar = findStarWithName(name);
+    String methodName = opMethodName.get();
+    switch (methodName) {
+      case "naive_neighbors_2":
+        int neighbors = Integer.parseInt(args.get(0));
+        String sName = args.get(1);
+        String sStarNoQuotes = sName.substring(1, sName.length() - 1);
+        ArrayList<Star> starsInRange2 = performNaiveNeighbors(neighbors, sStarNoQuotes, starsList);
+        starsInRange2.forEach(System.out::println);
+        break;
+      case "naive_neighbors_4":
+        int intNeighbors = Integer.parseInt(args.get(0));
+        double dPosX = Double.parseDouble(args.get(1));
+        double dPosY = Double.parseDouble(args.get(2));
+        double dPosZ = Double.parseDouble(args.get(3));
+        ArrayList<Star> starsInRange4 =
+            performNaiveNeighbors(intNeighbors, dPosX, dPosY, dPosZ, starsList);
+        starsInRange4.forEach(System.out::println);
+        break;
+      default:
+        System.out.println("ERROR: Hashmap reqInfoMaps has unregistered names, "
+            + "shouldn't have reached here");
+        break;
+    }
+  }
 
-        if (selectedStar.isEmpty()) {
-            return new ArrayList<>();
-        }
-        else {
-            Star presentStar = selectedStar.get();
+  /**
+   * Match the arguments given to which method (if any) the Command Object should execute.
+   *
+   * @param args the list of arguments to be operated on
+   * @return Optional<String> empty if the arguments are invalid, a String if a match is found.
+   */
+  public Optional<String> matchArgsToMethod(ArrayList<String> args) {
+    return argsValidator.testArgs(args);
+  }
 
-            double selectedX = presentStar.getX();
-            double selectedY = presentStar.getY();
-            double selectedZ = presentStar.getZ();
-
-            ArrayList<Star> template = copyWithType(alos);
-            template.removeIf(star -> star.getName().equals(name));
-
-            return performNaiveNeighbors(count, selectedX, selectedY, selectedZ, template);
-        }
+  /**
+   * Finds "count" number of stars whose distance are closest to the star whose name is given.
+   *
+   * @param count the number of stars allowed for the list
+   * @param name  the name of the destination star
+   * @param alos  the list of stars to search through
+   * @return the list of stars from least distance to greatest within count given
+   */
+  public ArrayList<Star> performNaiveNeighbors(int count, String name, ArrayList<Star> alos) {
+    Optional<Star> selectedStar = findStarWithName(name, starsList);
+    // If the name given is empty, print an error
+    if (name.isEmpty()) {
+      System.out.println("ERROR: Empty String is not a valid name for stars");
+      return new ArrayList<>();
     }
 
-    public ArrayList<Star> performNaiveNeighbors(int count, double x, double y, double z, ArrayList<Star> alos) {
-        if (count == 0) {
-            return new ArrayList<>();
-        }
+    // If the star is not found, print an error
+    if (selectedStar.isEmpty()) {
+      System.out.printf("ERROR: No Stars with name \"%s\" is found%n", name);
+      return new ArrayList<>();
+    } else {
+      Star presentStar = selectedStar.get();
 
+      double selectedX = presentStar.getX();
+      double selectedY = presentStar.getY();
+      double selectedZ = presentStar.getZ();
 
-        // Ask TA for clone vs copyWithType
-        ArrayList<Star> template = copyWithType(alos);
-        Collections.sort(template, (star1, star2)
-                -> Double.compare(star1.distanceTo(x, y, z), star2.distanceTo(x, y, z)));
+      ArrayList<Star> template = copyWithType(alos);
+      template.removeIf(star -> star.getName().equals(name));
 
-        if (count >= template.size()) {
-            return template;
-        }
+      return performNaiveNeighbors(count, selectedX, selectedY, selectedZ, template);
+    }
+  }
 
-        ArrayList<Star> truncatedStarList = new ArrayList<Star>();
-        ArrayList<Star> sameValueList = new ArrayList<Star>();
-
-        double distAtCount = template.get(count - 1).distanceTo(x, y, z);
-        int whenDistStart = 0;
-
-        for (int i = 0; i < count; i++) {
-
-            if (template.get(i).distanceTo(x, y, z) == distAtCount) {
-                whenDistStart = i;
-                break;
-            }
-            truncatedStarList.add(template.get(i));
-        }
-
-        for (int j = whenDistStart; j < template.size(); j++) {
-            if (template.get(j).distanceTo(x, y, z) != distAtCount) {
-                break;
-            }
-            sameValueList.add(template.get(j));
-        }
-
-        // randomly pick (count - whenDistStart + 1) out of the arraylist
-        Random ran = new Random();
-//        System.out.println(whenDistStart);
-//        System.out.println(distAtCount);
-//        System.out.println(truncatedStarList);
-//        System.out.println(sameValueList);
-        for (int k = 0; k < (count - whenDistStart); k++) {
-            int selected = ran.nextInt(sameValueList.size());
-            truncatedStarList.add(sameValueList.remove(selected));
-        }
-
-        return truncatedStarList;
+  /**
+   * Finds "count" number of stars whose distance are closest coordinate (x, y, z).
+   *
+   * @param count the number of stars allowed for the list
+   * @param x     the x coordinate of the point
+   * @param y     the y coordinate of the point
+   * @param z     the z coordinate of the point
+   * @param alos  the list of stars to search through
+   * @return the list of stars from least distance to greatest within count given
+   */
+  public ArrayList<Star> performNaiveNeighbors(int count, double x, double y, double z,
+                                               ArrayList<Star> alos) {
+    // If the count is zero, return an empty list
+    if (count == 0) {
+      return new ArrayList<>();
     }
 
-    private ArrayList<Star> findStarsWithCord(double x, double y, double z) {
-        ArrayList<Star> template = new ArrayList<Star>();
-        for(Star eachStar : starsList) {
-            if ((x == eachStar.getX()) && (y == eachStar.getY()) && (z == eachStar.getZ())) {
-                template.add(eachStar);
-            }
-        }
-        return template;
+    ArrayList<Star> template = copyWithType(alos);
+    template.sort(Comparator.comparingDouble(star -> star.distanceTo(x, y, z)));
+
+    // If the number asked to return is greater than the size of the list,
+    // return the entire list
+    if (count >= template.size()) {
+      return template;
     }
 
-    private Optional<Star> findStarWithName(String name) {
-        for(Star eachStar : starsList) {
-            if (eachStar.getName().equals(name)) {
-                return Optional.of(eachStar);
-            }
-        }
-        return Optional.empty();
+    ArrayList<Star> truncatedStarList = new ArrayList<Star>();
+    ArrayList<Star> sameValueList = new ArrayList<Star>();
+
+    // Finds the star at the (count - 1)th position on the list and its distance
+    double distAtCount = template.get(count - 1).distanceTo(x, y, z);
+    int whenDistStart = 0;
+
+    // Add stars from the list until finding a star whose distance is the same as
+    // distAtCount
+    for (int i = 0; i < count; i++) {
+      if (template.get(i).distanceTo(x, y, z) == distAtCount) {
+        whenDistStart = i;
+        break;
+      }
+      truncatedStarList.add(template.get(i));
     }
 
-    private <A> ArrayList<A> copyWithType(ArrayList<A> aloa) {
-        return new ArrayList<>(aloa);
+    // Find all stars whose distance is the same as distAtCount
+    for (int j = whenDistStart; j < template.size(); j++) {
+      if (template.get(j).distanceTo(x, y, z) != distAtCount) {
+        break;
+      }
+      sameValueList.add(template.get(j));
     }
 
-    public boolean areArgsValid(ArrayList<String> args) {
-        int argSize = args.size();
-        boolean result = true;
-
-        // Testing if the Stars CSV File has been loaded yet - NEED TO CORRECT LATER
-        if (currentFile.length() == 0) {
-            System.out.println("ERROR: No file has been loaded yet");
-            return false;
-        }
-
-        // Testing for Valid Args Size
-        if (!Arrays.asList(acceptArgs).contains(argSize)) {
-            System.out.println("ERROR: Incorrect Number of Arguments for \"naive_neighbors\"");
-            return false;
-        }
-
-        // Testing for Valid Neighbor Numbers - Must be Numeric and >= 0
-        String sNeighbors = args.get(0);
-        if (validator.isArgInteger(sNeighbors)) {
-            int intNeighbors = Integer.parseInt(sNeighbors);
-            if (intNeighbors < 0) {
-                result = false;
-                System.out.println("ERROR: Number of Neighbors Cannot Be Negative");
-            }
-        } else {
-            result = false;
-            System.out.println("ERROR: Number of Neighbors is Not an Integer");
-        }
-
-        // If taking in 2 Arguments, check if the second argument is a valid String and exists in the CSV
-        if (argSize == 2) {
-            String sName = args.get(1);
-            if (!validator.isArgString(sName)) {
-                result = false;
-                System.out.println("ERROR: Name is Not Surrounded by Double Quotes");
-            }
-            else {
-                String starNoQuotes = sName.substring(1, sName.length() - 1);
-                Optional<Star> selectedStar = findStarWithName(starNoQuotes);
-                if (selectedStar.isEmpty()) {
-                    result = false;
-                    System.out.printf("ERROR: The Selected Star %s is Not Found\n", sName);
-                }
-            }
-        }
-
-        // If taking in 4 Arguments, check if the rest of the 3 arguments are all Numeric
-        if (argSize == 4) {
-            String sXPos = args.get(1);
-            String sYPos = args.get(2);
-            String sZPos = args.get(3);
-
-            if (!(validator.isArgNumeric(sXPos) && validator.isArgNumeric(sYPos) && validator.isArgNumeric(sZPos))) {
-                result = false;
-                System.out.println("ERROR: X, Y, and Z Coordinates Should All Be Numeric");
-            }
-        }
-
-        return result;
+    // randomly pick (count - whenDistStart + 1) out of the arraylist
+    // until the truncatedStarList is filled
+    Random ran = new Random();
+    for (int k = 0; k < (count - whenDistStart); k++) {
+      int selected = ran.nextInt(sameValueList.size());
+      truncatedStarList.add(sameValueList.remove(selected));
     }
+
+    return truncatedStarList;
+  }
+
+  /**
+   * Given a string, determine if it can be converted to a non-negative integer.
+   *
+   * @param input - the input string
+   * @return True if the string can be converted to said specification
+   */
+  public boolean isNonNegInt(String input) {
+    return (isNonNegative(input) && isInteger(input));
+  }
 
 }

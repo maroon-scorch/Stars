@@ -1,0 +1,5 @@
+INPUT
+mock data/people/email-error.csv
+OUTPUT
+ERROR:
+END

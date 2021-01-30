@@ -1,0 +1,6 @@
+INPUT
+mock data/people/partial-blank-people-alt.csv
+OUTPUT
+First Name: Ethelda, Last Name: [Undeclared/Empty], Birth Date: 11/1/1989, Email Address: [Undeclared/Empty], Gender: Genderfluid, Street Address: 07738 Fairview Terrace
+First Name: Orion, Last Name: Chapleo, Birth Date: 9/17/1988, Email Address: ochapleo1@facebook.com, Gender: Genderqueer, Street Address: 99816 Cody Point
+END

@@ -1,0 +1,4 @@
+INPUT
+mock data/people/empty.csv
+OUTPUT
+END

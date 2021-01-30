@@ -1,0 +1,5 @@
+INPUT
+mock data/people/address-error.csv
+OUTPUT
+ERROR:
+END

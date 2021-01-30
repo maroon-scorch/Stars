@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
 
+import edu.brown.cs.student.command.REPLRunner;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
@@ -53,6 +54,8 @@ public final class Main {
     if (options.has("gui")) {
       runSparkServer((int) options.valueOf("port"));
     }
+
+    // Creates the REPL Runner and stars the loop
     REPLRunner runner = new REPLRunner();
     runner.run();
   }

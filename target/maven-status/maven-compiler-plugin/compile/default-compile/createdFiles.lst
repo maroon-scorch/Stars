@@ -1,6 +1,11 @@
-edu\brown\cs\student\stars\Command.class
+edu\brown\cs\student\people\MockCSV.class
 edu\brown\cs\student\stars\Main.class
 edu\brown\cs\student\stars\Star.class
 edu\brown\cs\student\stars\Main$FrontHandler.class
+edu\brown\cs\student\command\REPLRunner.class
 edu\brown\cs\student\stars\Main$ExceptionPrinter.class
+edu\brown\cs\student\people\MockPerson.class
+edu\brown\cs\student\command\Command.class
+edu\brown\cs\student\csvParse\CSVParser.class
 edu\brown\cs\student\stars\NaiveRadius.class
+edu\brown\cs\student\csvParse\LineConverter.class
