@@ -31,7 +31,7 @@ by space) to whatever command object the input matches too.
 For each command object in the 
 
 ## How to build/run your program:
-To build the program and start, run the following command:
+To build the program and start, run the following command in the root directory of the Project:
 ```
 mvn package
 chmod +x run
@@ -40,6 +40,7 @@ chmod +x cs32-test
 ```
 
 ## How to run any tests:
+All following commands should be run in the root directory of the Project:
 To run system tests for stars (student):
 ```
 ./cs32-test tests/mji13/stars/stars1/*.test
