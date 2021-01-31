@@ -48,9 +48,9 @@ public class ArgsInformation {
           + "Regex Requirements and Error Messages should be the same");
     }
     this.uniqueName = uniqueName;
-    this.argsFormat = argsFormat;
-    this.requirements = requirements;
-    this.errorMessages = errorMessages;
+    this.argsFormat = argsFormat.clone();
+    this.requirements = requirements.clone();
+    this.errorMessages = errorMessages.clone();
   }
 
   /**
@@ -68,7 +68,7 @@ public class ArgsInformation {
    * @return argsFormat
    */
   public String[] getArgsFormat() {
-    return argsFormat;
+    return argsFormat.clone();
   }
 
   /**
@@ -77,7 +77,7 @@ public class ArgsInformation {
    * @return requirements
    */
   public StringValidation[] getRequirements() {
-    return requirements;
+    return requirements.clone();
   }
 
   /**
@@ -86,7 +86,7 @@ public class ArgsInformation {
    * @return errorMessages
    */
   public String[] getErrorMessages() {
-    return errorMessages;
+    return errorMessages.clone();
   }
 
 }

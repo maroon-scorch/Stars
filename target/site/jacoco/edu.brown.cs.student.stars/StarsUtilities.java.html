@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StarsUtilities.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stars</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.student.stars</a> &gt; <span class="el_source">StarsUtilities.java</span></div><h1>StarsUtilities.java</h1><pre class="source lang-java linenums">package edu.brown.cs.student.stars;
+
+import java.util.ArrayList;
+import java.util.Optional;
+
+/**
+ * Interface for the Utilities Functions in the star package.
+ */
+public interface StarsUtilities {
+
+  /**
+   * Finds the Star with the name specified.
+   *
+   * @param name  the name of the star
+   * @param stars the list of stars to seach through
+   * @return Option of empty if not found, Option of the star if found
+   */
+  default Optional&lt;Star&gt; findStarWithName(String name, ArrayList&lt;Star&gt; stars) {
+<span class="fc bfc" id="L19" title="All 2 branches covered.">    for (Star eachStar : stars) {</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">      if (eachStar.getName().equals(name)) {</span>
+<span class="fc" id="L21">        return Optional.of(eachStar);</span>
+      }
+<span class="fc" id="L23">    }</span>
+<span class="fc" id="L24">    return Optional.empty();</span>
+  }
+
+  /**
+   * Finds the Stars with the coordinate specified.
+   *
+   * @param x     the x coordinate of the star
+   * @param y     the y coordinate of the star
+   * @param z     the z coordinate of the star
+   * @param stars the list of stars to seach through
+   * @return The list of stars found (could be empty).
+   */
+  default ArrayList&lt;Star&gt; findStarsWithCord(double x, double y, double z, ArrayList&lt;Star&gt; stars) {
+<span class="fc" id="L37">    ArrayList&lt;Star&gt; template = new ArrayList&lt;Star&gt;();</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">    for (Star eachStar : stars) {</span>
+<span class="pc bpc" id="L39" title="1 of 6 branches missed.">      if ((x == eachStar.getX()) &amp;&amp; (y == eachStar.getY()) &amp;&amp; (z == eachStar.getZ())) {</span>
+<span class="fc" id="L40">        template.add(eachStar);</span>
+      }
+<span class="fc" id="L42">    }</span>
+<span class="fc" id="L43">    return template;</span>
+  }
+
+  /**
+   * Makes a shallow copy of the ArrayList given and preserves type.
+   *
+   * @param &lt;A&gt; The genertic Type A of the ArrayList
+   * @param lst The ArrayList given
+   * @return A copy of the ArrayList
+   */
+  default &lt;A&gt; ArrayList&lt;A&gt; copyWithType(ArrayList&lt;A&gt; lst) {
+<span class="fc" id="L54">    return new ArrayList&lt;&gt;(lst);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

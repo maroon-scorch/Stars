@@ -120,6 +120,15 @@ public class Star implements StringValFunctions {
   }
 
   /**
+   * Gets the id of the star.
+   *
+   * @return name
+   */
+  public String getStarID() {
+    return starID;
+  }
+
+  /**
    * Gets the x coordinate of the star.
    *
    * @return x

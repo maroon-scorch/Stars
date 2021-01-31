@@ -14,7 +14,7 @@ import java.util.Optional;
 import static java.util.Map.entry;
 
 /**
- * MockCSV Command Object for executing the "mock <csv>" command.
+ * MockCSV Command Object for executing the "mock csv" command.
  */
 public class MockCSV implements Command, StringValFunctions {
   /**
@@ -47,7 +47,7 @@ public class MockCSV implements Command, StringValFunctions {
       )}));
 
   /**
-   * The argument validator for the arguments of the mock <csv> command.
+   * The argument validator for the arguments of the "mock csv" command.
    */
   private final ArgsValidator argsValidator
       = new ArgsValidator("mock <csv>", reqInfoMaps);
@@ -83,7 +83,7 @@ public class MockCSV implements Command, StringValFunctions {
    * but since MockCSV only has 1 method, this is a check for argument validation.
    *
    * @param args the list of arguments to be operated on
-   * @return Optional<String> empty if the arguments are invalid, a String if a match is found.
+   * @return Option of String - empty if the arguments are invalid, a String if a match is found.
    */
   public Optional<String> matchArgsToMethod(ArrayList<String> args) {
     return argsValidator.testArgs(args);

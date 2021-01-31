@@ -37,7 +37,7 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
    * - x: number
    * - y: number
    * - z: number
-   * See custome StringValidation Method at the Bottom
+   * See custom StringValidation Method at the Bottom
    */
   private final Map<Integer, ArgsInformation[]> reqInfoMaps
       = Map.ofEntries(
@@ -50,7 +50,7 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
       )}),
       entry(4, new ArgsInformation[] {new ArgsInformation(
           "naive_neighbors_4",
-          new String[] {"radius >= 0", "x: number", "y: number", "z: number"},
+          new String[] {"neighbors: int >= 0", "x: number", "y: number", "z: number"},
           new StringValidation[] {this::isNonNegInt, this::isNumeric,
               this::isNumeric, this::isNumeric},
           new String[] {"ERROR: Number of Neighbors must be a Positive Integer.",
@@ -86,9 +86,16 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
     this.currentFile = new StringBuilder();
   }
 
+  /**
+   * Executes the naive_neighbors Command.
+   * If successful, prints out the closest n number of stars to the specified location.
+   *
+   * Note: TA Colton said that the randomization is meant for tiebreakers to include on the list
+   * so if there are stars with same distance away but including them does not exceed that number
+   * asked, they will be included just as normal.
+   * @param args - the list of arguments to be operated on.
+   */
   public void execute(ArrayList<String> args) {
-    int argSize = args.size();
-
     if (currentFile.length() == 0) {
       System.out.println("ERROR: No file has been loaded yet");
       return;
@@ -128,7 +135,7 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
    * Match the arguments given to which method (if any) the Command Object should execute.
    *
    * @param args the list of arguments to be operated on
-   * @return Optional<String> empty if the arguments are invalid, a String if a match is found.
+   * @return Option of String - empty if the arguments are invalid, a String if match is found.
    */
   public Optional<String> matchArgsToMethod(ArrayList<String> args) {
     return argsValidator.testArgs(args);
@@ -143,7 +150,7 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
    * @return the list of stars from least distance to greatest within count given
    */
   public ArrayList<Star> performNaiveNeighbors(int count, String name, ArrayList<Star> alos) {
-    Optional<Star> selectedStar = findStarWithName(name, starsList);
+    Optional<Star> selectedStar = findStarWithName(name, alos);
     // If the name given is empty, print an error
     if (name.isEmpty()) {
       System.out.println("ERROR: Empty String is not a valid name for stars");
@@ -217,6 +224,13 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
         break;
       }
       sameValueList.add(template.get(j));
+    }
+
+    // Edge Case where the entire list is at the same distance and the number of stars
+    // with the same distance equals the length of the list, in that case randomization
+    // is not needed because they are used for tiebreakers when the limit exceeds.
+    if ((truncatedStarList.size() == 0) && (sameValueList.size() == count)) {
+      return sameValueList;
     }
 
     // randomly pick (count - whenDistStart + 1) out of the arraylist

@@ -50,7 +50,7 @@ public class ArgsValidator {
       ArgsInformation[] reqInfos = reqInfoMaps.get(argSize);
       ArrayList<String> errorList = new ArrayList<>();
       for (ArgsInformation reqInfo : reqInfos) {
-        String error = testArgsWithRegex(args, reqInfo);
+        String error = testArgsWithReq(args, reqInfo);
         // If the test passes, meaning the error was empty
         if (error.isEmpty()) {
           return Optional.of(reqInfo.getUniqueName());
@@ -75,7 +75,7 @@ public class ArgsValidator {
    * @return the String of all the errors that occurred when failing the tests of
    * the ArgsInformation. If all tests were passed, an empty String would be returned.
    */
-  public String testArgsWithRegex(ArrayList<String> args, ArgsInformation reqInfo) {
+  public String testArgsWithReq(ArrayList<String> args, ArgsInformation reqInfo) {
     int argSize = args.size();
     String[] argsFormat = reqInfo.getArgsFormat();
     StringValidation[] requirements = reqInfo.getRequirements();

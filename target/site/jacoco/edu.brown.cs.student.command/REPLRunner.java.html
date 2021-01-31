@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>REPLRunner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stars</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.student.command</a> &gt; <span class="el_source">REPLRunner.java</span></div><h1>REPLRunner.java</h1><pre class="source lang-java linenums">package edu.brown.cs.student.command;
+
+import edu.brown.cs.student.people.MockCSV;
+import edu.brown.cs.student.stars.NaiveNeighbors;
+import edu.brown.cs.student.stars.NaiveRadius;
+import edu.brown.cs.student.stars.Star;
+import edu.brown.cs.student.stars.UpdateStarFile;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static java.util.Map.entry;
+
+/**
+ * REPLRunner that initiates the REPL Loop until being termianted.
+ */
+public class REPLRunner {
+
+  /**
+   * The list of stars shared by the stars, naive_radius, and naive_neighbors command.
+   */
+<span class="nc" id="L27">  private final ArrayList&lt;Star&gt; starsList = new ArrayList&lt;&gt;();</span>
+
+  /**
+   * The currentFileName shared by the stars, naive_radius, and naive_neighbors command.
+   */
+<span class="nc" id="L32">  private final StringBuilder currentFile = new StringBuilder();</span>
+
+  /**
+   * The Hashmap of String Keys to which Command Object they correspond to.
+   */
+<span class="nc" id="L37">  private final Map&lt;String, Command&gt; commandMap = Map.ofEntries(</span>
+<span class="nc" id="L38">      entry(&quot;stars&quot;, new UpdateStarFile(starsList, currentFile)),</span>
+<span class="nc" id="L39">      entry(&quot;naive_radius&quot;, new NaiveRadius(starsList, currentFile)),</span>
+<span class="nc" id="L40">      entry(&quot;naive_neighbors&quot;, new NaiveNeighbors(starsList, currentFile)),</span>
+<span class="nc" id="L41">      entry(&quot;mock&quot;, new MockCSV())</span>
+  );
+
+  /**
+   * Constructs an empty REPLRunner.
+   */
+<span class="nc" id="L47">  public REPLRunner() {</span>
+<span class="nc" id="L48">  }</span>
+
+  /**
+   * Runs the REPLRunner that takes in each line and executes them.
+   */
+  public void run() {
+<span class="nc" id="L54">    try (BufferedReader reader = new BufferedReader(</span>
+        new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
+      String input;
+<span class="nc bnc" id="L57" title="All 2 branches missed.">      while ((input = reader.readLine()) != null) {</span>
+        try {
+<span class="nc" id="L59">          ArrayList&lt;String&gt; separatedCommand = new ArrayList&lt;&gt;();</span>
+
+          // Referencef from IRon's Regex Pattern under post:
+          // https://stackoverflow.com/questions/366202/
+          // regex-for-splitting-a-string-using-space-when-not-surrounded-by-single-or-double
+          // Separates the Command into different Strings without splitting between &quot;&quot;
+<span class="nc" id="L65">          Pattern pattern = Pattern.compile(&quot;(\&quot;[^\&quot;]*\&quot;|[\\S]+)+&quot;);</span>
+<span class="nc" id="L66">          Matcher matcher = pattern.matcher(input);</span>
+
+<span class="nc bnc" id="L68" title="All 2 branches missed.">          while (matcher.find()) {</span>
+<span class="nc" id="L69">            separatedCommand.add(matcher.group());</span>
+          }
+
+<span class="nc" id="L72">          separatedCommand.removeIf(String::isEmpty);</span>
+<span class="nc" id="L73">          String commandTitle = separatedCommand.remove(0);</span>
+
+<span class="nc bnc" id="L75" title="All 2 branches missed.">          if (commandMap.containsKey(commandTitle)) {</span>
+<span class="nc" id="L76">            Command currentCommand = commandMap.get(commandTitle);</span>
+<span class="nc" id="L77">            currentCommand.execute(separatedCommand);</span>
+<span class="nc" id="L78">          } else {</span>
+<span class="nc" id="L79">            System.out.printf(&quot;ERROR: The Command \&quot;%s\&quot; does not exist%n&quot;, commandTitle);</span>
+          }
+<span class="nc" id="L81">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L82">          System.out.println(&quot;ERROR: &quot; + e.getMessage());</span>
+<span class="nc" id="L83">        } catch (Exception e) {</span>
+<span class="nc" id="L84">          System.out.println(&quot;ERROR: Invalid input for entry&quot;);</span>
+<span class="nc" id="L85">        }</span>
+      }
+<span class="nc" id="L87">    } catch (Exception e) {</span>
+<span class="nc" id="L88">      System.out.println(&quot;ERROR: Exception has occurred, please re-run the program&quot;);</span>
+<span class="nc" id="L89">    }</span>
+<span class="nc" id="L90">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

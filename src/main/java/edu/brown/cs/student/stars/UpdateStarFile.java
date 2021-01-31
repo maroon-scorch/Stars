@@ -14,7 +14,7 @@ import java.util.Optional;
 import static java.util.Map.entry;
 
 /**
- * Stars Command Object for executing the "stars <filepath>" command.
+ * Stars Command Object for executing the "stars filepath" command.
  */
 public class UpdateStarFile implements Command, StringValFunctions {
   /**
@@ -87,7 +87,7 @@ public class UpdateStarFile implements Command, StringValFunctions {
       starsList.clear();
       starsList.addAll(tempStarsList);
       currentFile.replace(0, currentFile.length(), filepath);
-      System.out.printf("Read %d stars from %s\n", starsList.size(), filepath);
+      System.out.printf("Read %d stars from %s%n", starsList.size(), filepath);
     }
   }
 
@@ -97,7 +97,7 @@ public class UpdateStarFile implements Command, StringValFunctions {
    * but since Stars only has 1 method, this is a check for argument validation.
    *
    * @param args the list of arguments to be operated on
-   * @return Optional<String> empty if the arguments are invalid, a String if a match is found.
+   * @return Option of String - empty if the arguments are invalid, a String if match is found.
    */
   public Optional<String> matchArgsToMethod(ArrayList<String> args) {
     return argsValidator.testArgs(args);

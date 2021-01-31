@@ -8,6 +8,7 @@ import edu.brown.cs.student.stars.UpdateStarFile;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -51,7 +52,7 @@ public class REPLRunner {
    */
   public void run() {
     try (BufferedReader reader = new BufferedReader(
-        new InputStreamReader(System.in))) {
+        new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
       String input;
       while ((input = reader.readLine()) != null) {
         try {
@@ -75,8 +76,10 @@ public class REPLRunner {
             Command currentCommand = commandMap.get(commandTitle);
             currentCommand.execute(separatedCommand);
           } else {
-            System.out.printf("ERROR: The Command \"%s\" does not exist\n", commandTitle);
+            System.out.printf("ERROR: The Command \"%s\" does not exist%n", commandTitle);
           }
+        } catch (RuntimeException e) {
+          System.out.println("ERROR: " + e.getMessage());
         } catch (Exception e) {
           System.out.println("ERROR: Invalid input for entry");
         }

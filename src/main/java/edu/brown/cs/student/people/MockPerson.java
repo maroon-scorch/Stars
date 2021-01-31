@@ -12,7 +12,7 @@ import java.util.Optional;
 import static java.util.Map.entry;
 
 /**
- * MockPerson Object for representing a MockPerson in the "mock <csv>" command.
+ * MockPerson Object for representing a MockPerson in the "mock csv" command.
  */
 public class MockPerson implements StringValFunctions {
 
@@ -93,7 +93,7 @@ public class MockPerson implements StringValFunctions {
   /**
    * Formats the String to a default value is the input is empty.
    *
-   * @param input
+   * @param input - text to be passed in
    * @return "[Undeclared/Empty]" if input is empty; otherwise, the input
    */
   public String formatEmpty(String input) {
@@ -136,7 +136,7 @@ public class MockPerson implements StringValFunctions {
   /**
    * Determines if the String Date is in the format mm/dd/yy, zero can be omitted.
    *
-   * @param input
+   * @param input - text to be passed in
    * @return True if format is matched and date is in range
    */
   public Boolean isMockDate(String input) {
@@ -148,7 +148,7 @@ public class MockPerson implements StringValFunctions {
   /**
    * Given a string date in the format "mm/dd/yy" checks if the day and months are in range.
    *
-   * @param input
+   * @param input - text to be passed in
    * @return True if date is in range
    */
   private Boolean isMockDateInRage(String input) {
@@ -165,7 +165,7 @@ public class MockPerson implements StringValFunctions {
   /**
    * Given a string email, checks if the email is valid.
    *
-   * @param input
+   * @param input - text to be passed in
    * @return True if email is in the regex form specified = [username]@[domain]
    */
   public Boolean isMockEmail(String input) {
@@ -177,7 +177,7 @@ public class MockPerson implements StringValFunctions {
   /**
    * Given a string street address, checks if the street address is valid.
    *
-   * @param input
+   * @param input - text to be passed in
    * @return True if street address is in form - [street number] [any]
    */
   public Boolean isMockStreetAddress(String input) {

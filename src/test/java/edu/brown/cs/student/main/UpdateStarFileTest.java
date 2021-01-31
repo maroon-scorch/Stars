@@ -44,4 +44,5 @@ public class UpdateStarFileTest {
     assertEquals(cmd.matchArgsToMethod(slst).get(), "stars_1");
   }
 
+
 }

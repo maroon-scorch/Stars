@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Star.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stars</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.student.stars</a> &gt; <span class="el_source">Star.java</span></div><h1>Star.java</h1><pre class="source lang-java linenums">package edu.brown.cs.student.stars;
+
+import edu.brown.cs.student.validations.ArgsInformation;
+import edu.brown.cs.student.validations.ArgsValidator;
+import edu.brown.cs.student.validations.StringValFunctions;
+import edu.brown.cs.student.validations.StringValidation;
+
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
+
+import static java.util.Map.entry;
+
+/**
+ * The Stars Object that stores the information from the CSV File.
+ */
+public class Star implements StringValFunctions {
+  /**
+   * The list of fields MockPerson stores:
+   * starID, star name, x coordinate, y coordinate, z coordinate.
+   */
+  private final String starID, starName;
+  private final double x, y, z;
+
+  /**
+   * Specifications on the requirements on the argument passed to the command.
+   * starID - any String
+   * starName - any String
+   * x - numeric
+   * y - numeric
+   * z - numeric.
+   */
+<span class="fc" id="L33">  private final Map&lt;Integer, ArgsInformation[]&gt; stringEntryValidation</span>
+<span class="fc" id="L34">      = Map.ofEntries(</span>
+<span class="fc" id="L35">      entry(5, new ArgsInformation[] {new ArgsInformation(</span>
+          &quot;star_x_y_z&quot;,
+          new String[] {&quot;starID: any string&quot;, &quot;starName: any string&quot;, &quot;x: number&quot;,
+              &quot;y: number&quot;, &quot;z: number&quot;},
+          new StringValidation[] {this::pass, this::pass, this::isNumeric, this::isNumeric,
+              this::isNumeric},
+          new String[] {&quot;ERROR: Star ID of row is malformed&quot;,
+              &quot;ERROR: Proper Name of row is malformed&quot;,
+              &quot;ERROR: Coordinate X of row must be numeric.&quot;,
+              &quot;ERROR: Coordinate Y of row must be numeric.&quot;,
+              &quot;ERROR: Coordinate Z of row must be numeric.&quot;
+          }
+      )}));
+
+  /**
+   * Creates a Star Object with the String Parameters Given.
+   *
+   * @param starID   id of Star
+   * @param starName name of Star
+   * @param strX     x coodinate of Star
+   * @param strY     y coordiante of Star
+   * @param strZ     z coordiante of Star
+   */
+<span class="fc" id="L58">  public Star(String starID, String starName, String strX, String strY, String strZ) {</span>
+<span class="fc" id="L59">    ArrayList&lt;String&gt; stringArgs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L60">    stringArgs.add(starID);</span>
+<span class="fc" id="L61">    stringArgs.add(starName);</span>
+<span class="fc" id="L62">    stringArgs.add(strX);</span>
+<span class="fc" id="L63">    stringArgs.add(strY);</span>
+<span class="fc" id="L64">    stringArgs.add(strZ);</span>
+
+<span class="fc" id="L66">    ArgsValidator argsValidator = new ArgsValidator(&quot;star:&quot;, stringEntryValidation);</span>
+<span class="fc" id="L67">    Optional&lt;String&gt; opMethodName = argsValidator.testArgs(stringArgs);</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
+<span class="nc" id="L69">      throw new IllegalArgumentException(&quot;ERROR: The fields of the row does not&quot;</span>
+          + &quot;match the specifications of stars&quot;);
+    }
+
+<span class="fc" id="L73">    this.starID = starID;</span>
+<span class="fc" id="L74">    this.starName = starName;</span>
+<span class="fc" id="L75">    this.x = Double.parseDouble(strX);</span>
+<span class="fc" id="L76">    this.y = Double.parseDouble(strY);</span>
+<span class="fc" id="L77">    this.z = Double.parseDouble(strZ);</span>
+<span class="fc" id="L78">  }</span>
+
+  /**
+   * Creates a Star Object with the Parameters in the Proper Types Given.
+   *
+   * @param starID   id of Star
+   * @param starName name of Star
+   * @param x        x coodinate of Star
+   * @param y        y coordiante of Star
+   * @param z        z coordiante of Star
+   */
+<span class="fc" id="L89">  public Star(String starID, String starName, double x, double y, double z) {</span>
+<span class="fc" id="L90">    this.starID = starID;</span>
+<span class="fc" id="L91">    this.starName = starName;</span>
+<span class="fc" id="L92">    this.x = x;</span>
+<span class="fc" id="L93">    this.y = y;</span>
+<span class="fc" id="L94">    this.z = z;</span>
+<span class="fc" id="L95">  }</span>
+
+  /**
+   * Finds the distance of the star to the coordinate given.
+   *
+   * @param xPos x coodinate of destination
+   * @param yPos y coordiante of destination
+   * @param zPos z coordiante of destination
+   * @return the distance
+   */
+  public double distanceTo(double xPos, double yPos, double zPos) {
+<span class="fc" id="L106">    double xDiff = x - xPos;</span>
+<span class="fc" id="L107">    double yDiff = y - yPos;</span>
+<span class="fc" id="L108">    double zDiff = z - zPos;</span>
+
+<span class="fc" id="L110">    return Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2) + Math.pow(zDiff, 2));</span>
+  }
+
+  /**
+   * Gets the name of the star.
+   *
+   * @return name
+   */
+  public String getName() {
+<span class="fc" id="L119">    return starName;</span>
+  }
+
+  /**
+   * Gets the id of the star.
+   *
+   * @return name
+   */
+  public String getStarID() {
+<span class="fc" id="L128">    return starID;</span>
+  }
+
+  /**
+   * Gets the x coordinate of the star.
+   *
+   * @return x
+   */
+  public double getX() {
+<span class="fc" id="L137">    return x;</span>
+  }
+
+  /**
+   * Gets the y coordinate of the star.
+   *
+   * @return y
+   */
+  public double getY() {
+<span class="fc" id="L146">    return y;</span>
+  }
+
+  /**
+   * Gets the z coordinate of the star.
+   *
+   * @return z
+   */
+  public double getZ() {
+<span class="fc" id="L155">    return z;</span>
+  }
+
+  /**
+   * Enables the star object to be printable.
+   *
+   * @return the String Literal of the star (which is its id)
+   */
+  public String toString() {
+<span class="fc" id="L164">    return starID;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -138,7 +138,7 @@ public class NaiveRadius implements Command, StarsUtilities, StringValFunctions 
    * Match the arguments given to which method (if any) the Command Object should execute.
    *
    * @param args the list of arguments to be operated on
-   * @return Optional<String> empty if the arguments are invalid, a String if a match is found.
+   * @return Optional of String - empty if the arguments are invalid, a String if match is found.
    */
   public Optional<String> matchArgsToMethod(ArrayList<String> args) {
     return argsValidator.testArgs(args);
@@ -162,7 +162,7 @@ public class NaiveRadius implements Command, StarsUtilities, StringValFunctions 
     }
 
     // If the selected star is not found, print an error
-    Optional<Star> selectedStar = findStarWithName(name, starsList);
+    Optional<Star> selectedStar = findStarWithName(name, alos);
     if (selectedStar.isEmpty()) {
       System.out.printf("ERROR: No Stars with name \"%s\" is found%n", name);
       return new ArrayList<>();
@@ -194,7 +194,7 @@ public class NaiveRadius implements Command, StarsUtilities, StringValFunctions 
   public ArrayList<Star> performNaiveRadius(
       double r, double x, double y, double z, ArrayList<Star> alos) {
     if (r == 0) {
-      return findStarsWithCord(x, y, z, starsList);
+      return findStarsWithCord(x, y, z, alos);
     }
     ArrayList<Star> template = copyWithType(alos);
     template.removeIf(star -> (star.distanceTo(x, y, z) > r));

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockPerson.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stars</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.student.people</a> &gt; <span class="el_source">MockPerson.java</span></div><h1>MockPerson.java</h1><pre class="source lang-java linenums">package edu.brown.cs.student.people;
+
+import edu.brown.cs.student.validations.ArgsInformation;
+import edu.brown.cs.student.validations.ArgsValidator;
+import edu.brown.cs.student.validations.StringValFunctions;
+import edu.brown.cs.student.validations.StringValidation;
+
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
+
+import static java.util.Map.entry;
+
+/**
+ * MockPerson Object for representing a MockPerson in the &quot;mock csv&quot; command.
+ */
+public class MockPerson implements StringValFunctions {
+
+  /**
+   * The list of fields MockPerson stores:
+   * first name, last name, birth date, email, gender, and street address.
+   */
+  private String firstName, lastName, birthDate, email, gender, streetAddress;
+
+  /**
+   * Specifications on the requirements on the argument passed to the command:
+   * first name - any String
+   * last name - any String
+   * date - mm/dd/yyyy (leading zeroes can be omitted)
+   * email - [username]@[domain]
+   * gender - any String
+   * street address - number name suffix
+   * See custom StringValidation methods at the Bottom.
+   */
+<span class="fc" id="L35">  private final Map&lt;Integer, ArgsInformation[]&gt; stringEntryValidation</span>
+<span class="fc" id="L36">      = Map.ofEntries(</span>
+<span class="fc" id="L37">      entry(6, new ArgsInformation[] {new ArgsInformation(</span>
+          &quot;person&quot;,
+          new String[] {&quot;firstName: any string&quot;, &quot;lastName: any string&quot;, &quot;date: mm/dd/yyyy&quot;,
+              &quot;email: [username]@[domain]&quot;, &quot;gender: any string&quot;,
+              &quot;street address: number name suffix&quot;},
+          new StringValidation[] {this::pass, this::pass, this::isMockDate, this::isMockEmail,
+              this::pass, this::isMockStreetAddress},
+          new String[] {&quot;ERROR: Field FirstName is malformed&quot;,
+              &quot;ERROR: Field LastName is malformed&quot;,
+              &quot;ERROR: Date must exists and be in format mm/dd/yyyy (zero can be omitted)&quot;,
+              &quot;ERROR: Email Address must be in format [username]@[domain],&quot;
+                  + &quot; domain should have at least one period&quot;,
+              &quot;ERROR: Field Gender is malformed&quot;,
+              &quot;ERROR: Street Address should start with numbers and be alphanumeric&quot;
+          }
+      )}));
+
+  /**
+   * Creates a MockPerson Object with the names given.
+   *
+   * @param firstName     First Name of Person
+   * @param lastName      Last Name of Person
+   * @param birthDate     Birthdate of Person
+   * @param email         Email of Person
+   * @param gender        Gender of Person
+   * @param streetAddress Street Address of Person
+   */
+  public MockPerson(String firstName, String lastName, String birthDate, String email,
+<span class="fc" id="L65">                    String gender, String streetAddress) {</span>
+<span class="fc" id="L66">    ArrayList&lt;String&gt; stringArgs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L67">    stringArgs.add(firstName);</span>
+<span class="fc" id="L68">    stringArgs.add(lastName);</span>
+<span class="fc" id="L69">    stringArgs.add(birthDate);</span>
+<span class="fc" id="L70">    stringArgs.add(email);</span>
+<span class="fc" id="L71">    stringArgs.add(gender);</span>
+<span class="fc" id="L72">    stringArgs.add(streetAddress);</span>
+
+    // Passes the ArrayList of Arguments to the Argument Validator
+<span class="fc" id="L75">    ArgsValidator argsValidator = new ArgsValidator(&quot;mock-person:&quot;,</span>
+        stringEntryValidation);
+<span class="fc" id="L77">    Optional&lt;String&gt; opMethodName = argsValidator.testArgs(stringArgs);</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
+<span class="nc" id="L79">      throw new IllegalArgumentException(&quot;ERROR: The fields of the row does not&quot;</span>
+          + &quot; match the specifications of mock-person&quot;);
+    }
+
+    // If no errors are thrown, they passed the Argument Validation, precedes to construct
+<span class="fc" id="L84">    this.firstName = firstName;</span>
+<span class="fc" id="L85">    this.lastName = lastName;</span>
+<span class="fc" id="L86">    this.birthDate = birthDate;</span>
+<span class="fc" id="L87">    this.email = email;</span>
+<span class="fc" id="L88">    this.gender = gender;</span>
+<span class="fc" id="L89">    this.streetAddress = streetAddress;</span>
+<span class="fc" id="L90">  }</span>
+
+
+  /**
+   * Formats the String to a default value is the input is empty.
+   *
+   * @param input - text to be passed in
+   * @return &quot;[Undeclared/Empty]&quot; if input is empty; otherwise, the input
+   */
+  public String formatEmpty(String input) {
+<span class="fc bfc" id="L100" title="All 2 branches covered.">    return (input.isEmpty()) ? &quot;[Undeclared/Empty]&quot; : input;</span>
+  }
+
+
+  /**
+   * Gives the String format of MockPerson if printed.
+   *
+   * @return the toString version of MockPerson
+   */
+  public String toString() {
+<span class="fc" id="L110">    return &quot;First Name: &quot; + formatEmpty(firstName)</span>
+<span class="fc" id="L111">        + &quot;, Last Name: &quot; + formatEmpty(lastName)</span>
+<span class="fc" id="L112">        + &quot;, Birth Date: &quot; + formatEmpty(birthDate)</span>
+<span class="fc" id="L113">        + &quot;, Email Address: &quot; + formatEmpty(email)</span>
+<span class="fc" id="L114">        + &quot;, Gender: &quot; + formatEmpty(gender)</span>
+<span class="fc" id="L115">        + &quot;, Street Address: &quot; + formatEmpty(streetAddress);</span>
+  }
+
+
+  /**
+   * HashMap of the Number of Days in a Month, used in checking if Date is valid.
+   */
+<span class="fc" id="L122">  private final Map&lt;Integer, Integer&gt; monthToDays = Map.ofEntries(</span>
+<span class="fc" id="L123">      entry(1, 31),</span>
+<span class="fc" id="L124">      entry(2, 28),</span>
+<span class="fc" id="L125">      entry(3, 31),</span>
+<span class="fc" id="L126">      entry(4, 30),</span>
+<span class="fc" id="L127">      entry(5, 31),</span>
+<span class="fc" id="L128">      entry(6, 30),</span>
+<span class="fc" id="L129">      entry(7, 31),</span>
+<span class="fc" id="L130">      entry(8, 31),</span>
+<span class="fc" id="L131">      entry(9, 30),</span>
+<span class="fc" id="L132">      entry(10, 31),</span>
+<span class="fc" id="L133">      entry(11, 30),</span>
+<span class="fc" id="L134">      entry(12, 31));</span>
+
+  /**
+   * Determines if the String Date is in the format mm/dd/yy, zero can be omitted.
+   *
+   * @param input - text to be passed in
+   * @return True if format is matched and date is in range
+   */
+  public Boolean isMockDate(String input) {
+<span class="fc" id="L143">    boolean dateIsInRightFomat = input.matches(</span>
+        &quot;([1-9]|0[1-9]|1[012])[/]([1-9]|0[1-9]|[12][0-9]|3[01])[/]\\d\\d\\d\\d&quot;);
+<span class="fc bfc" id="L145" title="All 4 branches covered.">    return (dateIsInRightFomat &amp;&amp; isMockDateInRage(input));</span>
+  }
+
+  /**
+   * Given a string date in the format &quot;mm/dd/yy&quot; checks if the day and months are in range.
+   *
+   * @param input - text to be passed in
+   * @return True if date is in range
+   */
+  private Boolean isMockDateInRage(String input) {
+<span class="fc" id="L155">    String[] dateArray = input.split(&quot;/&quot;);</span>
+<span class="fc" id="L156">    int month = Integer.parseInt(dateArray[0]);</span>
+<span class="fc" id="L157">    int day = Integer.parseInt(dateArray[1]);</span>
+<span class="fc" id="L158">    int year = Integer.parseInt(dateArray[2]);</span>
+
+<span class="fc" id="L160">    int monthDays = monthToDays.get(month);</span>
+<span class="fc bfc" id="L161" title="All 4 branches covered.">    return ((day &lt;= monthDays)</span>
+<span class="pc bpc" id="L162" title="1 of 4 branches missed.">        || ((month == 2) &amp;&amp; (day == (monthToDays.get(2) + 1)) &amp;&amp; (year % 4 == 0)));</span>
+  }
+
+  /**
+   * Given a string email, checks if the email is valid.
+   *
+   * @param input - text to be passed in
+   * @return True if email is in the regex form specified = [username]@[domain]
+   */
+  public Boolean isMockEmail(String input) {
+    // Referenced from https://www.tutorialspoint.com/validate-email-address-in-java
+<span class="fc bfc" id="L173" title="All 2 branches covered.">    return (input.isEmpty()</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">        || input.matches(&quot;^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w-_]+\\.)+[\\w]+[\\w]$&quot;));</span>
+  }
+
+  /**
+   * Given a string street address, checks if the street address is valid.
+   *
+   * @param input - text to be passed in
+   * @return True if street address is in form - [street number] [any]
+   */
+  public Boolean isMockStreetAddress(String input) {
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">    return (input.isEmpty()</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">        || input.matches(&quot;(\\d+)[ ]([A-Za-z0-9\\s]+)&quot;));</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

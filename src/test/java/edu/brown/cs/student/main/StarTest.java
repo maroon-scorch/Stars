@@ -35,6 +35,7 @@ public class StarTest {
   public void testStarGet() {
     // Simple Get
     Star star1 = new Star("Abc", "My life is a joke", 1.9, 2.0, 3.1);
+    assertEquals(star1.getStarID(), "Abc");
     assertEquals(star1.getName(), "My life is a joke");
     assertEquals(star1.getX(), 1.9, 0.01);
     assertEquals(star1.getY(), 2.0, 0.01);
@@ -42,6 +43,7 @@ public class StarTest {
 
     // Construct With String
     Star star2 = new Star("A", "B", "1.2", "-5", "6");
+    assertEquals(star2.getStarID(), "A");
     assertEquals(star2.getName(), "B");
     assertEquals(star2.getX(), 1.2, 0.01);
     assertEquals(star2.getY(), -5, 0.01);
@@ -49,6 +51,7 @@ public class StarTest {
 
     // Empty String
     Star star3 = new Star("Abc", "", 1.9, 2.0, 3.1);
+    assertEquals(star3.getStarID(), "Abc");
     assertEquals(star3.getName(), "");
   }
 

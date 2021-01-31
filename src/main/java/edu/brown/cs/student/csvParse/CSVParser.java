@@ -2,9 +2,12 @@ package edu.brown.cs.student.csvParse;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.ArrayList;
 
@@ -38,15 +41,22 @@ public class CSVParser {
       String[] expectedHeaders,
       LineConverter<T> lineConverter) {
 
-    // Clears the Template first
+    // Clears the Template first and sets up the Path
     template.clear();
+    Path path = Paths.get(filepath);
 
-    try (BufferedReader csvReader = new BufferedReader(new FileReader(filepath))) {
-      String[] headers = csvReader.readLine().split(",", -1);
+    try (BufferedReader csvReader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+      String header = csvReader.readLine();
+      // Checks if File is Empty
+      if (header == null) {
+        throw new NullPointerException("The file is empty.");
+      }
 
+      String[] headers = header.split(",", -1);
       // Fails if the Headers do not Match
       if (!Arrays.equals(headers, expectedHeaders)) {
-        throw new RuntimeException("The headers of the File are not the expected headers.");
+        throw new IllegalArgumentException("The "
+            + "headers of the File are not the expected headers.");
       }
 
       // For each line, adds the converted line to the ArrayList
@@ -56,7 +66,7 @@ public class CSVParser {
       }
 
     } catch (FileNotFoundException e) {
-      System.out.printf("ERROR: File %s does not exist.\n", filepath);
+      System.out.printf("ERROR: File %s does not exist.%n", filepath);
       return false;
     } catch (IOException e) {
       System.out.println("ERROR: File Name/Path/Content is not valid");
