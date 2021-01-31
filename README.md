@@ -90,7 +90,12 @@ The Object representation of a MockPerson, stores their first name, last name, e
 #### MockCSV.java:
 This is the "mock csv" command, similar to UpdateStarFile.java
 
+* ArrayLists are chosen over Linked Lists for stars because the specific tie breakers of NaiveNeighbors required indexing of the ArrayList, this is best done with ArrayList because accessing each component has a time complexity of Constant Time whereas a linked list would require traveling from either the beginning or the end of the list to that point. In addition, ArrayLists were also better suited, personally, for Functional Methods such as .forEach and .removeIf, they also offer general compatibility towards Arrays (which ArrayLists are just extendible Arrays) which is another data structure commonly used in the implementation.
+
 ## Answers to design questions:
+Suppose that in addition to the commands specified in Command Line/REPL Specification, you wanted to support 10+ more commands. How would you change your code - particularly your REPL parsing - to do this? Don't worry about specific algorithmic details; we're interested in the higher-level design.
+
+Because of the implementation of the HashMap in my REPL Runner. All I really have to do is to add 10+ more entries of the command into the HashMap, with the key being what string should invoke them. Then I would create a Command Object for each of the Commands and handle the functionalities internally to them. For the possible arguments of each command, they would be handled by the Argument Validator via an internal Hashmap defined by the Command Object. If one Command has ties to another, they just have to share the same mutable constant defined separately in the REPL Runner. Overall, it doesn't change any main code in the run method of REPLRunner.
 
 ## How to build/run your program:
 To build the program and start, run the following command in the root directory of the Project:
