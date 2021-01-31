@@ -19,10 +19,9 @@ All subsequent runs of the program would execute normally as expected.
 ## Design details:
 ### REPL:
 Rrather than connecting the logic of the comands directly to the REPLRunner,
-I instead made all commands extend from an Interface called "Command" with only two default methods
-- execute and matchArgsToMethod. "execute" is the actual execution of the command while "matchArgsToMethod" is
-a validation of the arguments being passed to the command to determine if the command should be executed and
-which form of the command to choose.
+all commands extend from an Interface called "Command" with only two default methods
+- execute: the actual execution of the command
+- matchArgsToMethod: which uses the arguments passed to determine which method (if any) should be used to execute the command. If no methods are found, the arguments are invalid, and their corresponding errors are printed.
 
 For the runner, a Hashmap is set up to key the first string of the split (after being split
 by space) to whatever command object the input matches too.
