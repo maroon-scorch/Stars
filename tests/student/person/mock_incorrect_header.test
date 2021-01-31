@@ -1,0 +1,5 @@
+INPUT
+mock data/people/header-error.csv
+OUTPUT
+ERROR:
+END
