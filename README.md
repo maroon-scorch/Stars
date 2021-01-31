@@ -30,15 +30,28 @@ by space) to whatever command object the input matches too.
 ### Argument Validation:
 For each command object in the 
 
-## How to run any tests:
-To run system tests for stars:
+## How to build/run your program:
+To build the program and start, run the following command:
 ```
-./cs32-test tests/student/stars1/*.test --timeout 20
+mvn package
+chmod +x run
+chmod +x cs32-test
+./run
+```
+
+## How to run any tests:
+To run system tests for stars (student):
+```
+./cs32-test tests/mji13/stars/stars1/*.test
+```
+To run system tests for stars (TA):
+```
+./cs32-test tests/ta/stars/stars1/*.test
 ```
 
 To run system tests for data-modeling:
 ```
-./cs32-test tests/student/person/*.test --timeout 20
+./cs32-test tests/mji13/person/*.test
 ```
 
 To run Unit Tests:
@@ -46,11 +59,6 @@ To run Unit Tests:
 mvn test
 ```
 
-## How to build/run your program:
-To build the program and start, run the following command:
-```
-mvn package
-./run
-```
+
 
 ## Answers to design questions:
