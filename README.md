@@ -19,24 +19,53 @@ All subsequent runs of the program would execute normally as expected.
 ## Design details:
 The packages in the source code are subdivided into 5 packages:
 - Command
-- CSVParse
-- People
-- Stars
 - Validations
+- CSVParse
+- Stars
+- People
 
 ### Command:
 #### Command.java
-Rrather than connecting the logic of the comands directly to the REPLRunner,
-all commands extend from an Interface called "Command" with only two default methods
+Rrather than connecting the logic of the comands directly to the REPLRunner, all commands extend from an Interface called "Command" with only two default methods:
 - execute: the actual execution of the command
 - matchArgsToMethod: which uses the arguments passed to determine which method (if any) should be used to execute the command. If no methods are found, the arguments are invalid, and their corresponding errors are printed.
+A command object can execute multiple different types of command (ex. A NaiveRadius Command could handle 2 arguments and 4 arguments without needing to create Two Separate Command Objects for each case), and how they decide which method to execute is handled under Validations.
 
 #### REPLRunner.java
-For the runner, a Hashmap is set up to key the first string of the split (after being split
-by space) to whatever command object the input matches too.
+For the runner, a Hashmap is set up to keys to whatever command object the input matches too (ex. "naive_radius" to the Naive Radius Command).
+For each line passed to the BufferedReader, the string is split by space (excluding that inside of doulbe quotes) and the first string is passed to the Hashmap to see if a key for it exists. If there is such a key for the first string, then the rest of the strings are passed into its corresponding Command Object.
 
-### Argument Validation:
-For each command object in the 
+### Validations:
+For each command object, whenever the rest of the strings is passed into them, these arguments will be checked by the validation packages for whether or not they are valid and, if they are valid, which method in the command should the command execute. The central idea of Validations is to use Anonmynous (Lambda) Methods to check if each String in the argument is valid. The main process of validation is **ArgsValidator.java**, but there are several building blocks contributing to it.
+
+#### StringValidation.java:
+An interface defining generic anonmynous methods that converts a single String parameter to Boolean
+#### StringValFunctions.java:
+An Interface storing generic String to Boolean Methods as Utilities for other classes to use.
+#### ArgsInformation.java:
+An Object Class defined an "ArgsInformation", which is a tuple storing 4 items - the **unqiueName** of the ArgsInformation, a list of human readable **argsFormat** to specify what the requirement for each argument is, a list of **requirements** which are StringValidation methods, and a list of corresponding **errorMessages** to print out.
+
+The idea is that the ArgsInformation would be passed into a Validator against a list of Strings. For each String, they are tested against the StringValidation Method at the same index, if the method returns false, the corresponding errorMessage at the same index would be printed/stored. If all tests are true, then no errors have occurred, then the uniqueName of the ArgsInformation is passed back as a key for the Command Object to find which method to use.
+#### ArgsValidator.java:
+The ArgsValidator takes the previous idea but runs the list of Strings against all possible ArgsInformations specified by the Command Object.
+Specifically, the ArgsValidator takes in the name of the Command Object (String) and a Hashmap.
+The Hashmap maps the **size** of the arguments to a list of possible ArgsInformations for arguments of that **size** (ex. NaiveRadius has a Hashmap with keys 2 and 4, for the size of arguments, and each size corresponds to a list of one ArgsInformation)
+
+The reason why Hashmaps don't just map to ArgsInformation but instead to a list of ArgsInformation is because the same command in the future may have the same number of arguments but for two different functionalities, so a list of ArgsInformation is considered instead.
+
+Each Command Object would build their own ArgsValidator Object internally, and for whatever list of strings for arguments they receive, they will pass it to the ArgsValidator they built to verify if its valid. If the uniqueName is passed back, then a switch case of the uniqueNames would tell the Command Object what to do. If nothing is passed back, then the Command exits the execution.
+
+### CSVParse:
+The CSV Parser is called by Commands that needs to read a CSV file. The idea of the CSV Parser is that it would take in the filepath specified, a list of expected Headers for the file, an initial list that would be empty, and a custom Anonmynous (Lambda) Method that converts a given line to a generic type T.
+If no errors occur, then the Parser would first check if the headers match each other, then for every line, they would convert the line to an Object of generic type T, and add that to the empty list.
+
+There are 2 files under CSVParse:
+#### LineConverter.java:
+This file defines an anonmynous method that converts a String to a generic type T.
+#### CSVParser.java:
+This is the parser of the CSV Files, it functions as explained above.
+
+### Stars
 
 ## Answers to design questions:
 
