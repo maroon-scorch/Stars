@@ -3,7 +3,7 @@
 ## Stars
 **TODO: Fill out this section!**
 ## Known bugs:
-When running the program for the first time, a warning similar to the following would occur
+When running the program for the first time, a warning for **illegal reflective access** similar to the following would occur
 ```
 + WARNING: An illegal reflective access operation has occurred
 + WARNING: Illegal reflective access by com.google.inject.internal.cglib.core.$ReflectUtils$1 (file:/usr/share/maven/lib/guice.jar) 
