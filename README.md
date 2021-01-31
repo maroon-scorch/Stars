@@ -17,12 +17,21 @@ The error would appear twice in **mvn package** and when you run the program or 
 All subsequent runs of the program would execute normally as expected.
 
 ## Design details:
-### REPL:
+The packages in the source code are subdivided into 5 packages:
+- Command
+- CSVParse
+- People
+- Stars
+- Validations
+
+### Command:
+#### Command.java
 Rrather than connecting the logic of the comands directly to the REPLRunner,
 all commands extend from an Interface called "Command" with only two default methods
 - execute: the actual execution of the command
 - matchArgsToMethod: which uses the arguments passed to determine which method (if any) should be used to execute the command. If no methods are found, the arguments are invalid, and their corresponding errors are printed.
 
+#### REPLRunner.java
 For the runner, a Hashmap is set up to key the first string of the split (after being split
 by space) to whatever command object the input matches too.
 
