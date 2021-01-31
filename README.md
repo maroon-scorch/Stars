@@ -30,6 +30,8 @@ by space) to whatever command object the input matches too.
 ### Argument Validation:
 For each command object in the 
 
+## Answers to design questions:
+
 ## How to build/run your program:
 To build the program and start, run the following command in the root directory of the Project:
 ```
@@ -59,7 +61,3 @@ To run Unit Tests:
 ```
 mvn test
 ```
-
-
-
-## Answers to design questions:
