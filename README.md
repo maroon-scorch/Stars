@@ -126,3 +126,6 @@ To run Unit Tests:
 ```
 mvn test
 ```
+
+## Notes
+data_modeling.txt can be found under the people package
