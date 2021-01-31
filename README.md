@@ -24,7 +24,7 @@ The packages in the source code are subdivided into 5 packages:
 - Stars
 - People
 
-### Command:
+### Command -----
 #### Command.java
 Rrather than connecting the logic of the comands directly to the REPLRunner, all commands extend from an Interface called "Command" with only two default methods:
 - execute: the actual execution of the command
@@ -35,7 +35,7 @@ A command object can execute multiple different types of command (ex. A NaiveRad
 For the runner, a Hashmap is set up to keys to whatever command object the input matches too (ex. "naive_radius" to the Naive Radius Command).
 For each line passed to the BufferedReader, the string is split by space (excluding that inside of doulbe quotes) and the first string is passed to the Hashmap to see if a key for it exists. If there is such a key for the first string, then the rest of the strings are passed into its corresponding Command Object.
 
-### Validations:
+### Validations -----
 For each command object, whenever the rest of the strings is passed into them, these arguments will be checked by the validation packages for whether or not they are valid and, if they are valid, which method in the command should the command execute. The central idea of Validations is to use Anonmynous (Lambda) Methods to check if each String in the argument is valid. The main process of validation is **ArgsValidator.java**, but there are several building blocks contributing to it.
 
 #### StringValidation.java:
@@ -55,7 +55,7 @@ The reason why Hashmaps don't just map to ArgsInformation but instead to a list 
 
 Each Command Object would build their own ArgsValidator Object internally, and for whatever list of strings for arguments they receive, they will pass it to the ArgsValidator they built to verify if its valid. If the uniqueName is passed back, then a switch case of the uniqueNames would tell the Command Object what to do. If nothing is passed back, then the Command exits the execution.
 
-### CSVParse:
+### CSVParse -----
 The CSV Parser is called by Commands that needs to read a CSV file. The idea of the CSV Parser is that it would take in the filepath specified, a list of expected Headers for the file, an initial list that would be empty, and a custom Anonmynous (Lambda) Method that converts a given line to a generic type T.
 If no errors occur, then the Parser would first check if the headers match each other, then for every line, they would convert the line to an Object of generic type T, and add that to the empty list.
 
@@ -65,7 +65,30 @@ This file defines an anonmynous method that converts a String to a generic type 
 #### CSVParser.java:
 This is the parser of the CSV Files, it functions as explained above.
 
-### Stars
+### Stars -----
+#### Main.java:
+The main method of the project, calls the REPLRunner and runs the REPL.
+#### StarUtilities.java:
+An interface that stores certain Stars specific methods shared by NaiveRadius and NaiveNeighbors
+#### Star.java:
+The Object representation of a Star, stores its id, name, x, y, and z coordinate. The Star also has a distanceTo method that returns the distance of the star to a coordinate.
+Validations of String Arguments passed to Star.java are also handled by the ArgumentValidator.
+
+Each of the three Command Objects share an ArrayList of Stars together and a StringBuilder of what the currentFile is. Whenever the "stars" command make any changes to the
+list of stars, it would change the other two object as well.
+#### UpdateStarFile.java:
+This is the "stars filepath" command. It constructs a CSVParser that reads the file and converts them to a list of Stars Object/
+#### NaiveRadius.java:
+NaiveRadius takes in all stars whose distance to the location specified is less than the radius. The arguments are first passed through the validator, then each correspondent method would handle the logic internally. Specifically, performing NaiveRadius requires a filtering of the list to remove all stars with a distance greater than the radius, and then sorting of the list to return.
+#### NaiveNeighbors.java:
+NaiveNeighbors takes in the n closest stars to it given a nonnegative integer n. The arguments are first passed through the validator, then each correspondent method would handle the logic internally. The object would first sort the list and find the first n stars. Specific implementations of tiebreakers are explained in the code. 
+
+### Person -----
+#### MockPerson.java:
+The Object representation of a MockPerson, stores their first name, last name, email, gender, street address, and birth date. Validations of String Arguments passed to MockPerson.java are also handled by the ArgumentValidator inside the Object rather than the Command because other commands might also use the MockPerson object later.
+
+#### MockCSV.java:
+This is the "mock csv" command, similar to UpdateStarFile.java
 
 ## Answers to design questions:
 
