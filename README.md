@@ -14,7 +14,7 @@ When running the program for the first time, a warning for **illegal reflective 
 ```
 This is a known [bug](https://github.com/google/guice/issues/1133) for Maven to occur occasionally due to system dependencies.
 The error would appear twice in **mvn package** and when you run the program or conduct system tests.
-All subsequent runs of the program would execute normally as expected.
+This bug may cause intended tests to timeout, ./run to not execute properly, however, repeated executions of the system tests should resolve the issue.
 
 ## Design details:
 The packages in the source code are subdivided into 5 packages:
