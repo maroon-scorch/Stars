@@ -1,0 +1,5 @@
+INPUT
+stars data/stars/star-has-empty-lines.csv
+OUTPUT
+ERROR:
+END

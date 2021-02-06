@@ -1,0 +1,11 @@
+INPUT
+stars data/stars/ten-star.csv
+neighbors 1 "Sol"
+stars data/stars/randomName13141414514.csv
+neighbors 1 "Sol"
+OUTPUT
+Read 10 stars from data/stars/ten-star.csv
+70667
+ERROR:
+70667
+END

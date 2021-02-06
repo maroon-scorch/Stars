@@ -1,0 +1,16 @@
+INPUT
+stars data/stars/ten-star.csv
+radius 1000 2 3 4
+OUTPUT
+Read 10 stars from data/stars/ten-star.csv
+0
+118721
+3759
+87666
+70667
+71454
+71457
+2
+1
+3
+END
