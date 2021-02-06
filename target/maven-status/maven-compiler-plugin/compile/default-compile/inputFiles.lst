@@ -8,6 +8,7 @@ C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\sr
 C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\validations\ArgsValidator.java
 C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Main.java
 C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\validations\ArgsInformation.java
+C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\kdTree\HasCoordinates.java
 C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\kdTree\KDNode.java
 C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\UpdateStarFile.java
 C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\validations\StringValFunctions.java
@@ -15,7 +16,6 @@ C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\sr
 C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\validations\StringValidation.java
 C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\people\MockPerson.java
 C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\StarStorage.java
-C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\StarsUtilities.java
 C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\command\Command.java
 C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveNeighbors.java
 C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Neighbors.java

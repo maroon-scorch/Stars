@@ -23,7 +23,7 @@ import static java.util.Map.entry;
  */
 public class REPLRunner {
   /**
-   * The common datatypes shared by all the stars-related commands.
+   * The common data-types shared by all the stars-related commands.
    */
   private final StarStorage starStorage = new StarStorage("storage");
 

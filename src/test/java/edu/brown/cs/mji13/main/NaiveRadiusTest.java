@@ -1,7 +1,9 @@
 package edu.brown.cs.mji13.main;
 
+import edu.brown.cs.mji13.stars.NaiveNeighbors;
 import edu.brown.cs.mji13.stars.Star;
 import edu.brown.cs.mji13.stars.NaiveRadius;
+import edu.brown.cs.mji13.stars.StarStorage;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -13,6 +15,7 @@ import static org.junit.Assert.*;
 
 public class NaiveRadiusTest {
 
+  private StarStorage starStorage;
   private NaiveRadius naive_radius;
   private ArrayList<Star> starsList;
 
@@ -21,14 +24,21 @@ public class NaiveRadiusTest {
    */
   @Before
   public void setUp() {
-    naive_radius  = new NaiveRadius();
     starsList = new ArrayList<Star>();
-    Star[] starArray = {new Star("1", "1", 0, 0, 0), new Star("2", "2", 10, 6, 5),
-        new Star("3", "3", 3.1, 1.5, -6.7), new Star("4", "4", -5, -6, -7),
-        new Star("5", "5", -10.56, -13, 12), new Star("6", "6", 0.5, 0, 0),
-        new Star("7", "7", -50, -50, -50), new Star("8", "8", 5, 6, 7),
-        new Star("9", "9", 3, 4, 5), new Star("10", "10", 10, 20, 3)};
+    Star[] starArray = {new Star("1", "1", Arrays.asList(0.0, 0.0, 0.0)),
+        new Star("2", "2", Arrays.asList(10.0, 6.0, 5.0)),
+        new Star("3", "3", Arrays.asList(3.1, 1.5, -6.7)),
+        new Star("4", "4", Arrays.asList(-5.0, -6.0, -7.0)),
+        new Star("5", "5", Arrays.asList(-10.56, -13.0, 12.0)),
+        new Star("6", "6", Arrays.asList(0.5, 0.0, 0.0)),
+        new Star("7", "7", Arrays.asList(-50.0, -50.0, -50.0)),
+        new Star("8", "8", Arrays.asList(5.0, 6.0, 7.0)),
+        new Star("9", "9", Arrays.asList(3.0, 4.0, 5.0)),
+        new Star("10", "10", Arrays.asList(10.0, 20.0, 3.0))};
     starsList.addAll(Arrays.asList(starArray));
+    starStorage = new StarStorage("test");
+    starStorage.setListToStarsMap(starsList);
+    naive_radius  = new NaiveRadius(starStorage);
   }
 
   /**
@@ -65,8 +75,10 @@ public class NaiveRadiusTest {
     assertEquals(result1.size(), 0);
 
     // Adding a duplicate star to "7"
-    starsList.add(new Star("Duplicate 7", "Dup 7", -50, -50, -50));
-    starsList.add(new Star("Duplicate 7 Again", "Dup 7 again", -50, -50, -50));
+    starsList.add(new Star("Duplicate 7", "Dup 7",
+        Arrays.asList(-50.0, -50.0, -50.0)));
+    starsList.add(new Star("Duplicate 7 Again", "Dup 7 again",
+        Arrays.asList(-50.0, -50.0, -50.0)));
 
     ArrayList<Star> result2 = naive_radius.performNaiveRadius(0, "7", starsList);
     assertEquals(result2.size(), 2);

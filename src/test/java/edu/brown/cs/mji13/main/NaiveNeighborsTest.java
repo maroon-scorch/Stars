@@ -2,6 +2,7 @@ package edu.brown.cs.mji13.main;
 
 import edu.brown.cs.mji13.stars.Star;
 import edu.brown.cs.mji13.stars.NaiveNeighbors;
+import edu.brown.cs.mji13.stars.StarStorage;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -12,8 +13,9 @@ import java.util.Random;
 
 import static org.junit.Assert.*;
 
-public class NaiveNeighborsTest {
+public class NaiveNeighborsTest<starsStorage> {
 
+  private StarStorage starStorage;
   private NaiveNeighbors naive_neighbors;
   private ArrayList<Star> starsList;
 
@@ -22,14 +24,21 @@ public class NaiveNeighborsTest {
    */
   @Before
   public void setUp() {
-    naive_neighbors  = new NaiveNeighbors();
     starsList = new ArrayList<Star>();
-    Star[] starArray = {new Star("1", "1", 0, 0, 0), new Star("2", "2", 10, 6, 5),
-        new Star("3", "3", 3.1, 1.5, -6.7), new Star("4", "4", -5, -6, -7),
-        new Star("5", "5", -10.56, -13, 12), new Star("6", "6", 0.5, 0, 0),
-        new Star("7", "7", -50, -50, -50), new Star("8", "8", 5, 6, 7),
-        new Star("9", "9", 3, 4, 5), new Star("10", "10", 10, 20, 3)};
+    Star[] starArray = {new Star("1", "1", Arrays.asList(0.0, 0.0, 0.0)),
+        new Star("2", "2", Arrays.asList(10.0, 6.0, 5.0)),
+        new Star("3", "3", Arrays.asList(3.1, 1.5, -6.7)),
+        new Star("4", "4", Arrays.asList(-5.0, -6.0, -7.0)),
+        new Star("5", "5", Arrays.asList(-10.56, -13.0, 12.0)),
+        new Star("6", "6", Arrays.asList(0.5, 0.0, 0.0)),
+        new Star("7", "7", Arrays.asList(-50.0, -50.0, -50.0)),
+        new Star("8", "8", Arrays.asList(5.0, 6.0, 7.0)),
+        new Star("9", "9", Arrays.asList(3.0, 4.0, 5.0)),
+        new Star("10", "10", Arrays.asList(10.0, 20.0, 3.0))};
     starsList.addAll(Arrays.asList(starArray));
+    starStorage = new StarStorage("test");
+    starStorage.setListToStarsMap(starsList);
+    naive_neighbors  = new NaiveNeighbors(starStorage);
   }
 
   /**
@@ -78,7 +87,7 @@ public class NaiveNeighborsTest {
   @Test
   public void testNRCoordinateNoStars() {
     ArrayList<Star> oneStar = new ArrayList<>();
-    oneStar.add(new Star("My life is a joke", "5", 1, 2, 3));
+    oneStar.add(new Star("My life is a joke", "5", Arrays.asList(1.0, 2.0, 3.0)));
     ArrayList<Star> result = naive_neighbors.performNaiveNeighbors(10, "5", oneStar);
     assertEquals(result.size(), 0);
   }
@@ -89,16 +98,17 @@ public class NaiveNeighborsTest {
   @Test
   public void testNNNameOccupy() {
     ArrayList<Star> occupyList = new ArrayList<>();
-    occupyList.add(new Star("A", "A", 1, 1, 1));
-    occupyList.add(new Star("B", "B", 1, 1, 1));
-    occupyList.add(new Star("C", "C", 1, 1, 1));
+    occupyList.add(new Star("A", "A", Arrays.asList(1.0, 1.0, 1.0)));
+    occupyList.add(new Star("B", "B",  Arrays.asList(1.0, 1.0, 1.0)));
+    occupyList.add(new Star("C", "C",  Arrays.asList(1.0, 1.0, 1.0)));
+    starStorage.setListToStarsMap(occupyList);
 
     ArrayList<Star> result
         = naive_neighbors.performNaiveNeighbors(1, "A", occupyList);
     String[] answers = {"B", "C"};
 
     assertEquals(result.size(), 1);
-    assertEquals(result.get(0).distanceTo(1, 1, 1), 0, 0.01);
+    assertEquals(result.get(0).distanceTo( Arrays.asList(1.0, 1.0, 1.0)), 0, 0.01);
     assertTrue(Arrays.asList(answers).contains(result.get(0).getStarID()));
   }
 
@@ -108,9 +118,10 @@ public class NaiveNeighborsTest {
   @Test
   public void testNNNameSameDistance() {
     ArrayList<Star> occupyList = new ArrayList<>();
-    occupyList.add(new Star("A", "A", 1, 1, 1));
-    occupyList.add(new Star("B", "B", 0, 0, 0));
-    occupyList.add(new Star("C", "C", 1, -1, -1));
+    occupyList.add(new Star("A", "A",  Arrays.asList(1.0, 1.0, 1.0)));
+    occupyList.add(new Star("B", "B",  Arrays.asList(0.0, 0.0, 0.0)));
+    occupyList.add(new Star("C", "C", Arrays.asList(1.0, -1.0, -1.0)));
+    starStorage.setListToStarsMap(occupyList);
 
     ArrayList<Star> result
         = naive_neighbors.performNaiveNeighbors(1, "B", occupyList);
@@ -118,7 +129,7 @@ public class NaiveNeighborsTest {
     String[] answers = {"A", "C"};
 
     assertEquals(result.size(), 1);
-    assertEquals(result.get(0).distanceTo(0, 0, 0), Math.sqrt(3), 0.01);
+    assertEquals(result.get(0).distanceTo(Arrays.asList(0.0, 0.0, 0.0)), Math.sqrt(3), 0.01);
     assertTrue(Arrays.asList(answers).contains(result.get(0).getStarID()));
   }
 
@@ -128,12 +139,13 @@ public class NaiveNeighborsTest {
   @Test
   public void testNNNameTieBreakers() {
     ArrayList<Star> occupyList = new ArrayList<>();
-    occupyList.add(new Star("A", "A", 1, 1, 1));
-    occupyList.add(new Star("B", "B", 0, 0, 0));
-    occupyList.add(new Star("C", "C", 1, -1, -1));
-    occupyList.add(new Star("D", "D", -1, -1, -1));
-    occupyList.add(new Star("E", "E", 1, 1, -1));
-    occupyList.add(new Star("F", "F", -1, 1, -1));
+    occupyList.add(new Star("A", "A", Arrays.asList(1.0, 1.0, 1.0)));
+    occupyList.add(new Star("B", "B", Arrays.asList(0.0, 0.0, 0.0)));
+    occupyList.add(new Star("C", "C", Arrays.asList(1.0, -1.0, -1.0)));
+    occupyList.add(new Star("D", "D", Arrays.asList(-1.0, -1.0, -1.0)));
+    occupyList.add(new Star("E", "E", Arrays.asList(1.0, 1.0, -1.0)));
+    occupyList.add(new Star("F", "F", Arrays.asList(-1.0, 1.0, -1.0)));
+    starStorage.setListToStarsMap(occupyList);
 
     ArrayList<Star> result
         = naive_neighbors.performNaiveNeighbors(3, "B", occupyList);
@@ -144,7 +156,8 @@ public class NaiveNeighborsTest {
     Random r = new Random();
     int numPick = r.nextInt(3);
 
-    assertEquals(result.get(numPick).distanceTo(0, 0, 0), Math.sqrt(3), 0.01);
+    assertEquals(result.get(numPick).distanceTo(
+        Arrays.asList(0.0, 0.0, 0.0)), Math.sqrt(3), 0.01);
     assertTrue(Arrays.asList(answers).contains(result.get(numPick).getStarID()));
   }
 
@@ -223,9 +236,10 @@ public class NaiveNeighborsTest {
   @Test
   public void testNNOccupy() {
     ArrayList<Star> occupyList = new ArrayList<>();
-    occupyList.add(new Star("A", "A", 1, 1, 1));
-    occupyList.add(new Star("B", "B", 0.5, 0.5, 0.5));
-    occupyList.add(new Star("C", "C", 1, 1, 1));
+    occupyList.add(new Star("A", "A", Arrays.asList(1.0, 1.0, 1.0)));
+    occupyList.add(new Star("B", "B", Arrays.asList(0.5, 0.5, 0.5)));
+    occupyList.add(new Star("C", "C", Arrays.asList(1.0, 1.0, 1.0)));
+    starStorage.setListToStarsMap(occupyList);
 
     ArrayList<Star> result
         = naive_neighbors.performNaiveNeighbors(2, 0, 0, 0, occupyList);
@@ -233,7 +247,8 @@ public class NaiveNeighborsTest {
 
     assertEquals(result.size(), 2);
     assertEquals(result.get(0).getStarID(), "B");
-    assertEquals(result.get(1).distanceTo(0, 0, 0), Math.sqrt(3), 0.01);
+    assertEquals(result.get(1).distanceTo(Arrays.asList(0.0, 0.0, 0.0)),
+        Math.sqrt(3), 0.01);
     assertTrue(Arrays.asList(answers).contains(result.get(1).getStarID()));
   }
 
@@ -243,9 +258,10 @@ public class NaiveNeighborsTest {
   @Test
   public void testNNSameDistance() {
     ArrayList<Star> occupyList = new ArrayList<>();
-    occupyList.add(new Star("A", "A", 1, 1, 1));
-    occupyList.add(new Star("B", "B", 0.5, 0.5, 0.5));
-    occupyList.add(new Star("C", "C", 1, -1, -1));
+    occupyList.add(new Star("A", "A", Arrays.asList(1.0, 1.0, 1.0)));
+    occupyList.add(new Star("B", "B", Arrays.asList(0.5, 0.5, 0.5)));
+    occupyList.add(new Star("C", "C", Arrays.asList(1.0, -1.0, -1.0)));
+    starStorage.setListToStarsMap(occupyList);
 
     ArrayList<Star> result
         = naive_neighbors.performNaiveNeighbors(2, 0, 0, 0, occupyList);
@@ -253,7 +269,8 @@ public class NaiveNeighborsTest {
 
     assertEquals(result.size(), 2);
     assertEquals(result.get(0).getStarID(), "B");
-    assertEquals(result.get(1).distanceTo(0, 0, 0), Math.sqrt(3), 0.01);
+    assertEquals(result.get(1).distanceTo(Arrays.asList(0.0, 0.0, 0.0)),
+        Math.sqrt(3), 0.01);
     assertTrue(Arrays.asList(answers).contains(result.get(1).getStarID()));
   }
 
@@ -263,12 +280,13 @@ public class NaiveNeighborsTest {
   @Test
   public void testNNTieBreaker() {
     ArrayList<Star> occupyList = new ArrayList<>();
-    occupyList.add(new Star("A", "A", 1, 1, 1));
-    occupyList.add(new Star("B", "B", 0, 0, 0));
-    occupyList.add(new Star("C", "C", 1, -1, -1));
-    occupyList.add(new Star("D", "D", -1, -1, -1));
-    occupyList.add(new Star("E", "E", 1, 1, -1));
-    occupyList.add(new Star("F", "F", -1, 1, -1));
+    occupyList.add(new Star("A", "A", Arrays.asList(1.0, 1.0, 1.0)));
+    occupyList.add(new Star("B", "B", Arrays.asList(0.0, 0.0, 0.0)));
+    occupyList.add(new Star("C", "C", Arrays.asList(1.0, -1.0, -1.0)));
+    occupyList.add(new Star("D", "D", Arrays.asList(-1.0, -1.0, -1.0)));
+    occupyList.add(new Star("E", "E", Arrays.asList(1.0, 1.0, -1.0)));
+    occupyList.add(new Star("F", "F", Arrays.asList(-1.0, 1.0, -1.0)));
+    starStorage.setListToStarsMap(occupyList);
 
     ArrayList<Star> result
         = naive_neighbors.performNaiveNeighbors(4, 0, 0, 0, occupyList);
@@ -279,7 +297,8 @@ public class NaiveNeighborsTest {
 
     Random r = new Random();
     int numPick = r.nextInt(2) + 1;
-    assertEquals(result.get(numPick).distanceTo(0, 0, 0), Math.sqrt(3), 0.01);
+    assertEquals(result.get(numPick).distanceTo(
+        Arrays.asList(0.0, 0.0, 0.0)), Math.sqrt(3), 0.01);
     assertTrue(Arrays.asList(answers).contains(result.get(numPick).getStarID()));
   }
 

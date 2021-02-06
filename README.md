@@ -93,7 +93,40 @@ This is the "mock csv" command, similar to UpdateStarFile.java
 * ArrayLists are chosen over Linked Lists for stars because the specific tie breakers of NaiveNeighbors required indexing of the ArrayList, this is best done with ArrayList because accessing each component has a time complexity of Constant Time whereas a linked list would require traveling from either the beginning or the end of the list to that point. In addition, ArrayLists were also better suited, personally, for Functional Methods such as .forEach and .removeIf, they also offer general compatibility towards Arrays (which ArrayLists are just extendible Arrays) which is another data structure commonly used in the implementation.
 
 ## Answers to design questions:
-Suppose that in addition to the commands specified in Command Line/REPL Specification, you wanted to support 10+ more commands. How would you change your code - particularly your REPL parsing - to do this? Don't worry about specific algorithmic details; we're interested in the higher-level design.
+### Stars2 Questions:
+1. What are some problems you would run into if you wanted to use your k-d tree to find points that are close to each other on the earth's surface? You do not need to explain how to solve these problems.
+
+There are three main problems that the k-d tree would run into for considering points on the Earth's surface:
+a. The existence of a cycle in a spherical/angular representation of coordinates
+b. Determining the right metric to use for "distance" between two points
+c. How the space partitioning would adjust accordingly to b
+
+a: One of the fundamental assumptions that a KD Tree takes that helps reduce its runtime when compared to a list is the notion of direction,
+ex. If the axis distance of the selected coordinate to the origin point is greater than the desired radius/distance and the selected point
+is between the left child's coordinate and the selected coordinate, then we can automatically eliminate the right subtree because we assume
+that any points on the right child's side will be on that side with a distance greater than the desired distance we are searching for, and vice versa.
+
+However, the above condition assumes that the point on the right subtree's side will never be on the left subtree's side, and this is
+indeed true for the Cartesian Coordinates. However, when dealing with spheres such as the question here, because now there is a notion of a cycle,
+the points on the right subtree, if extended long enough, can actually wrap back to the space for the left subtree because it is traversing on a sphere.
+Thus, the KD Tree Model here cannot safely eliminate a subtree with our current assumptions when dealing with coordinates such as Latitudes and Longitudes.
+It would instead be more advisable to convert all points to the Cartesian Coordinate with respect to the center of Earth as origin.
+
+b: However, even if all the points are in Cartesian Coordinate, we still run into the problem of defining what the measure of the distance between two
+points on Earth's surface should be. The KD Tree Model so far uses the Euclidean distance between two points; however, the Euclidean Distance of
+two points on a sphere does not convey a notion of "nearness" as much as they would just cut through the sphere entirely (ex. If I have two points on
+the opposite side of the globe, their euclidean distance is just a straight line axis through the two points and the center, which is not very helpful
+when I am trying to consider geographical distances).
+
+c: It would be more advisable instead to choose distances on a surface, but then one might run into
+the problem of how to divide the KD Tree based on the specific metric of distance they have chosen
+because the original implementation relied solely on considering Euclidean distances. For each different kind of metric in distance,
+the space partitioning method would wary as well.
+
+2. Your k-d tree supports most of the methods required by the Collection interface. What would you have to add/change to make code like "Collection<Star> db = new KDTree<Star>()" compile and work properly?
+
+### Stars1 Questions:
+1. Suppose that in addition to the commands specified in Command Line/REPL Specification, you wanted to support 10+ more commands. How would you change your code - particularly your REPL parsing - to do this? Don't worry about specific algorithmic details; we're interested in the higher-level design.
 
 Because of the implementation of the HashMap in my REPL Runner. All I really have to do is to add 10+ more entries of the command into the HashMap, with the key being what string should invoke them. Then I would create a Command Object for each of the Commands and handle the functionalities internally to them. For the possible arguments of each command, they would be handled by the Argument Validator via an internal Hashmap defined by the Command Object. If one Command has ties to another, they just have to share the same mutable constant defined separately in the REPL Runner. Overall, it doesn't change any main code in the run method of REPLRunner.
 

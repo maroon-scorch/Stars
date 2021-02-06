@@ -21,9 +21,9 @@ public class UpdateStarFileTest {
     Star star1
         = cmd.lineToStar("1,Lonely Star,5,-2.24,10.04");
     assertEquals(star1.getName(), "Lonely Star");
-    assertEquals(star1.getX(), 5, 0.01);
-    assertEquals(star1.getY(), -2.24, 0.01);
-    assertEquals(star1.getZ(), 10.04, 0.01);
+    assertEquals(star1.getCoordinate(0), 5, 0.01);
+    assertEquals(star1.getCoordinate(1), -2.24, 0.01);
+    assertEquals(star1.getCoordinate(2), 10.04, 0.01);
   }
 
   /**

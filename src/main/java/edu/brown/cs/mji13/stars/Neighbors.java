@@ -1,25 +1,26 @@
 package edu.brown.cs.mji13.stars;
 
 import edu.brown.cs.mji13.command.Command;
-import edu.brown.cs.mji13.kdTree.KDNode;
 import edu.brown.cs.mji13.kdTree.KDTree;
 import edu.brown.cs.mji13.validations.ArgsInformation;
 import edu.brown.cs.mji13.validations.ArgsValidator;
 import edu.brown.cs.mji13.validations.StringValFunctions;
 import edu.brown.cs.mji13.validations.StringValidation;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.PriorityQueue;
 import java.util.Random;
 
 import static java.util.Map.entry;
 
 public class Neighbors implements Command, StringValFunctions {
+
+  /**
+   * The common data-types shared by all the stars-related commands.
+   */
   private StarStorage starStorage;
 
   /**
@@ -32,7 +33,6 @@ public class Neighbors implements Command, StringValFunctions {
    * - x: number
    * - y: number
    * - z: number
-   * See custom StringValidation Method at the Bottom
    */
   private final Map<Integer, ArgsInformation[]> reqInfoMaps
       = Map.ofEntries(
@@ -65,7 +65,7 @@ public class Neighbors implements Command, StringValFunctions {
   /**
    * Creates a Neighbors object.
    *
-   * @param starStorage  - the storage of relevant stars data shared by files
+   * @param starStorage - the storage of relevant stars data shared by files
    */
   public Neighbors(StarStorage starStorage) {
     this.starStorage = starStorage;
@@ -81,22 +81,22 @@ public class Neighbors implements Command, StringValFunctions {
    * Executes the naive_neighbors Command.
    * If successful, prints out the closest n number of stars to the specified location.
    *
-   * Note: TA Colton said that the randomization is meant for tiebreakers to include on the list
-   * so if there are stars with same distance away but including them does not exceed that number
-   * asked, they will be included just as normal.
    * @param args - the list of arguments to be operated on.
    */
   public void execute(ArrayList<String> args) {
+    // If no File has been loaded, signal an error
     if (starStorage.getFileName().length() == 0) {
       System.out.println("ERROR: No file has been loaded yet");
       return;
     }
 
+    // If the arguments failed the validation check, exit out of execute.
     Optional<String> opMethodName = matchArgsToMethod(args);
     if (opMethodName.isEmpty()) {
       return;
     }
 
+    // If a valid method name has been found, then operate:
     String methodName = opMethodName.get();
     KDTree<Star> sTree = starStorage.getStarsTree();
     switch (methodName) {
@@ -133,45 +133,49 @@ public class Neighbors implements Command, StringValFunctions {
     return argsValidator.testArgs(args);
   }
 
+  /**
+   * Finds "count" number of stars whose distance are closest coordinate (x, y, z). If
+   * an optional of name is present, then the specified name will be removed from the
+   * resulting list.
+   *
+   * @param count the number of stars allowed for the list
+   * @param x     the x coordinate of the point
+   * @param y     the y coordinate of the point
+   * @param z     the z coordinate of the point
+   * @param tree  the KD Tree of stars to search through
+   * @param name  an optional field to support "neighbors count name" commands
+   * @return the list of stars from least distance to greatest within count given
+   */
   public ArrayList<Star> performNeighbors(
       int count, double x, double y, double z, KDTree<Star> tree, Optional<String> name) {
 
-    if (count == 0) {
-      return new ArrayList<>();
-    }
-
     boolean filterName = name.isPresent();
+    // Setup for findNearestNeighbors from the KD Tree
+    List<Double> cordsList = Arrays.asList(x, y, z);
+    ArrayList<Star> resultList = tree.findNearestNeighbors(count, cordsList);
 
-    PriorityQueue<Star> maxStarQueue = new PriorityQueue<Star>((Star star1, Star star2)
-        -> Double.compare(star2.distanceTo(x, y, z), star1.distanceTo(x, y, z)));
-    ArrayList<Star> tiedList = new ArrayList<>();
-
-    int dimension = 3;
-
-    performNeighborsHelper(count, x, y, z, 0, dimension, maxStarQueue, tiedList, tree.getTree());
-
-    ArrayList<Star> resultList = new ArrayList<>(maxStarQueue);
-    resultList.sort(Comparator.comparingDouble(star -> star.distanceTo(x, y, z)));;
-
+    // If we are removing the name, then proceed to remove the star with said name from
+    // the list.
     if (filterName) {
       String pName = name.get();
       resultList.removeIf(star -> star.getName().equals(pName));
-      tiedList.removeIf(star -> star.getName().equals(pName));
       count = count - 1;
     }
 
-    if (tiedList.isEmpty()) {
+    // If the size of the resultlist is the same as the count, then there are no ties,
+    // so we can safely return the list.
+    if (resultList.size() == count) {
       return resultList;
     }
 
-    resultList.addAll(tiedList);
+    // If the list is tied, find the distance at which the stars are tied.
     ArrayList<Star> fullTiedList = new ArrayList<>(resultList);
-    double distAtCount = resultList.get(count - 1).distanceTo(x, y, z);
-    resultList.removeIf(star -> star.distanceTo(x, y, z) == distAtCount);
-    fullTiedList.removeIf(star -> star.distanceTo(x, y, z) != distAtCount);
+    double distAtCount = resultList.get(count - 1).distanceTo(cordsList);
+    resultList.removeIf(star -> star.distanceTo(cordsList) == distAtCount);
+    fullTiedList.removeIf(star -> star.distanceTo(cordsList) != distAtCount);
 
-    // System.out.println(fullTiedList);
-
+    // For the remaining gap in the result list, randomly remove stars from the fully
+    // tied list until the result list is full.
     Random ran = new Random();
     for (int i = 0; i < (count - resultList.size() + 1); i++) {
       int selected = ran.nextInt(fullTiedList.size());
@@ -181,81 +185,15 @@ public class Neighbors implements Command, StringValFunctions {
     return resultList;
   }
 
-  public void performNeighborsHelper(
-      int count, double x, double y, double z, int level, int dimension,
-      PriorityQueue<Star> starsQueue, ArrayList<Star> tieList, KDNode<Star> currentNode) {
-
-    Star currentStar = currentNode.getItem();
-    if (currentStar == null) {
-      return;
-    }
-
-    if (starsQueue.size() < count) {
-      starsQueue.add(currentStar);
-    } else {
-      Star maxStar = starsQueue.element();
-      if (currentStar.distanceTo(x, y, z) < maxStar.distanceTo(x, y, z)) {
-        starsQueue.poll();
-        tieList.clear();
-        starsQueue.add(currentStar);
-      } else if (currentStar.distanceTo(x, y, z) == maxStar.distanceTo(x, y, z)) {
-        tieList.add(currentStar);
-      }
-    }
-
-
-    KDNode<Star> leftNode = currentNode.getLeft();
-    Star leftStar = leftNode.getItem();
-
-    KDNode<Star> rightNode = currentNode.getRight();
-    Star rightStar = rightNode.getItem();
-
-    int choice = level % dimension;
-    // zero
-    double maxDist = starsQueue.element().distanceTo(x, y, z);
-
-    switch (choice) {
-      case 0:
-        double xDist = Math.abs(currentStar.getX() - x);
-        if (xDist <= maxDist) {
-          performNeighborsHelper(count, x, y, z, level + 1, dimension, starsQueue, tieList, leftNode);
-          performNeighborsHelper(count, x, y, z, level + 1, dimension, starsQueue, tieList, rightNode);
-        } else {
-          if (x < currentStar.getX()) {
-            performNeighborsHelper(count, x, y, z, level + 1, dimension, starsQueue, tieList, leftNode);
-          } else if (x >= currentStar.getX()) {
-            performNeighborsHelper(count, x, y, z, level + 1, dimension, starsQueue, tieList, rightNode);
-          }
-        }
-        break;
-      case 1:
-        double yDist = Math.abs(currentStar.getY() - y);
-        if (yDist <= maxDist) {
-          performNeighborsHelper(count, x, y, z, level + 1, dimension, starsQueue, tieList, leftNode);
-          performNeighborsHelper(count, x, y, z, level + 1, dimension, starsQueue, tieList, rightNode);
-        } else {
-          if (y < currentStar.getY()) {
-            performNeighborsHelper(count, x, y, z, level + 1, dimension, starsQueue, tieList, leftNode);
-          } else if (y >= currentStar.getY()) {
-            performNeighborsHelper(count, x, y, z, level + 1, dimension, starsQueue, tieList, rightNode);
-          }
-        }
-        break;
-      case 2:
-        double zDist = Math.abs(currentStar.getZ() - z);
-        if (zDist <= maxDist) {
-          performNeighborsHelper(count, x, y, z, level + 1, dimension, starsQueue, tieList, leftNode);
-          performNeighborsHelper(count, x, y, z, level + 1, dimension, starsQueue, tieList, rightNode);
-        } else {
-          if (z < currentStar.getZ()) {
-            performNeighborsHelper(count, x, y, z, level + 1, dimension, starsQueue, tieList, leftNode);
-          } else if (z >= currentStar.getZ()) {
-            performNeighborsHelper(count, x, y, z, level + 1, dimension, starsQueue, tieList, rightNode);
-          }
-        }
-        break;
-    }
-  }
+  /**
+   * Finds "count" number of stars whose distance are closest to the star whose name is given,
+   * excluding the star with the name itself.
+   *
+   * @param count the number of stars allowed for the list
+   * @param name  the name of the destination star
+   * @param tree  the KD Tree of stars to search through
+   * @return the list of stars from least distance to greatest within count given
+   */
   public ArrayList<Star> performNeighbors(
       int count, String name, KDTree<Star> tree) {
     // If the name is empty, print an error
@@ -273,12 +211,14 @@ public class Neighbors implements Command, StringValFunctions {
 
     Star presentStar = selectedStar.get();
 
-    double selectedX = presentStar.getX();
-    double selectedY = presentStar.getY();
-    double selectedZ = presentStar.getZ();
+    double selectedX = presentStar.getCoordinate(0);
+    double selectedY = presentStar.getCoordinate(1);
+    double selectedZ = presentStar.getCoordinate(2);
 
+    // Calls performNeighbors in the coordinate form.
     ArrayList<Star> resultList
-        = performNeighbors(count + 1, selectedX, selectedY, selectedZ, tree, Optional.of(name));
+        = performNeighbors(count + 1, selectedX, selectedY, selectedZ, tree,
+        Optional.of(name));
 
     return resultList;
   }

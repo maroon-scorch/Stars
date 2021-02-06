@@ -1,7 +1,6 @@
 package edu.brown.cs.mji13.stars;
 
 import edu.brown.cs.mji13.command.Command;
-import edu.brown.cs.mji13.kdTree.KDNode;
 import edu.brown.cs.mji13.kdTree.KDTree;
 import edu.brown.cs.mji13.validations.ArgsInformation;
 import edu.brown.cs.mji13.validations.ArgsValidator;
@@ -9,15 +8,18 @@ import edu.brown.cs.mji13.validations.StringValFunctions;
 import edu.brown.cs.mji13.validations.StringValidation;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static java.util.Map.entry;
 
-public class Radius implements Command, StarsUtilities, StringValFunctions {
+public class Radius implements Command, StringValFunctions {
 
+  /**
+   * The common data-types shared by all the stars-related commands.
+   */
   private StarStorage starStorage;
 
   /**
@@ -63,12 +65,19 @@ public class Radius implements Command, StarsUtilities, StringValFunctions {
   /**
    * Creates a Radius object.
    *
-   * @param starStorage  - the storage of relevant stars data shared by files
+   * @param starStorage - the storage of relevant stars data shared by files
    */
   public Radius(StarStorage starStorage) {
     this.starStorage = starStorage;
   }
 
+  /**
+   * Executes the radius Command.
+   * If successful, prints out every stars with radius less than or equal to that of
+   * the specified radius.
+   *
+   * @param args - the list of arguments to be operated on.
+   */
   public void execute(ArrayList<String> args) {
     // If the current file is empty, print an error
     if (starStorage.getFileName().length() == 0) {
@@ -108,101 +117,43 @@ public class Radius implements Command, StarsUtilities, StringValFunctions {
     }
   }
 
+  /**
+   * Match the arguments given to which method (if any) the Command Object should execute.
+   *
+   * @param args the list of arguments to be operated on
+   * @return Optional of String - empty if the arguments are invalid, a String if match is found.
+   */
   public Optional<String> matchArgsToMethod(ArrayList<String> args) {
     return argsValidator.testArgs(args);
   }
 
+  /**
+   * Finds all stars whose distance to the coordinate (x, y, z) is less than or equal to
+   * the radius given.
+   *
+   * @param r    the radius given
+   * @param x    the x coordinate of the point
+   * @param y    the y coordinate of the point
+   * @param z    the z coordinate of the point
+   * @param tree the KD Tree of stars to search through
+   * @return the list of stars within range inclusive.
+   */
   public ArrayList<Star> performRadius(
       double r, double x, double y, double z, KDTree<Star> tree) {
-    ArrayList<Star> template = new ArrayList<Star>();
-    int dimension = 3;
-    ArrayList<Function<Star, Double>> distList = new ArrayList<>() {{
-      add(Star::getX);
-      add(Star::getY);
-      add(Star::getZ);
-    }};
-
-    performRadiusHelper(r, x, y, z, 0, dimension, template, tree.getTree());
-    template.sort(Comparator.comparingDouble(star -> star.distanceTo(x, y, z)));
-    return template;
+    List<Double> cords = Arrays.asList(x, y, z);
+    return tree.findNodesInRadius(r, cords);
   }
 
-  public void performRadiusHelper(
-      double r, double x, double y, double z, int level, int dimension,
-      ArrayList<Star> currentList, KDNode<Star> currentNode) {
-
-    Star currentStar = currentNode.getItem();
-    if (currentStar == null) {
-      return;
-    }
-
-    if (currentStar.distanceTo(x, y, z) <= r) {
-      currentList.add(currentStar);
-    } else if (currentStar.getX() == x && currentStar.getY() == y && currentStar.getZ() == z) {
-      currentList.add(currentStar);
-    }
-
-
-    KDNode<Star> leftNode = currentNode.getLeft();
-    Star leftStar = leftNode.getItem();
-
-    KDNode<Star> rightNode = currentNode.getRight();
-    Star rightStar = rightNode.getItem();
-
-    int choice = level % dimension;
-
-//    System.out.println(currentStar);
-//    System.out.println(level);
-//    System.out.println(leftStar);
-//    System.out.println(rightStar);
-//    System.out.println("--------------");
-
-
-    switch (choice) {
-      case 0:
-        double xDist = Math.abs(currentStar.getX() - x);
-        if (xDist <= r) {
-          performRadiusHelper(r, x, y, z, level + 1, dimension, currentList, leftNode);
-          performRadiusHelper(r, x, y, z, level + 1, dimension, currentList, rightNode);
-        } else {
-          if (x < currentStar.getX()) {
-            performRadiusHelper(r, x, y, z, level + 1, dimension, currentList, leftNode);
-          } else if (x >= currentStar.getX()) {
-            performRadiusHelper(r, x, y, z, level + 1, dimension, currentList, rightNode);
-          }
-        }
-        break;
-      case 1:
-        double yDist = Math.abs(currentStar.getY() - y);
-        if (yDist <= r) {
-          performRadiusHelper(r, x, y, z, level + 1, dimension, currentList, leftNode);
-          performRadiusHelper(r, x, y, z, level + 1, dimension, currentList, rightNode);
-        } else {
-          if (y < currentStar.getY()) {
-            performRadiusHelper(r, x, y, z, level + 1, dimension, currentList, leftNode);
-          } else if (y >= currentStar.getY()) {
-            performRadiusHelper(r, x, y, z, level + 1, dimension, currentList, rightNode);
-          }
-        }
-        break;
-      case 2:
-        double zDist = Math.abs(currentStar.getZ() - z);
-        if (zDist <= r) {
-          performRadiusHelper(r, x, y, z, level + 1, dimension, currentList, leftNode);
-          performRadiusHelper(r, x, y, z, level + 1, dimension, currentList, rightNode);
-        } else {
-          if (z < currentStar.getZ()) {
-            performRadiusHelper(r, x, y, z, level + 1, dimension, currentList, leftNode);
-          } else if (z >= currentStar.getZ()) {
-            performRadiusHelper(r, x, y, z, level + 1, dimension, currentList, rightNode);
-          }
-        }
-        break;
-    }
-  }
-
-  public ArrayList<Star> performRadius(
-      double r, String name, KDTree<Star> tree) {
+  /**
+   * Finds all stars whose distance to the star specified with the name is less than or equal to
+   * the radius given.
+   *
+   * @param r    the radius given
+   * @param name the name of the star
+   * @param tree the KD Tree of stars to search through
+   * @return the list of stars within range inclusive.
+   */
+  public ArrayList<Star> performRadius(double r, String name, KDTree<Star> tree) {
     // If the name is empty, print an error
     if (name.isEmpty()) {
       System.out.println("ERROR: Empty String is not a valid name for stars");
@@ -218,16 +169,16 @@ public class Radius implements Command, StarsUtilities, StringValFunctions {
 
     Star presentStar = selectedStar.get();
 
-    double selectedX = presentStar.getX();
-    double selectedY = presentStar.getY();
-    double selectedZ = presentStar.getZ();
+    double selectedX = presentStar.getCoordinate(0);
+    double selectedY = presentStar.getCoordinate(1);
+    double selectedZ = presentStar.getCoordinate(2);
 
     ArrayList<Star> resultList
         = performRadius(r, selectedX, selectedY, selectedZ, tree);
+    // Remove the name from the list generated
     resultList.removeIf(star -> star.getName().equals(name));
 
     return resultList;
   }
-
 
 }

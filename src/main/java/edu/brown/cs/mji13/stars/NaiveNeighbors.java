@@ -7,7 +7,9 @@ import edu.brown.cs.mji13.validations.StringValFunctions;
 import edu.brown.cs.mji13.validations.StringValidation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -17,8 +19,10 @@ import static java.util.Map.entry;
 /**
  * Naive Neighbors Command Object for executing the "naive_neighbors ..." command.
  */
-public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctions {
-
+public class NaiveNeighbors implements Command, StringValFunctions {
+  /**
+   * The common data-types shared by all the stars-related commands.
+   */
   private StarStorage starStorage;
 
   /**
@@ -31,7 +35,6 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
    * - x: number
    * - y: number
    * - z: number
-   * See custom StringValidation Method at the Bottom
    */
   private final Map<Integer, ArgsInformation[]> reqInfoMaps
       = Map.ofEntries(
@@ -64,7 +67,7 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
   /**
    * Creates a NaiveNeighbors object.
    *
-   * @param starStorage  - the storage of relevant stars data shared by files
+   * @param starStorage - the storage of relevant stars data shared by files
    */
   public NaiveNeighbors(StarStorage starStorage) {
     this.starStorage = starStorage;
@@ -79,23 +82,27 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
   /**
    * Executes the naive_neighbors Command.
    * If successful, prints out the closest n number of stars to the specified location.
-   *
+   * <p>
    * Note: TA Colton said that the randomization is meant for tiebreakers to include on the list
    * so if there are stars with same distance away but including them does not exceed that number
    * asked, they will be included just as normal.
+   *
    * @param args - the list of arguments to be operated on.
    */
   public void execute(ArrayList<String> args) {
+    // If no File has been loaded, signal an error
     if (starStorage.getFileName().length() == 0) {
       System.out.println("ERROR: No file has been loaded yet");
       return;
     }
 
+    // If the arguments failed the validation check, exit out of execute.
     Optional<String> opMethodName = matchArgsToMethod(args);
     if (opMethodName.isEmpty()) {
       return;
     }
 
+    // If a valid method name has been found, then operate:
     String methodName = opMethodName.get();
     ArrayList<Star> slist = starStorage.getStarsList();
     switch (methodName) {
@@ -141,7 +148,6 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
    * @return the list of stars from least distance to greatest within count given
    */
   public ArrayList<Star> performNaiveNeighbors(int count, String name, ArrayList<Star> alos) {
-    Optional<Star> selectedStar = findStarWithName(name, alos);
     // If the name given is empty, print an error
     if (name.isEmpty()) {
       System.out.println("ERROR: Empty String is not a valid name for stars");
@@ -149,17 +155,18 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
     }
 
     // If the star is not found, print an error
+    Optional<Star> selectedStar = starStorage.getStarFromMap(name);
     if (selectedStar.isEmpty()) {
       System.out.printf("ERROR: No Stars with name \"%s\" is found%n", name);
       return new ArrayList<>();
     } else {
       Star presentStar = selectedStar.get();
 
-      double selectedX = presentStar.getX();
-      double selectedY = presentStar.getY();
-      double selectedZ = presentStar.getZ();
+      double selectedX = presentStar.getCoordinate(0);
+      double selectedY = presentStar.getCoordinate(1);
+      double selectedZ = presentStar.getCoordinate(2);
 
-      ArrayList<Star> template = copyWithType(alos);
+      ArrayList<Star> template = new ArrayList<>(alos);
       template.removeIf(star -> star.getName().equals(name));
 
       return performNaiveNeighbors(count, selectedX, selectedY, selectedZ, template);
@@ -183,8 +190,9 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
       return new ArrayList<>();
     }
 
-    ArrayList<Star> template = copyWithType(alos);
-    template.sort(Comparator.comparingDouble(star -> star.distanceTo(x, y, z)));
+    ArrayList<Star> template = new ArrayList<>(alos);
+    List<Double> cordList = Arrays.asList(x, y, z);
+    template.sort(Comparator.comparingDouble(star -> star.distanceTo(cordList)));
 
     // If the number asked to return is greater than the size of the list,
     // return the entire list
@@ -196,13 +204,13 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
     ArrayList<Star> sameValueList = new ArrayList<Star>();
 
     // Finds the star at the (count - 1)th position on the list and its distance
-    double distAtCount = template.get(count - 1).distanceTo(x, y, z);
+    double distAtCount = template.get(count - 1).distanceTo(cordList);
     int whenDistStart = 0;
 
     // Add stars from the list until finding a star whose distance is the same as
     // distAtCount
     for (int i = 0; i < count; i++) {
-      if (template.get(i).distanceTo(x, y, z) == distAtCount) {
+      if (template.get(i).distanceTo(cordList) == distAtCount) {
         whenDistStart = i;
         break;
       }
@@ -211,7 +219,7 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
 
     // Find all stars whose distance is the same as distAtCount
     for (int j = whenDistStart; j < template.size(); j++) {
-      if (template.get(j).distanceTo(x, y, z) != distAtCount) {
+      if (template.get(j).distanceTo(cordList) != distAtCount) {
         break;
       }
       sameValueList.add(template.get(j));
@@ -234,6 +242,5 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
 
     return truncatedStarList;
   }
-
 
 }

@@ -7,6 +7,7 @@ import edu.brown.cs.mji13.validations.StringValFunctions;
 import edu.brown.cs.mji13.validations.StringValidation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
@@ -16,8 +17,11 @@ import static java.util.Map.entry;
 /**
  * Naive Radius Command Object for executing the "naive_radius ..." command.
  */
-public class NaiveRadius implements Command, StarsUtilities, StringValFunctions {
+public class NaiveRadius implements Command, StringValFunctions {
 
+  /**
+   * The common data-types shared by all the stars-related commands.
+   */
   private StarStorage starStorage;
 
   /**
@@ -153,7 +157,7 @@ public class NaiveRadius implements Command, StarsUtilities, StringValFunctions 
     }
 
     // If the selected star is not found, print an error
-    Optional<Star> selectedStar = findStarWithName(name, alos);
+    Optional<Star> selectedStar = starStorage.getStarFromMap(name);
     if (selectedStar.isEmpty()) {
       System.out.printf("ERROR: No Stars with name \"%s\" is found%n", name);
       return new ArrayList<>();
@@ -161,11 +165,11 @@ public class NaiveRadius implements Command, StarsUtilities, StringValFunctions 
 
     Star presentStar = selectedStar.get();
 
-    double selectedX = presentStar.getX();
-    double selectedY = presentStar.getY();
-    double selectedZ = presentStar.getZ();
+    double selectedX = presentStar.getCoordinate(0);
+    double selectedY = presentStar.getCoordinate(1);
+    double selectedZ = presentStar.getCoordinate(2);
 
-    ArrayList<Star> template = copyWithType(alos);
+    ArrayList<Star> template = new ArrayList<>(alos);
     template.removeIf(star -> star.getName().equals(name));
 
     return performNaiveRadius(r, selectedX, selectedY, selectedZ, template);
@@ -184,12 +188,9 @@ public class NaiveRadius implements Command, StarsUtilities, StringValFunctions 
    */
   public ArrayList<Star> performNaiveRadius(
       double r, double x, double y, double z, ArrayList<Star> alos) {
-    if (r == 0) {
-      return findStarsWithCord(x, y, z, alos);
-    }
-    ArrayList<Star> template = copyWithType(alos);
-    template.removeIf(star -> (star.distanceTo(x, y, z) > r));
-    template.sort(Comparator.comparingDouble(star -> star.distanceTo(x, y, z)));
+    ArrayList<Star> template = new ArrayList<>(alos);
+    template.removeIf(star -> (star.distanceTo(Arrays.asList(x, y, z)) > r));
+    template.sort(Comparator.comparingDouble(star -> star.distanceTo(Arrays.asList(x, y, z))));
     return template;
   }
 }

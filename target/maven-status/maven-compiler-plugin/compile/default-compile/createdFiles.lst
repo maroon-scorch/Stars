@@ -1,16 +1,12 @@
-edu\brown\cs\mji13\stars\NaiveNeighbors.class
 edu\brown\cs\mji13\validations\ArgsInformation.class
 edu\brown\cs\mji13\csvParse\LineConverter.class
 edu\brown\cs\mji13\stars\Star.class
 edu\brown\cs\mji13\validations\ArgsValidator.class
-edu\brown\cs\mji13\command\REPLRunner.class
-edu\brown\cs\mji13\stars\NaiveRadius.class
 edu\brown\cs\mji13\stars\UpdateStarFile.class
 edu\brown\cs\mji13\command\Command.class
 edu\brown\cs\mji13\validations\StringValFunctions.class
 edu\brown\cs\mji13\stars\Main.class
 edu\brown\cs\mji13\validations\StringValidation.class
-edu\brown\cs\mji13\stars\StarsUtilities.class
 edu\brown\cs\mji13\csvParse\CSVParser.class
 edu\brown\cs\mji13\stars\Main$FrontHandler.class
 edu\brown\cs\mji13\people\MockCSV.class

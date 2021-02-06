@@ -3,7 +3,6 @@ edu\brown\cs\mji13\main\MockCSVTest.class
 edu\brown\cs\mji13\main\StarTest.class
 edu\brown\cs\mji13\main\StringValidationsTest.class
 edu\brown\cs\mji13\main\UpdateStarFileTest.class
-edu\brown\cs\mji13\main\StarsUtilitiesTest.class
 edu\brown\cs\mji13\main\NaiveNeighborsTest.class
 edu\brown\cs\mji13\main\MockPersonTest.class
 edu\brown\cs\mji13\main\NaiveRadiusTest.class
