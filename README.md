@@ -22,6 +22,7 @@ The packages in the source code are subdivided into 5 packages:
 - Validations
 - CSVParse
 - Stars
+- kdTree
 - People
 
 ### Command -----
@@ -68,8 +69,6 @@ This is the parser of the CSV Files, it functions as explained above.
 ### Stars -----
 #### Main.java:
 The main method of the project, calls the REPLRunner and runs the REPL.
-#### StarUtilities.java:
-An interface that stores certain Stars specific methods shared by NaiveRadius and NaiveNeighbors
 #### Star.java:
 The Object representation of a Star, stores its id, name, x, y, and z coordinate. The Star also has a distanceTo method that returns the distance of the star to a coordinate.
 Validations of String Arguments passed to Star.java are also handled by the ArgumentValidator.
@@ -82,6 +81,21 @@ This is the "stars filepath" command. It constructs a CSVParser that reads the f
 NaiveRadius takes in all stars whose distance to the location specified is less than the radius. The arguments are first passed through the validator, then each correspondent method would handle the logic internally. Specifically, performing NaiveRadius requires a filtering of the list to remove all stars with a distance greater than the radius, and then sorting of the list to return.
 #### NaiveNeighbors.java:
 NaiveNeighbors takes in the n closest stars to it given a nonnegative integer n. The arguments are first passed through the validator, then each correspondent method would handle the logic internally. The object would first sort the list and find the first n stars. Specific implementations of tiebreakers are explained in the code. 
+#### Radius.java:
+The mature implementation of naive_radius using KD Trees, more details in the code.
+#### Neighbors.java:
+The mature implementation of naive_neighbors using KD Trees, more details in the code.
+#### StarsGenerator.java:
+A utilities class that generates a list of random stars for Model Based Testing, more explained below.
+
+### KDTree -----
+The KDTree stores an object of generic type T that extends that interface hasCoordinate:
+#### hasCoordinate.java:
+An interface for any objects that rely on coordinates to implement, it requires the object that implement the interface to declare how to access their coordinates and the metric of distance between coordinates.
+#### KDNode.java:
+The building block of KDTree, the Node is the same as a node for a Binary Tree. The leaf node is just left with null indiciating that whatever below is empty because this suited the best during recursive detections.
+#### KDTree.java:
+An implementation of generic KDTree, offers both radius search and neighbors search in its class. more explained in the stencil code.
 
 ### Person -----
 #### MockPerson.java:
@@ -142,6 +156,13 @@ Finally, for Equals and Hashcodes,for Equality a KD Tree is the same to another 
 
 Because of the implementation of the HashMap in my REPL Runner. All I really have to do is to add 10+ more entries of the command into the HashMap, with the key being what string should invoke them. Then I would create a Command Object for each of the Commands and handle the functionalities internally to them. For the possible arguments of each command, they would be handled by the Argument Validator via an internal Hashmap defined by the Command Object. If one Command has ties to another, they just have to share the same mutable constant defined separately in the REPL Runner. Overall, it doesn't change any main code in the run method of REPLRunner.
 
+## Model Based Testing:
+There were some challenges to Model Based Testing such as how to compare the two lists when the tiebreaking of lists ensure a nondeterminsitic list, or how to generate sufificently random lists of stars for testing. Finally, I decided to settle on using a custom object class called StarGenerator to generate the lists for me. You can find the Model Based Testing under the stars package of the JUnit Tests. In it, by initializing a starsGenderator, I ran NaiveRadius vs Radius and NaiveNeighbors vs Neighbors in two separate files.
+
+For all instances, a random list of stars is generated during setup that's shared by both commands. For the radius, in coordinate searches, a random coordinate is generated each time in a for loop, and the result of the naive_radius vs radius are compared to each other directly. For names, I have prepared a keyset of all the keys of names for stars and iterated both commands through that and compared their results to one another (which should be the same).
+
+For neighbors, instead of comparing the lists of stars, I mapped the stars to distance because the result could be nondeterminsitic for stars but not for distances. Otherwise, they followed the same steps as above.
+
 ## How to build/run your program:
 To build the program and start, run the following command in the root directory of the Project:
 ```
@@ -153,7 +174,11 @@ chmod +x cs32-test
 
 ## How to run any tests:
 All following commands should be run in the root directory of the Project:
-To run system tests for stars (student):
+To run system tests for stars2 (student):
+```
+./cs32-test tests/mji13/stars/stars2/*.test
+```
+To run system tests for stars1 (student):
 ```
 ./cs32-test tests/mji13/stars/stars1/*.test
 ```
