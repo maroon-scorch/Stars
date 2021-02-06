@@ -64,4 +64,14 @@ public interface StringValFunctions {
   default Boolean isNonNegative(String input) {
     return (isNumeric(input) && (Double.parseDouble(input) >= 0));
   }
+
+  /**
+   * Given a string, determine if it can be converted to a non-negative integer.
+   *
+   * @param input - the input string
+   * @return True if the string can be converted to said specification
+   */
+  default Boolean isNonNegInt(String input) {
+    return (isNonNegative(input) && isInteger(input));
+  }
 }

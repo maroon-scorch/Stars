@@ -18,14 +18,8 @@ import static java.util.Map.entry;
  * Naive Neighbors Command Object for executing the "naive_neighbors ..." command.
  */
 public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctions {
-  /**
-   * The list of Stars to store the converted lines to stars in.
-   */
-  private final ArrayList<Star> starsList;
-  /**
-   * The name of the current file the Command is operating on.
-   */
-  private final StringBuilder currentFile;
+
+  private StarStorage starStorage;
 
   /**
    * Specifications on the requirements on the argument passed to the command.
@@ -70,20 +64,16 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
   /**
    * Creates a NaiveNeighbors object.
    *
-   * @param starsList   - the list of stars the current File has
-   * @param currentFile - the name of the current File
+   * @param starStorage  - the storage of relevant stars data shared by files
    */
-  public NaiveNeighbors(ArrayList<Star> starsList, StringBuilder currentFile) {
-    this.starsList = starsList;
-    this.currentFile = currentFile;
+  public NaiveNeighbors(StarStorage starStorage) {
+    this.starStorage = starStorage;
   }
 
   /**
-   * Creates a NaiveRadius object.
+   * Creates a NaiveNeighbors object.
    */
   public NaiveNeighbors() {
-    this.starsList = new ArrayList<Star>();
-    this.currentFile = new StringBuilder();
   }
 
   /**
@@ -96,7 +86,7 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
    * @param args - the list of arguments to be operated on.
    */
   public void execute(ArrayList<String> args) {
-    if (currentFile.length() == 0) {
+    if (starStorage.getFileName().length() == 0) {
       System.out.println("ERROR: No file has been loaded yet");
       return;
     }
@@ -107,12 +97,13 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
     }
 
     String methodName = opMethodName.get();
+    ArrayList<Star> slist = starStorage.getStarsList();
     switch (methodName) {
       case "naive_neighbors_2":
         int neighbors = Integer.parseInt(args.get(0));
         String sName = args.get(1);
         String sStarNoQuotes = sName.substring(1, sName.length() - 1);
-        ArrayList<Star> starsInRange2 = performNaiveNeighbors(neighbors, sStarNoQuotes, starsList);
+        ArrayList<Star> starsInRange2 = performNaiveNeighbors(neighbors, sStarNoQuotes, slist);
         starsInRange2.forEach(System.out::println);
         break;
       case "naive_neighbors_4":
@@ -121,7 +112,7 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
         double dPosY = Double.parseDouble(args.get(2));
         double dPosZ = Double.parseDouble(args.get(3));
         ArrayList<Star> starsInRange4 =
-            performNaiveNeighbors(intNeighbors, dPosX, dPosY, dPosZ, starsList);
+            performNaiveNeighbors(intNeighbors, dPosX, dPosY, dPosZ, slist);
         starsInRange4.forEach(System.out::println);
         break;
       default:
@@ -244,14 +235,5 @@ public class NaiveNeighbors implements Command, StarsUtilities, StringValFunctio
     return truncatedStarList;
   }
 
-  /**
-   * Given a string, determine if it can be converted to a non-negative integer.
-   *
-   * @param input - the input string
-   * @return True if the string can be converted to said specification
-   */
-  public boolean isNonNegInt(String input) {
-    return (isNonNegative(input) && isInteger(input));
-  }
 
 }

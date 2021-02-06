@@ -2,6 +2,7 @@ package edu.brown.cs.mji13.stars;
 
 import edu.brown.cs.mji13.command.Command;
 import edu.brown.cs.mji13.csvParse.CSVParser;
+import edu.brown.cs.mji13.kdTree.KDTree;
 import edu.brown.cs.mji13.validations.ArgsInformation;
 import edu.brown.cs.mji13.validations.ArgsValidator;
 import edu.brown.cs.mji13.validations.StringValFunctions;
@@ -17,15 +18,8 @@ import static java.util.Map.entry;
  * Stars Command Object for executing the "stars filepath" command.
  */
 public class UpdateStarFile implements Command, StringValFunctions {
-  /**
-   * The list of Stars to store the converted lines to stars in.
-   */
-  private final ArrayList<Star> starsList;
 
-  /**
-   * The name of the current file the Command is operating on.
-   */
-  private final StringBuilder currentFile;
+  private StarStorage starStorage;
 
   /**
    * The parser to handle parsing of the CSV File.
@@ -58,12 +52,14 @@ public class UpdateStarFile implements Command, StringValFunctions {
   /**
    * Creates a UpdateStarFile object.
    *
-   * @param starsList   - the list of stars the current File has
-   * @param currentFile - the name of the current File
+   * @param starStorage  - the storage of relevant stars data shared by files
    */
-  public UpdateStarFile(ArrayList<Star> starsList, StringBuilder currentFile) {
-    this.starsList = starsList;
-    this.currentFile = currentFile;
+  public UpdateStarFile(
+      StarStorage starStorage) {
+    this.starStorage = starStorage;
+  }
+
+  public UpdateStarFile() {
   }
 
   /**
@@ -84,10 +80,11 @@ public class UpdateStarFile implements Command, StringValFunctions {
         parser.parse(filepath, tempStarsList, expectedHeaders, this::lineToStar);
     if (isSuccessful) {
       // If parsing was successful, update the starsList and the currentFile name
-      starsList.clear();
-      starsList.addAll(tempStarsList);
-      currentFile.replace(0, currentFile.length(), filepath);
-      System.out.printf("Read %d stars from %s%n", starsList.size(), filepath);
+      starStorage.setList(tempStarsList);
+      starStorage.setListToTree(tempStarsList);
+      starStorage.setListToStarsMap(tempStarsList);
+      starStorage.setName(filepath);
+      System.out.printf("Read %d stars from %s%n", tempStarsList.size(), filepath);
     }
   }
 

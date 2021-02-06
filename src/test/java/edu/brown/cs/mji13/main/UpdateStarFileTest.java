@@ -17,7 +17,7 @@ public class UpdateStarFileTest {
     ArrayList<Star> lst = new ArrayList<>();
     StringBuilder currentFile = new StringBuilder();
 
-    UpdateStarFile cmd = new UpdateStarFile(lst, currentFile);
+    UpdateStarFile cmd = new UpdateStarFile();
     Star star1
         = cmd.lineToStar("1,Lonely Star,5,-2.24,10.04");
     assertEquals(star1.getName(), "Lonely Star");
@@ -33,7 +33,7 @@ public class UpdateStarFileTest {
   public void testMatchArgs() {
     ArrayList<Star> lst = new ArrayList<>();
     StringBuilder currentFile = new StringBuilder();
-    UpdateStarFile cmd = new UpdateStarFile(lst, currentFile);
+    UpdateStarFile cmd = new UpdateStarFile();
 
     ArrayList<String> slst = new ArrayList<>();
     slst.add("star.csv");

@@ -17,14 +17,8 @@ import static java.util.Map.entry;
  * Naive Radius Command Object for executing the "naive_radius ..." command.
  */
 public class NaiveRadius implements Command, StarsUtilities, StringValFunctions {
-  /**
-   * The list of Stars to store the converted lines to stars in.
-   */
-  private final ArrayList<Star> starsList;
-  /**
-   * The name of the current file the Command is operating on.
-   */
-  private final StringBuilder currentFile;
+
+  private StarStorage starStorage;
 
   /**
    * Specifications on the requirements on the argument passed to the command.
@@ -69,20 +63,16 @@ public class NaiveRadius implements Command, StarsUtilities, StringValFunctions 
   /**
    * Creates a NaiveRadius object.
    *
-   * @param starsList   - the list of stars the current File has
-   * @param currentFile - the name of the current File
+   * @param starStorage  - the storage of relevant stars data shared by files
    */
-  public NaiveRadius(ArrayList<Star> starsList, StringBuilder currentFile) {
-    this.starsList = starsList;
-    this.currentFile = currentFile;
+  public NaiveRadius(StarStorage starStorage) {
+    this.starStorage = starStorage;
   }
 
   /**
    * Creates a NaiveRadius object.
    */
   public NaiveRadius() {
-    this.starsList = new ArrayList<Star>();
-    this.currentFile = new StringBuilder();
   }
 
   /**
@@ -98,7 +88,7 @@ public class NaiveRadius implements Command, StarsUtilities, StringValFunctions 
   public void execute(ArrayList<String> args) {
 
     // If the current file is empty, print an error
-    if (currentFile.length() == 0) {
+    if (starStorage.getFileName().length() == 0) {
       System.out.println("ERROR: No file has been loaded yet");
       return;
     }
@@ -111,12 +101,13 @@ public class NaiveRadius implements Command, StarsUtilities, StringValFunctions 
 
     // If a method name has been found, determines which method it maps to and executes it
     String methodName = opMethodName.get();
+    ArrayList<Star> slist = starStorage.getStarsList();
     switch (methodName) {
       case "naive_radius_2":
         double radius = Double.parseDouble(args.get(0));
         String sName = args.get(1);
         String sStarNoQuotes = sName.substring(1, sName.length() - 1);
-        ArrayList<Star> starsInRange2 = performNaiveRadius(radius, sStarNoQuotes, starsList);
+        ArrayList<Star> starsInRange2 = performNaiveRadius(radius, sStarNoQuotes, slist);
         starsInRange2.forEach(System.out::println);
         break;
       case "naive_radius_4":
@@ -124,7 +115,7 @@ public class NaiveRadius implements Command, StarsUtilities, StringValFunctions 
         double dPosX = Double.parseDouble(args.get(1));
         double dPosY = Double.parseDouble(args.get(2));
         double dPosZ = Double.parseDouble(args.get(3));
-        ArrayList<Star> starsInRange4 = performNaiveRadius(dRadius, dPosX, dPosY, dPosZ, starsList);
+        ArrayList<Star> starsInRange4 = performNaiveRadius(dRadius, dPosX, dPosY, dPosZ, slist);
         starsInRange4.forEach(System.out::println);
         break;
       default:

@@ -129,15 +129,5 @@ public class ArgsValidatorTest implements StringValFunctions{
         "ERROR:----------------------------------------------\n");
   }
 
-  /**
-   * Given a string, determine if it can be converted to a non-negative integer.
-   *
-   * @param input - the input string
-   * @return True if the string can be converted to said specification
-   */
-  private boolean isNonNegInt(String input) {
-    return (isNonNegative(input) && isInteger(input));
-  }
-
 
 }

@@ -3,7 +3,9 @@ package edu.brown.cs.mji13.command;
 import edu.brown.cs.mji13.people.MockCSV;
 import edu.brown.cs.mji13.stars.NaiveNeighbors;
 import edu.brown.cs.mji13.stars.NaiveRadius;
-import edu.brown.cs.mji13.stars.Star;
+import edu.brown.cs.mji13.stars.Neighbors;
+import edu.brown.cs.mji13.stars.Radius;
+import edu.brown.cs.mji13.stars.StarStorage;
 import edu.brown.cs.mji13.stars.UpdateStarFile;
 
 import java.io.BufferedReader;
@@ -17,27 +19,23 @@ import java.util.regex.Pattern;
 import static java.util.Map.entry;
 
 /**
- * REPLRunner that initiates the REPL Loop until being termianted.
+ * REPLRunner that initiates the REPL Loop until being terminated.
  */
 public class REPLRunner {
-
   /**
-   * The list of stars shared by the stars, naive_radius, and naive_neighbors command.
+   * The common datatypes shared by all the stars-related commands.
    */
-  private final ArrayList<Star> starsList = new ArrayList<>();
-
-  /**
-   * The currentFileName shared by the stars, naive_radius, and naive_neighbors command.
-   */
-  private final StringBuilder currentFile = new StringBuilder();
+  private final StarStorage starStorage = new StarStorage("storage");
 
   /**
    * The Hashmap of String Keys to which Command Object they correspond to.
    */
   private final Map<String, Command> commandMap = Map.ofEntries(
-      entry("stars", new UpdateStarFile(starsList, currentFile)),
-      entry("naive_radius", new NaiveRadius(starsList, currentFile)),
-      entry("naive_neighbors", new NaiveNeighbors(starsList, currentFile)),
+      entry("stars", new UpdateStarFile(starStorage)),
+      entry("naive_radius", new NaiveRadius(starStorage)),
+      entry("naive_neighbors", new NaiveNeighbors(starStorage)),
+      entry("radius", new Radius(starStorage)),
+      entry("neighbors", new Neighbors(starStorage)),
       entry("mock", new MockCSV())
   );
 
