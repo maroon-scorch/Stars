@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KDNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stars</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mji13.kdTree</a> &gt; <span class="el_source">KDNode.java</span></div><h1>KDNode.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mji13.kdTree;
+
+/**
+ * The KD Node that stores the serves as the building block of the KD Tree
+ * A KD Node can be one of two types:
+ * 1. node(T item, node left, node right)
+ * 2. empty node which is KDNode().
+ *
+ * @param &lt;T&gt; - Generic type of the item that each Node holds, must extend from HasCoordinates
+ */
+public class KDNode&lt;T extends HasCoordinates&gt; {
+  /**
+   * The fields a non-empty KD Node stores:
+   * item, left child, right child.
+   */
+  private T item;
+  private KDNode&lt;T&gt; left, right;
+
+  /**
+   * Constructs a new non-empty node, left and right children are initially empty nodes.
+   *
+   * @param item - the item to be stored at the head of this node
+   */
+<span class="fc" id="L24">  public KDNode(T item) {</span>
+<span class="fc" id="L25">    this.item = item;</span>
+<span class="fc" id="L26">    this.left = new KDNode&lt;T&gt;();</span>
+<span class="fc" id="L27">    this.right = new KDNode&lt;T&gt;();</span>
+<span class="fc" id="L28">  }</span>
+
+  /**
+   * Constructs an empty node, all fields are currently null.
+   */
+<span class="fc" id="L33">  public KDNode() {</span>
+<span class="fc" id="L34">    this.item = null;</span>
+<span class="fc" id="L35">    this.left = null;</span>
+<span class="fc" id="L36">    this.right = null;</span>
+<span class="fc" id="L37">  }</span>
+
+  /**
+   * Gets the current item at the node.
+   *
+   * @return the item at the node
+   */
+  public T getItem() {
+<span class="fc" id="L45">    return item;</span>
+  }
+
+  /**
+   * Gets the left child of the node.
+   *
+   * @return the left child at the node
+   */
+  public KDNode&lt;T&gt; getLeft() {
+<span class="fc" id="L54">    return left;</span>
+  }
+
+  /**
+   * Gets the right child of the node.
+   *
+   * @return the right child at the node
+   */
+  public KDNode&lt;T&gt; getRight() {
+<span class="fc" id="L63">    return right;</span>
+  }
+
+  /**
+   * Sets the current item of the node to another item.
+   *
+   * @param item - the item to replace the current item
+   */
+  public void setItem(T item) {
+<span class="fc" id="L72">    this.item = item;</span>
+<span class="fc" id="L73">  }</span>
+
+  /**
+   * Sets the current left child of the node to another node.
+   *
+   * @param node - the node to replace the left child
+   */
+  public void setLeft(KDNode&lt;T&gt; node) {
+<span class="fc" id="L81">    this.left = node;</span>
+<span class="fc" id="L82">  }</span>
+
+  /**
+   * Sets the current right child of the node to another node.
+   *
+   * @param node - the node to replace the right child
+   */
+  public void setRight(KDNode&lt;T&gt; node) {
+<span class="fc" id="L90">    this.right = node;</span>
+<span class="fc" id="L91">  }</span>
+
+  /**
+   * Returns the string literal of the Tree (constructed in PostOrder).
+   *
+   * @return - the string version of the tree
+   */
+  public String toString() {
+    try {
+<span class="fc bfc" id="L100" title="All 2 branches covered.">      return ((item == null) ? &quot;&quot; : item.toString()) + &quot; &quot;</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">          + ((left == null) ? &quot;&quot; : left.toString()) + &quot; &quot;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">          + ((right == null) ? &quot;&quot; : right.toString());</span>
+<span class="nc" id="L103">    } catch (Exception e) {</span>
+<span class="nc" id="L104">      System.out.println(&quot;ERROR: To String for Tree of this type hasn't been implemented yet&quot;);</span>
+<span class="nc" id="L105">      return &quot;&quot;;</span>
+    }
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

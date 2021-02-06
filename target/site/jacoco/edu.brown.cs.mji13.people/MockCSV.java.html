@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockCSV.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stars</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mji13.people</a> &gt; <span class="el_source">MockCSV.java</span></div><h1>MockCSV.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mji13.people;
+
+import edu.brown.cs.mji13.command.Command;
+import edu.brown.cs.mji13.csvParse.CSVParser;
+import edu.brown.cs.mji13.validations.ArgsInformation;
+import edu.brown.cs.mji13.validations.ArgsValidator;
+import edu.brown.cs.mji13.validations.StringValFunctions;
+import edu.brown.cs.mji13.validations.StringValidation;
+
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
+
+import static java.util.Map.entry;
+
+/**
+ * MockCSV Command Object for executing the &quot;mock csv&quot; command.
+ */
+public class MockCSV implements Command, StringValFunctions {
+  /**
+   * The list of MockPerson to store the lines of csv file in.
+   */
+<span class="fc" id="L23">  private final ArrayList&lt;MockPerson&gt; peopleList = new ArrayList&lt;&gt;();</span>
+
+  /**
+   * The parser to handle parsing of the CSV File.
+   */
+<span class="fc" id="L28">  private final CSVParser parser = new CSVParser();</span>
+
+  /**
+   * Expected Headers of the CSV File.
+   */
+<span class="fc" id="L33">  private final String[] expectedHeaders</span>
+      = {&quot;FirstName&quot;, &quot;LastName&quot;, &quot;BirthDate&quot;, &quot;Email&quot;, &quot;Gender&quot;, &quot;StreetAddress&quot;};
+
+  /**
+   * Specifications on the requirements on the argument passed to the command.
+   * filepath - any string.
+   */
+<span class="fc" id="L40">  private final Map&lt;Integer, ArgsInformation[]&gt; reqInfoMaps</span>
+<span class="fc" id="L41">      = Map.ofEntries(</span>
+<span class="fc" id="L42">      entry(1, new ArgsInformation[] {new ArgsInformation(</span>
+          &quot;mock_csv_1&quot;,
+          new String[] {&quot;filepath: any&quot;},
+          new StringValidation[] {this::pass},
+          new String[] {&quot;ERROR: Filepath can be any string&quot;}
+      )}));
+
+  /**
+   * The argument validator for the arguments of the &quot;mock csv&quot; command.
+   */
+<span class="fc" id="L52">  private final ArgsValidator argsValidator</span>
+      = new ArgsValidator(&quot;mock &lt;csv&gt;&quot;, reqInfoMaps);
+
+  /**
+   * Creates an empty MOCKCSV object.
+   */
+<span class="fc" id="L58">  public MockCSV() {</span>
+<span class="fc" id="L59">  }</span>
+
+  /**
+   * Executes the MockCSV Command.
+   * If successful, prints out every line of the MockPerson converted in String.
+   *
+   * @param args - the list of arguments to be operated on
+   */
+  public void execute(ArrayList&lt;String&gt; args) {
+<span class="nc" id="L68">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
+<span class="nc" id="L70">      return;</span>
+    }
+<span class="nc" id="L72">    String filepath = args.get(0);</span>
+<span class="nc" id="L73">    boolean isSuccessful =</span>
+<span class="nc" id="L74">        parser.parse(filepath, peopleList, expectedHeaders, this::lineToPerson);</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">    if (isSuccessful) {</span>
+<span class="nc" id="L76">      peopleList.forEach(System.out::println);</span>
+    }
+<span class="nc" id="L78">  }</span>
+
+  /**
+   * Match the arguments given to which method (if any) the Command Object should execute,
+   * normally a switch case would handle the methodName to the execution of the method,
+   * but since MockCSV only has 1 method, this is a check for argument validation.
+   *
+   * @param args the list of arguments to be operated on
+   * @return Option of String - empty if the arguments are invalid, a String if a match is found.
+   */
+  public Optional&lt;String&gt; matchArgsToMethod(ArrayList&lt;String&gt; args) {
+<span class="fc" id="L89">    return argsValidator.testArgs(args);</span>
+  }
+
+  /**
+   * Given a line of the CSV File, converts it into a MockPerson object.
+   *
+   * @param line - the line of the file
+   * @return MockPerson if no errors or illegal arguments were present.
+   */
+  public MockPerson lineToPerson(String line) {
+<span class="fc" id="L99">    String[] personAttributes = line.split(&quot;,&quot;, -1);</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">    if (personAttributes.length != 6) {</span>
+<span class="nc" id="L101">      throw new IllegalArgumentException(&quot;The file's rows are malformed, &quot;</span>
+          + &quot;they have inconsistent number of entries per row&quot;);
+    }
+<span class="fc" id="L104">    String firstName = personAttributes[0];</span>
+<span class="fc" id="L105">    String lastName = personAttributes[1];</span>
+<span class="fc" id="L106">    String birthDate = personAttributes[2];</span>
+<span class="fc" id="L107">    String email = personAttributes[3];</span>
+<span class="fc" id="L108">    String gender = personAttributes[4];</span>
+<span class="fc" id="L109">    String streetAddress = personAttributes[5];</span>
+
+<span class="fc" id="L111">    return new MockPerson(firstName, lastName, birthDate, email, gender, streetAddress);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

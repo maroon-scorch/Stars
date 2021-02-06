@@ -15,6 +15,9 @@ import java.util.Optional;
 
 import static java.util.Map.entry;
 
+/**
+ * Radius Command Object for executing the "radius ..." command.
+ */
 public class Radius implements Command, StringValFunctions {
 
   /**

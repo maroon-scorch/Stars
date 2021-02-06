@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"edu.brown.cs.student.command"},{"l":"edu.brown.cs.student.csvParse"},{"l":"edu.brown.cs.student.people"},{"l":"edu.brown.cs.student.stars"},{"l":"edu.brown.cs.student.validations"}]
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"edu.brown.cs.mji13.command"},{"l":"edu.brown.cs.mji13.csvParse"},{"l":"edu.brown.cs.mji13.kdTree"},{"l":"edu.brown.cs.mji13.people"},{"l":"edu.brown.cs.mji13.stars"},{"l":"edu.brown.cs.mji13.validations"}]

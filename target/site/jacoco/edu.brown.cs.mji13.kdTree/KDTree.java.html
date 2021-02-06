@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KDTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stars</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mji13.kdTree</a> &gt; <span class="el_source">KDTree.java</span></div><h1>KDTree.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mji13.kdTree;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
+
+/**
+ * The KD Tree Object implemented for efficient multi-dimensional searches.
+ *
+ * @param &lt;T&gt; - the generic type T of the items that the tree stores;
+ *            must extend from HasCoordinates
+ */
+public class KDTree&lt;T extends HasCoordinates&gt; {
+  /**
+   * The two fields that a KD Tree stores:
+   * 1. the dimension of the KDTree.
+   * 2. the Tree itself.
+   */
+  private int dimension;
+  private KDNode&lt;T&gt; root;
+
+  /**
+   * Constructs a KD Tree Object of the dimension specified, so sets up an empty tree.
+   *
+   * @param dimension - the dimension of the KD Tree, must be at least 1
+   */
+<span class="fc" id="L28">  public KDTree(int dimension) {</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">    if (dimension &lt; 1) {</span>
+<span class="nc" id="L30">      throw new IllegalArgumentException(&quot;KD Trees cannot have a dimension less than 1&quot;);</span>
+    }
+
+<span class="fc" id="L33">    this.dimension = dimension;</span>
+<span class="fc" id="L34">    this.root = new KDNode&lt;T&gt;();</span>
+<span class="fc" id="L35">  }</span>
+
+  /**
+   * Constructs the actual KD Tree of Type T for a given arraylist of the same item types.
+   *
+   * @param itemList - the list of items to be turned into a KD Tree
+   */
+  public void constructTree(ArrayList&lt;T&gt; itemList) {
+<span class="fc" id="L43">    ArrayList&lt;T&gt; template = new ArrayList&lt;&gt;(itemList);</span>
+<span class="fc" id="L44">    this.root = constructTreeHelper(template, 0);</span>
+<span class="fc" id="L45">  }</span>
+
+  /**
+   * The helper method of constructTree that keeps track of the depth of the KD Tree
+   * over recursion.
+   *
+   * @param itemList - the list of items to be turned into a KD Tree.
+   * @param level    - increments by 1 following down each recursion, analogous
+   *                 to the current depth of the tree.
+   * @return - the fully constructed KD Tree
+   */
+  private KDNode&lt;T&gt; constructTreeHelper(ArrayList&lt;T&gt; itemList, int level) {
+    // If the list is empty, then return the empty node.
+<span class="fc bfc" id="L58" title="All 2 branches covered.">    if (itemList.isEmpty()) {</span>
+<span class="fc" id="L59">      return new KDNode&lt;T&gt;();</span>
+    }
+
+    /*
+     Sorts the ArrayList by the comparator over one type of coordinate.
+     Note: level % dimension keeps track of which type of coordinate to sort through.
+      (ex. For x, y, z, at level 4, 4 % 3 = 1, so sort using x (1)).
+     */
+<span class="fc" id="L67">    ArrayList&lt;T&gt; currentList = new ArrayList&lt;&gt;(itemList);</span>
+<span class="fc" id="L68">    currentList.sort(Comparator.comparingDouble(cord -&gt; cord.getCoordinate(level % dimension)));</span>
+
+    // Finds the median, set the current Node to be the item at median
+<span class="fc" id="L71">    int median = (currentList.size() - 1) / 2;</span>
+<span class="fc" id="L72">    T currentItem = currentList.get(median);</span>
+<span class="fc" id="L73">    KDNode&lt;T&gt; currentNode = new KDNode&lt;&gt;(currentItem);</span>
+
+    // Construct lists left and right of the median, add them in accordingly.
+<span class="fc" id="L76">    ArrayList&lt;T&gt; leftList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L77">    ArrayList&lt;T&gt; rightList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L79" title="All 2 branches covered.">    for (int i = 0; i &lt; median; i++) {</span>
+<span class="fc" id="L80">      leftList.add(currentList.get(i));</span>
+    }
+
+<span class="fc bfc" id="L83" title="All 2 branches covered.">    for (int j = median + 1; j &lt; itemList.size(); j++) {</span>
+<span class="fc" id="L84">      rightList.add(currentList.get(j));</span>
+    }
+
+    // Pass the two lists down in recursion again
+<span class="fc" id="L88">    currentNode.setLeft(constructTreeHelper(leftList, level + 1));</span>
+<span class="fc" id="L89">    currentNode.setRight(constructTreeHelper(rightList, level + 1));</span>
+
+    // After all recursions finished, the currentNode is the constructed tree.
+<span class="fc" id="L92">    return currentNode;</span>
+  }
+
+
+  /**
+   * Given a coordinate and a radius, returns the list of all items within the radius from
+   * closest to furthest.
+   *
+   * @param radius - the radius of the search
+   * @param cords  - the coordinate of the search
+   * @return the sorted list of all items within the radius of the cords
+   */
+  public ArrayList&lt;T&gt; findNodesInRadius(double radius, List&lt;Double&gt; cords) {
+<span class="fc" id="L105">    ArrayList&lt;T&gt; template = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L106">    radiusHelper(radius, cords, 0, template, getTree());</span>
+<span class="fc" id="L107">    template.sort(Comparator.comparingDouble(star -&gt; star.distanceTo(cords)));</span>
+<span class="fc" id="L108">    return template;</span>
+  }
+
+  /**
+   * The helper method of findNodesInRadius that recurs down the tree and performs
+   * the search.
+   *
+   * @param radius      - the radius of the search
+   * @param cords       - the coordinate of the search
+   * @param level       - the depth of the currentNode in the whole tree
+   * @param template    - the ArrayList of items to be updated on during Recursion
+   * @param currentNode - the currentNode being recurred on
+   */
+  private void radiusHelper(double radius, List&lt;Double&gt; cords, int level,
+                           ArrayList&lt;T&gt; template, KDNode&lt;T&gt; currentNode) {
+    // If the current item is null (empty node) then break
+<span class="fc" id="L124">    T currentItem = currentNode.getItem();</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">    if (currentItem == null) {</span>
+<span class="fc" id="L126">      return;</span>
+    }
+    // If the current item's distance to the coordinate is less than the radius,
+    // add the item to the ArrayList
+<span class="fc bfc" id="L130" title="All 2 branches covered.">    if (currentItem.distanceTo(cords) &lt;= radius) {</span>
+<span class="fc" id="L131">      template.add(currentItem);</span>
+    }
+
+<span class="fc" id="L134">    KDNode&lt;T&gt; leftNode = currentNode.getLeft();</span>
+<span class="fc" id="L135">    KDNode&lt;T&gt; rightNode = currentNode.getRight();</span>
+
+    // Determine which Axis Distance to Compare to
+<span class="fc" id="L138">    int choice = level % dimension;</span>
+
+    // Finds the axis distance between the currentNode and the search position
+<span class="fc" id="L141">    double currentAxisCord = currentItem.getCoordinate(choice);</span>
+<span class="fc" id="L142">    double fixedAxisCord = cords.get(choice);</span>
+<span class="fc" id="L143">    double axisDist = Math.abs(currentAxisCord - fixedAxisCord);</span>
+
+    // Search both if the distance is less than the radius, otherwise, check
+    // direction to determine which subtree to traverse down
+<span class="fc bfc" id="L147" title="All 2 branches covered.">    if (axisDist &lt;= radius) {</span>
+<span class="fc" id="L148">      radiusHelper(radius, cords, level + 1, template, leftNode);</span>
+<span class="fc" id="L149">      radiusHelper(radius, cords, level + 1, template, rightNode);</span>
+    } else {
+<span class="fc bfc" id="L151" title="All 2 branches covered.">      if (fixedAxisCord &lt; currentAxisCord) {</span>
+<span class="fc" id="L152">        radiusHelper(radius, cords, level + 1, template, leftNode);</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">      } else if (fixedAxisCord &gt;= currentAxisCord) {</span>
+<span class="fc" id="L154">        radiusHelper(radius, cords, level + 1, template, rightNode);</span>
+      }
+    }
+<span class="fc" id="L157">  }</span>
+
+  /**
+   * Given a coordinate and a count, returns the list of count-th nearest neighbors to
+   * the coordinate. If there's a tie between elements that exceed the size requested,
+   * the result list plus the tied elements will be returned.
+   *
+   * @param count - the count of how many neighbors are wanted
+   * @param cords - the coordinate of the search
+   * @return the sorted list of the result list plus (if exists) all the tied elements
+   * to the last element of the result list.
+   */
+  public ArrayList&lt;T&gt; findNearestNeighbors(int count, List&lt;Double&gt; cords) {
+    // If asking for zero neighbors, return an empty list
+<span class="fc bfc" id="L171" title="All 2 branches covered.">    if (count == 0) {</span>
+<span class="fc" id="L172">      return new ArrayList&lt;&gt;();</span>
+    }
+
+    // The PriorityQueue is a maxheap where the item whose distance is furthest to the
+    // coordinate is the first element of the queue.
+<span class="fc" id="L177">    PriorityQueue&lt;T&gt; maxItemQueue = new PriorityQueue&lt;T&gt;((T item1, T item2)</span>
+<span class="fc" id="L178">        -&gt; Double.compare(item2.distanceTo(cords), item1.distanceTo(cords)));</span>
+    // The ArrayList storing all the tied stars.
+<span class="fc" id="L180">    ArrayList&lt;T&gt; tiedList = new ArrayList&lt;&gt;();</span>
+
+    // Calls the helper function to recur down the tree.
+<span class="fc" id="L183">    neighborsHelper(count, cords, 0, maxItemQueue, tiedList, getTree());</span>
+
+    // Converts the completed queue back to the list and sorts it
+<span class="fc" id="L186">    ArrayList&lt;T&gt; resultList = new ArrayList&lt;&gt;(maxItemQueue);</span>
+<span class="fc" id="L187">    resultList.sort(Comparator.comparingDouble(T -&gt; T.distanceTo(cords)));</span>
+
+    // Adds all the tiedLists elements to the end of the result list.
+<span class="fc" id="L190">    resultList.addAll(tiedList);</span>
+<span class="fc" id="L191">    return resultList;</span>
+  }
+
+  /**
+   * The helper method of findNearestNeighbors that recurs down the tree and performs
+   * the search.
+   *
+   * @param count       - the count of the search
+   * @param cords       - the coordinate of the search
+   * @param level       - the depth of the currentNode in the whole tree
+   * @param itemQueue   - the Queue storing all the relevant items that are nearest
+   * @param tiedList    - the list of tied items to the first element of the Queue
+   * @param currentNode - the currentNode being recurred on
+   */
+  private void neighborsHelper(int count, List&lt;Double&gt; cords, int level,
+                               PriorityQueue&lt;T&gt; itemQueue, ArrayList&lt;T&gt; tiedList,
+                               KDNode&lt;T&gt; currentNode) {
+    // If the node is an empty node, break out of the current function call.
+<span class="fc" id="L209">    T currentItem = currentNode.getItem();</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">    if (currentItem == null) {</span>
+<span class="fc" id="L211">      return;</span>
+    }
+
+    // If the Queue isn't full yet (has a size of count), add the item in.
+<span class="fc bfc" id="L215" title="All 2 branches covered.">    if (itemQueue.size() &lt; count) {</span>
+<span class="fc" id="L216">      itemQueue.add(currentItem);</span>
+    } else {
+      // If the Queue is full:
+<span class="fc" id="L219">      T maxItem = itemQueue.element();</span>
+      // If the distance of the coordinate to the currentItem is less than that
+      // to the first element, remove the first element, clear the tied list,
+      // and add the current element down.
+<span class="fc bfc" id="L223" title="All 2 branches covered.">      if (currentItem.distanceTo(cords) &lt; maxItem.distanceTo(cords)) {</span>
+<span class="fc" id="L224">        itemQueue.poll();</span>
+<span class="fc" id="L225">        tiedList.clear();</span>
+<span class="fc" id="L226">        itemQueue.add(currentItem);</span>
+        // If the two elements have the same distance, add the currentItem to the tiedlist.
+<span class="fc bfc" id="L228" title="All 2 branches covered.">      } else if (currentItem.distanceTo(cords) == maxItem.distanceTo(cords)) {</span>
+<span class="fc" id="L229">        tiedList.add(currentItem);</span>
+      }
+    }
+
+<span class="fc" id="L233">    KDNode&lt;T&gt; leftNode = currentNode.getLeft();</span>
+<span class="fc" id="L234">    KDNode&lt;T&gt; rightNode = currentNode.getRight();</span>
+
+    // Determine which Axis Distance to Compare to
+<span class="fc" id="L237">    int choice = level % dimension;</span>
+
+<span class="fc" id="L239">    double maxDist = itemQueue.element().distanceTo(cords);</span>
+<span class="fc" id="L240">    double currentAxisCord = currentItem.getCoordinate(choice);</span>
+<span class="fc" id="L241">    double fixedAxisCord = cords.get(choice);</span>
+<span class="fc" id="L242">    double axisDist = Math.abs(currentAxisCord - fixedAxisCord);</span>
+
+    // Search both if the distance is less than the maximum distance to the furthest element,
+    // otherwise, check direction to determine which subtree to traverse down
+<span class="fc bfc" id="L246" title="All 2 branches covered.">    if (axisDist &lt;= maxDist) {</span>
+<span class="fc" id="L247">      neighborsHelper(count, cords, level + 1, itemQueue, tiedList, leftNode);</span>
+<span class="fc" id="L248">      neighborsHelper(count, cords, level + 1, itemQueue, tiedList, rightNode);</span>
+    } else {
+<span class="fc bfc" id="L250" title="All 2 branches covered.">      if (fixedAxisCord &lt; currentAxisCord) {</span>
+<span class="fc" id="L251">        neighborsHelper(count, cords, level + 1, itemQueue, tiedList, leftNode);</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">      } else if (fixedAxisCord &gt;= currentAxisCord) {</span>
+<span class="fc" id="L253">        neighborsHelper(count, cords, level + 1, itemQueue, tiedList, rightNode);</span>
+      }
+    }
+<span class="fc" id="L256">  }</span>
+
+
+  /**
+   * Clears the tree to a new empty tree.
+   */
+  public void clear() {
+<span class="fc" id="L263">    root = new KDNode&lt;T&gt;();</span>
+<span class="fc" id="L264">  }</span>
+
+  /**
+   * Find the size of the KD Tree.
+   *
+   * @return the size of the KD Tree.
+   */
+  public Integer rootSize() {
+<span class="fc" id="L272">    return treeSize(root);</span>
+  }
+
+  /**
+   * Helper method of rootSize that recurs down the tree to find its size.
+   *
+   * @param currentNode - the tree to find the size for.
+   * @return the size of the Tree.
+   */
+  private Integer treeSize(KDNode&lt;T&gt; currentNode) {
+<span class="fc bfc" id="L282" title="All 2 branches covered.">    if (currentNode.getItem() == null) {</span>
+<span class="fc" id="L283">      return 0;</span>
+    }
+
+<span class="fc" id="L286">    KDNode&lt;T&gt; leftNode = currentNode.getLeft();</span>
+<span class="fc" id="L287">    KDNode&lt;T&gt; rightNode = currentNode.getRight();</span>
+<span class="fc" id="L288">    return 1 + treeSize(leftNode) + treeSize(rightNode);</span>
+  }
+
+  /**
+   * Returns the tree stored in the object.
+   *
+   * @return the KD Tree.
+   */
+  public KDNode&lt;T&gt; getTree() {
+<span class="fc" id="L297">    return root;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

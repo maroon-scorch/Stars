@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NaiveRadius.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stars</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mji13.stars</a> &gt; <span class="el_source">NaiveRadius.java</span></div><h1>NaiveRadius.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mji13.stars;
+
+import edu.brown.cs.mji13.command.Command;
+import edu.brown.cs.mji13.validations.ArgsInformation;
+import edu.brown.cs.mji13.validations.ArgsValidator;
+import edu.brown.cs.mji13.validations.StringValFunctions;
+import edu.brown.cs.mji13.validations.StringValidation;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Optional;
+
+import static java.util.Map.entry;
+
+/**
+ * Naive Radius Command Object for executing the &quot;naive_radius ...&quot; command.
+ */
+public class NaiveRadius implements Command, StringValFunctions {
+
+  /**
+   * The common data-types shared by all the stars-related commands.
+   */
+  private StarStorage starStorage;
+
+  /**
+   * Specifications on the requirements on the argument passed to the command.
+   * 2 Arguments:
+   *   - radius: non-negative number
+   *   - name: surrounded by double quotes
+   * 4 Arguments:
+   *   - radius: non-negative number
+   *   - x: number
+   *   - y: number
+   *   - z: number
+   */
+<span class="pc" id="L38">  private final Map&lt;Integer, ArgsInformation[]&gt; reqInfoMaps</span>
+<span class="pc" id="L39">      = Map.ofEntries(</span>
+<span class="pc" id="L40">      entry(2, new ArgsInformation[] {new ArgsInformation(</span>
+          &quot;naive_radius_2&quot;,
+          new String[] {&quot;radius &gt;= 0&quot;, &quot;\&quot;name\&quot;&quot;},
+          new StringValidation[] {this::isNonNegative, this::isName},
+          new String[] {&quot;ERROR: Radius must be non-negative.&quot;,
+              &quot;ERROR: Name must be surrounded by double quotes&quot;}
+      )}),
+<span class="pc" id="L47">      entry(4, new ArgsInformation[] {new ArgsInformation(</span>
+          &quot;naive_radius_4&quot;,
+          new String[] {&quot;radius &gt;= 0&quot;, &quot;x: number&quot;, &quot;y: number&quot;, &quot;z: number&quot;},
+          new StringValidation[] {this::isNonNegative, this::isNumeric,
+              this::isNumeric, this::isNumeric},
+          new String[] {&quot;ERROR: Radius must be non-negative.&quot;,
+              &quot;ERROR: Coordinate X must be numeric&quot;,
+              &quot;ERROR: Coordinate Y must be numeric&quot;,
+              &quot;ERROR: Coordinate Z must be numeric&quot;
+          }
+      )})
+  );
+
+
+  /**
+   * The argument validator for the arguments of the mock &lt;csv&gt; command.
+   */
+<span class="pc" id="L64">  private final ArgsValidator argsValidator</span>
+      = new ArgsValidator(&quot;naive_radius&quot;, reqInfoMaps);
+
+  /**
+   * Creates a NaiveRadius object.
+   *
+   * @param starStorage  - the storage of relevant stars data shared by files
+   */
+<span class="fc" id="L72">  public NaiveRadius(StarStorage starStorage) {</span>
+<span class="fc" id="L73">    this.starStorage = starStorage;</span>
+<span class="fc" id="L74">  }</span>
+
+  /**
+   * Creates a NaiveRadius object.
+   */
+<span class="nc" id="L79">  public NaiveRadius() {</span>
+<span class="nc" id="L80">  }</span>
+
+  /**
+   * Executes the naive_radius Command.
+   * If successful, prints out every stars with radius less than or equal to that of
+   * the specified radius.
+   *
+   * Note: TA Colton said that the randomization is meant for tiebreakers to include on the list
+   * since naive_radius gets all the stars within range in, there are no tiebreakers to decide
+   * which &quot;star&quot; gets in.
+   * @param args - the list of arguments to be operated on.
+   */
+  public void execute(ArrayList&lt;String&gt; args) {
+
+    // If the current file is empty, print an error
+<span class="nc bnc" id="L95" title="All 2 branches missed.">    if (starStorage.getFileName().length() == 0) {</span>
+<span class="nc" id="L96">      System.out.println(&quot;ERROR: No file has been loaded yet&quot;);</span>
+<span class="nc" id="L97">      return;</span>
+    }
+
+    // If no methods are matched, exits the command
+<span class="nc" id="L101">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
+<span class="nc" id="L103">      return;</span>
+    }
+
+    // If a method name has been found, determines which method it maps to and executes it
+<span class="nc" id="L107">    String methodName = opMethodName.get();</span>
+<span class="nc" id="L108">    ArrayList&lt;Star&gt; slist = starStorage.getStarsList();</span>
+<span class="nc bnc" id="L109" title="All 3 branches missed.">    switch (methodName) {</span>
+      case &quot;naive_radius_2&quot;:
+<span class="nc" id="L111">        double radius = Double.parseDouble(args.get(0));</span>
+<span class="nc" id="L112">        String sName = args.get(1);</span>
+<span class="nc" id="L113">        String sStarNoQuotes = sName.substring(1, sName.length() - 1);</span>
+<span class="nc" id="L114">        ArrayList&lt;Star&gt; starsInRange2 = performNaiveRadius(radius, sStarNoQuotes, slist);</span>
+<span class="nc" id="L115">        starsInRange2.forEach(System.out::println);</span>
+<span class="nc" id="L116">        break;</span>
+      case &quot;naive_radius_4&quot;:
+<span class="nc" id="L118">        double dRadius = Double.parseDouble(args.get(0));</span>
+<span class="nc" id="L119">        double dPosX = Double.parseDouble(args.get(1));</span>
+<span class="nc" id="L120">        double dPosY = Double.parseDouble(args.get(2));</span>
+<span class="nc" id="L121">        double dPosZ = Double.parseDouble(args.get(3));</span>
+<span class="nc" id="L122">        ArrayList&lt;Star&gt; starsInRange4 = performNaiveRadius(dRadius, dPosX, dPosY, dPosZ, slist);</span>
+<span class="nc" id="L123">        starsInRange4.forEach(System.out::println);</span>
+<span class="nc" id="L124">        break;</span>
+      default:
+<span class="nc" id="L126">        System.out.println(&quot;ERROR: Hashmap reqInfoMaps has unregistered names, &quot;</span>
+            + &quot;shouldn't have reached here&quot;);
+        break;
+    }
+<span class="nc" id="L130">  }</span>
+
+  /**
+   * Match the arguments given to which method (if any) the Command Object should execute.
+   *
+   * @param args the list of arguments to be operated on
+   * @return Optional of String - empty if the arguments are invalid, a String if match is found.
+   */
+  public Optional&lt;String&gt; matchArgsToMethod(ArrayList&lt;String&gt; args) {
+<span class="fc" id="L139">    return argsValidator.testArgs(args);</span>
+  }
+
+
+  /**
+   * Finds all stars whose distance to the star specified with the name is less than or equal to
+   * the radius given.
+   *
+   * @param r the radius given
+   * @param name the name of the star
+   * @param alos the list of stars to search through
+   * @return the list of stars within range inclusive.
+   */
+  public ArrayList&lt;Star&gt; performNaiveRadius(double r, String name, ArrayList&lt;Star&gt; alos) {
+    // If the name is empty, print an error
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">    if (name.isEmpty()) {</span>
+<span class="nc" id="L155">      System.out.println(&quot;ERROR: Empty String is not a valid name for stars&quot;);</span>
+<span class="nc" id="L156">      return new ArrayList&lt;&gt;();</span>
+    }
+
+    // If the selected star is not found, print an error
+<span class="fc" id="L160">    Optional&lt;Star&gt; selectedStar = starStorage.getStarFromMap(name);</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">    if (selectedStar.isEmpty()) {</span>
+<span class="nc" id="L162">      System.out.printf(&quot;ERROR: No Stars with name \&quot;%s\&quot; is found%n&quot;, name);</span>
+<span class="nc" id="L163">      return new ArrayList&lt;&gt;();</span>
+    }
+
+<span class="fc" id="L166">    Star presentStar = selectedStar.get();</span>
+
+<span class="fc" id="L168">    double selectedX = presentStar.getCoordinate(0);</span>
+<span class="fc" id="L169">    double selectedY = presentStar.getCoordinate(1);</span>
+<span class="fc" id="L170">    double selectedZ = presentStar.getCoordinate(2);</span>
+
+<span class="fc" id="L172">    ArrayList&lt;Star&gt; template = new ArrayList&lt;&gt;(alos);</span>
+<span class="fc" id="L173">    template.removeIf(star -&gt; star.getName().equals(name));</span>
+
+<span class="fc" id="L175">    return performNaiveRadius(r, selectedX, selectedY, selectedZ, template);</span>
+  }
+
+  /**
+   * Finds all stars whose distance to the coordinate (x, y, z) is less than or equal to
+   * the radius given.
+   *
+   * @param r    the radius given
+   * @param x    the x coordinate of the point
+   * @param y    the y coordinate of the point
+   * @param z    the z coordinate of the point
+   * @param alos the list of stars to search through
+   * @return the list of stars within range inclusive.
+   */
+  public ArrayList&lt;Star&gt; performNaiveRadius(
+      double r, double x, double y, double z, ArrayList&lt;Star&gt; alos) {
+<span class="fc" id="L191">    ArrayList&lt;Star&gt; template = new ArrayList&lt;&gt;(alos);</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">    template.removeIf(star -&gt; (star.distanceTo(Arrays.asList(x, y, z)) &gt; r));</span>
+<span class="fc" id="L193">    template.sort(Comparator.comparingDouble(star -&gt; star.distanceTo(Arrays.asList(x, y, z))));</span>
+<span class="fc" id="L194">    return template;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

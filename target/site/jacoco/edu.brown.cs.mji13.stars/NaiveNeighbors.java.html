@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NaiveNeighbors.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stars</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mji13.stars</a> &gt; <span class="el_source">NaiveNeighbors.java</span></div><h1>NaiveNeighbors.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mji13.stars;
+
+import edu.brown.cs.mji13.command.Command;
+import edu.brown.cs.mji13.validations.ArgsInformation;
+import edu.brown.cs.mji13.validations.ArgsValidator;
+import edu.brown.cs.mji13.validations.StringValFunctions;
+import edu.brown.cs.mji13.validations.StringValidation;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+
+import static java.util.Map.entry;
+
+/**
+ * Naive Neighbors Command Object for executing the &quot;naive_neighbors ...&quot; command.
+ */
+public class NaiveNeighbors implements Command, StringValFunctions {
+  /**
+   * The common data-types shared by all the stars-related commands.
+   */
+  private StarStorage starStorage;
+
+  /**
+   * Specifications on the requirements on the argument passed to the command.
+   * 2 Arguments:
+   * - neighbors: non-negative integer
+   * - name: surrounded by double quotes
+   * 4 Arguments:
+   * - neighbors: non-negative integer
+   * - x: number
+   * - y: number
+   * - z: number
+   */
+<span class="pc" id="L39">  private final Map&lt;Integer, ArgsInformation[]&gt; reqInfoMaps</span>
+<span class="pc" id="L40">      = Map.ofEntries(</span>
+<span class="pc" id="L41">      entry(2, new ArgsInformation[] {new ArgsInformation(</span>
+          &quot;naive_neighbors_2&quot;,
+          new String[] {&quot;neighbors: int &gt;= 0&quot;, &quot;\&quot;name\&quot;&quot;},
+          new StringValidation[] {this::isNonNegInt, this::isName},
+          new String[] {&quot;ERROR: Number of Neighbors must be a Positive Integer.&quot;,
+              &quot;ERROR: Name must be surrounded by double quotes.&quot;}
+      )}),
+<span class="pc" id="L48">      entry(4, new ArgsInformation[] {new ArgsInformation(</span>
+          &quot;naive_neighbors_4&quot;,
+          new String[] {&quot;neighbors: int &gt;= 0&quot;, &quot;x: number&quot;, &quot;y: number&quot;, &quot;z: number&quot;},
+          new StringValidation[] {this::isNonNegInt, this::isNumeric,
+              this::isNumeric, this::isNumeric},
+          new String[] {&quot;ERROR: Number of Neighbors must be a Positive Integer.&quot;,
+              &quot;ERROR: Coordinate X must be numeric.&quot;,
+              &quot;ERROR: Coordinate Y must be numeric.&quot;,
+              &quot;ERROR: Coordinate Z must be numeric.&quot;
+          }
+      )})
+  );
+
+  /**
+   * The argument validator for the arguments of the mock &lt;csv&gt; command.
+   */
+<span class="pc" id="L64">  private final ArgsValidator argsValidator</span>
+      = new ArgsValidator(&quot;naive_neighbors&quot;, reqInfoMaps);
+
+  /**
+   * Creates a NaiveNeighbors object.
+   *
+   * @param starStorage - the storage of relevant stars data shared by files
+   */
+<span class="fc" id="L72">  public NaiveNeighbors(StarStorage starStorage) {</span>
+<span class="fc" id="L73">    this.starStorage = starStorage;</span>
+<span class="fc" id="L74">  }</span>
+
+  /**
+   * Creates a NaiveNeighbors object.
+   */
+<span class="nc" id="L79">  public NaiveNeighbors() {</span>
+<span class="nc" id="L80">  }</span>
+
+  /**
+   * Executes the naive_neighbors Command.
+   * If successful, prints out the closest n number of stars to the specified location.
+   * &lt;p&gt;
+   * Note: TA Colton said that the randomization is meant for tiebreakers to include on the list
+   * so if there are stars with same distance away but including them does not exceed that number
+   * asked, they will be included just as normal.
+   *
+   * @param args - the list of arguments to be operated on.
+   */
+  public void execute(ArrayList&lt;String&gt; args) {
+    // If no File has been loaded, signal an error
+<span class="nc bnc" id="L94" title="All 2 branches missed.">    if (starStorage.getFileName().length() == 0) {</span>
+<span class="nc" id="L95">      System.out.println(&quot;ERROR: No file has been loaded yet&quot;);</span>
+<span class="nc" id="L96">      return;</span>
+    }
+
+    // If the arguments failed the validation check, exit out of execute.
+<span class="nc" id="L100">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
+<span class="nc" id="L102">      return;</span>
+    }
+
+    // If a valid method name has been found, then operate:
+<span class="nc" id="L106">    String methodName = opMethodName.get();</span>
+<span class="nc" id="L107">    ArrayList&lt;Star&gt; slist = starStorage.getStarsList();</span>
+<span class="nc bnc" id="L108" title="All 3 branches missed.">    switch (methodName) {</span>
+      case &quot;naive_neighbors_2&quot;:
+<span class="nc" id="L110">        int neighbors = Integer.parseInt(args.get(0));</span>
+<span class="nc" id="L111">        String sName = args.get(1);</span>
+<span class="nc" id="L112">        String sStarNoQuotes = sName.substring(1, sName.length() - 1);</span>
+<span class="nc" id="L113">        ArrayList&lt;Star&gt; starsInRange2 = performNaiveNeighbors(neighbors, sStarNoQuotes, slist);</span>
+<span class="nc" id="L114">        starsInRange2.forEach(System.out::println);</span>
+<span class="nc" id="L115">        break;</span>
+      case &quot;naive_neighbors_4&quot;:
+<span class="nc" id="L117">        int intNeighbors = Integer.parseInt(args.get(0));</span>
+<span class="nc" id="L118">        double dPosX = Double.parseDouble(args.get(1));</span>
+<span class="nc" id="L119">        double dPosY = Double.parseDouble(args.get(2));</span>
+<span class="nc" id="L120">        double dPosZ = Double.parseDouble(args.get(3));</span>
+<span class="nc" id="L121">        ArrayList&lt;Star&gt; starsInRange4 =</span>
+<span class="nc" id="L122">            performNaiveNeighbors(intNeighbors, dPosX, dPosY, dPosZ, slist);</span>
+<span class="nc" id="L123">        starsInRange4.forEach(System.out::println);</span>
+<span class="nc" id="L124">        break;</span>
+      default:
+<span class="nc" id="L126">        System.out.println(&quot;ERROR: Hashmap reqInfoMaps has unregistered names, &quot;</span>
+            + &quot;shouldn't have reached here&quot;);
+        break;
+    }
+<span class="nc" id="L130">  }</span>
+
+  /**
+   * Match the arguments given to which method (if any) the Command Object should execute.
+   *
+   * @param args the list of arguments to be operated on
+   * @return Option of String - empty if the arguments are invalid, a String if match is found.
+   */
+  public Optional&lt;String&gt; matchArgsToMethod(ArrayList&lt;String&gt; args) {
+<span class="fc" id="L139">    return argsValidator.testArgs(args);</span>
+  }
+
+  /**
+   * Finds &quot;count&quot; number of stars whose distance are closest to the star whose name is given.
+   *
+   * @param count the number of stars allowed for the list
+   * @param name  the name of the destination star
+   * @param alos  the list of stars to search through
+   * @return the list of stars from least distance to greatest within count given
+   */
+  public ArrayList&lt;Star&gt; performNaiveNeighbors(int count, String name, ArrayList&lt;Star&gt; alos) {
+    // If the name given is empty, print an error
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">    if (name.isEmpty()) {</span>
+<span class="nc" id="L153">      System.out.println(&quot;ERROR: Empty String is not a valid name for stars&quot;);</span>
+<span class="nc" id="L154">      return new ArrayList&lt;&gt;();</span>
+    }
+
+    // If the star is not found, print an error
+<span class="fc" id="L158">    Optional&lt;Star&gt; selectedStar = starStorage.getStarFromMap(name);</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">    if (selectedStar.isEmpty()) {</span>
+<span class="nc" id="L160">      System.out.printf(&quot;ERROR: No Stars with name \&quot;%s\&quot; is found%n&quot;, name);</span>
+<span class="nc" id="L161">      return new ArrayList&lt;&gt;();</span>
+    } else {
+<span class="fc" id="L163">      Star presentStar = selectedStar.get();</span>
+
+<span class="fc" id="L165">      double selectedX = presentStar.getCoordinate(0);</span>
+<span class="fc" id="L166">      double selectedY = presentStar.getCoordinate(1);</span>
+<span class="fc" id="L167">      double selectedZ = presentStar.getCoordinate(2);</span>
+
+<span class="fc" id="L169">      ArrayList&lt;Star&gt; template = new ArrayList&lt;&gt;(alos);</span>
+<span class="fc" id="L170">      template.removeIf(star -&gt; star.getName().equals(name));</span>
+
+<span class="fc" id="L172">      return performNaiveNeighbors(count, selectedX, selectedY, selectedZ, template);</span>
+    }
+  }
+
+  /**
+   * Finds &quot;count&quot; number of stars whose distance are closest coordinate (x, y, z).
+   *
+   * @param count the number of stars allowed for the list
+   * @param x     the x coordinate of the point
+   * @param y     the y coordinate of the point
+   * @param z     the z coordinate of the point
+   * @param alos  the list of stars to search through
+   * @return the list of stars from least distance to greatest within count given
+   */
+  public ArrayList&lt;Star&gt; performNaiveNeighbors(int count, double x, double y, double z,
+                                               ArrayList&lt;Star&gt; alos) {
+    // If the count is zero, return an empty list
+<span class="fc bfc" id="L189" title="All 2 branches covered.">    if (count == 0) {</span>
+<span class="fc" id="L190">      return new ArrayList&lt;&gt;();</span>
+    }
+
+<span class="fc" id="L193">    ArrayList&lt;Star&gt; template = new ArrayList&lt;&gt;(alos);</span>
+<span class="fc" id="L194">    List&lt;Double&gt; cordList = Arrays.asList(x, y, z);</span>
+<span class="fc" id="L195">    template.sort(Comparator.comparingDouble(star -&gt; star.distanceTo(cordList)));</span>
+
+    // If the number asked to return is greater than the size of the list,
+    // return the entire list
+<span class="fc bfc" id="L199" title="All 2 branches covered.">    if (count &gt;= template.size()) {</span>
+<span class="fc" id="L200">      return template;</span>
+    }
+
+<span class="fc" id="L203">    ArrayList&lt;Star&gt; truncatedStarList = new ArrayList&lt;Star&gt;();</span>
+<span class="fc" id="L204">    ArrayList&lt;Star&gt; sameValueList = new ArrayList&lt;Star&gt;();</span>
+
+    // Finds the star at the (count - 1)th position on the list and its distance
+<span class="fc" id="L207">    double distAtCount = template.get(count - 1).distanceTo(cordList);</span>
+<span class="fc" id="L208">    int whenDistStart = 0;</span>
+
+    // Add stars from the list until finding a star whose distance is the same as
+    // distAtCount
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">    for (int i = 0; i &lt; count; i++) {</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">      if (template.get(i).distanceTo(cordList) == distAtCount) {</span>
+<span class="fc" id="L214">        whenDistStart = i;</span>
+<span class="fc" id="L215">        break;</span>
+      }
+<span class="fc" id="L217">      truncatedStarList.add(template.get(i));</span>
+    }
+
+    // Find all stars whose distance is the same as distAtCount
+<span class="fc bfc" id="L221" title="All 2 branches covered.">    for (int j = whenDistStart; j &lt; template.size(); j++) {</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">      if (template.get(j).distanceTo(cordList) != distAtCount) {</span>
+<span class="fc" id="L223">        break;</span>
+      }
+<span class="fc" id="L225">      sameValueList.add(template.get(j));</span>
+    }
+
+    // Edge Case where the entire list is at the same distance and the number of stars
+    // with the same distance equals the length of the list, in that case randomization
+    // is not needed because they are used for tiebreakers when the limit exceeds.
+<span class="fc bfc" id="L231" title="All 4 branches covered.">    if ((truncatedStarList.size() == 0) &amp;&amp; (sameValueList.size() == count)) {</span>
+<span class="fc" id="L232">      return sameValueList;</span>
+    }
+
+    // randomly pick (count - whenDistStart + 1) out of the arraylist
+    // until the truncatedStarList is filled
+<span class="fc" id="L237">    Random ran = new Random();</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">    for (int k = 0; k &lt; (count - whenDistStart); k++) {</span>
+<span class="fc" id="L239">      int selected = ran.nextInt(sameValueList.size());</span>
+<span class="fc" id="L240">      truncatedStarList.add(sameValueList.remove(selected));</span>
+    }
+
+<span class="fc" id="L243">    return truncatedStarList;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

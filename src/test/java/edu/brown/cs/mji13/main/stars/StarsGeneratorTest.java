@@ -95,5 +95,5 @@ public class StarsGeneratorTest {
     assertTrue(isValid);
     tearDown();
   }
-  
+
 }

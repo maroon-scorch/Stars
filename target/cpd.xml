@@ -1,2 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd-cpd/>
+<pmd-cpd>
+   <duplication lines="23" tokens="116">
+      <file line="201"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Neighbors.java"/>
+      <file line="159"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Radius.java"/>
+      <codefragment><![CDATA[      int count, String name, KDTree<Star> tree) {
+    // If the name is empty, print an error
+    if (name.isEmpty()) {
+      System.out.println("ERROR: Empty String is not a valid name for stars");
+      return new ArrayList<>();
+    }
+
+    // If the selected star is not found, print an error
+    Optional<Star> selectedStar = starStorage.getStarFromMap(name);
+    if (selectedStar.isEmpty()) {
+      System.out.printf("ERROR: No Stars with name \"%s\" is found%n", name);
+      return new ArrayList<>();
+    }
+
+    Star presentStar = selectedStar.get();
+
+    double selectedX = presentStar.getCoordinate(0);
+    double selectedY = presentStar.getCoordinate(1);
+    double selectedZ = presentStar.getCoordinate(2);
+
+    // Calls performNeighbors in the coordinate form.
+    ArrayList<Star> resultList
+        = performNeighbors(count + 1, selectedX, selectedY, selectedZ, tree,]]></codefragment>
+   </duplication>
+   <duplication lines="21" tokens="105">
+      <file line="152"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveRadius.java"/>
+      <file line="201"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Neighbors.java"/>
+      <file line="159"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Radius.java"/>
+      <codefragment><![CDATA[  public ArrayList<Star> performNaiveRadius(double r, String name, ArrayList<Star> alos) {
+    // If the name is empty, print an error
+    if (name.isEmpty()) {
+      System.out.println("ERROR: Empty String is not a valid name for stars");
+      return new ArrayList<>();
+    }
+
+    // If the selected star is not found, print an error
+    Optional<Star> selectedStar = starStorage.getStarFromMap(name);
+    if (selectedStar.isEmpty()) {
+      System.out.printf("ERROR: No Stars with name \"%s\" is found%n", name);
+      return new ArrayList<>();
+    }
+
+    Star presentStar = selectedStar.get();
+
+    double selectedX = presentStar.getCoordinate(0);
+    double selectedY = presentStar.getCoordinate(1);
+    double selectedZ = presentStar.getCoordinate(2);
+
+    ArrayList<Star> template = new ArrayList<>(alos);]]></codefragment>
+   </duplication>
+</pmd-cpd>

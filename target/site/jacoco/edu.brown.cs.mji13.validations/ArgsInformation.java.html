@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArgsInformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stars</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mji13.validations</a> &gt; <span class="el_source">ArgsInformation.java</span></div><h1>ArgsInformation.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mji13.validations;
+
+/**
+ * ArgsInformation Object that stores values of the Information required
+ * to be passed into the ArgsValidator Object.
+ */
+public class ArgsInformation {
+  /**
+   * The uniqueName of the Method that would be returned when all tests in the list of
+   * StringValidation passes. This is the identifer used in switch cases for Commands.
+   */
+  private final String uniqueName;
+
+  /**
+   * The format of how the args would be that's printed when an error is triggered.
+   * For example, if [&quot;a: integer&quot;, &quot;b: name&quot;, &quot;c: boolean&quot;] is passed, if Error is triggered
+   * this would print something similar to:
+   * &quot;ERROR: the String arguments should be in format [a: integer] [b: name] [c: boolean].
+   */
+  private final String[] argsFormat;
+
+  /**
+   * The StringValidation methods each argument would be evaluated against,
+   * The list of arguments are considered valid when all StringValidation return true.
+   * Argument at Index 0 would be tested against Requirements at Index 0, and so on
+   */
+  private final StringValidation[] requirements;
+
+  /**
+   * The Error Message to be printed when a requirement returns false.
+   */
+  private final String[] errorMessages;
+
+  /**
+   * Creates an ArgsInformation Object, if the lengths of the three Arrays are inconsistent,
+   * raise an Error.
+   *
+   * @param uniqueName    the uniqueName of the Constructor
+   * @param argsFormat    the argsFormat of the Constructor
+   * @param requirements  the requirements of the Constructor
+   * @param errorMessages the errorMessages of the Constructor
+   */
+  public ArgsInformation(String uniqueName, String[] argsFormat, StringValidation[] requirements,
+<span class="fc" id="L44">                         String[] errorMessages) {</span>
+<span class="pc bpc" id="L45" title="2 of 4 branches missed.">    if ((requirements.length != errorMessages.length)</span>
+        || (argsFormat.length != requirements.length)) {
+<span class="nc" id="L47">      throw new IllegalArgumentException(&quot;The length of &quot;</span>
+          + &quot;Regex Requirements and Error Messages should be the same&quot;);
+    }
+<span class="fc" id="L50">    this.uniqueName = uniqueName;</span>
+<span class="fc" id="L51">    this.argsFormat = argsFormat.clone();</span>
+<span class="fc" id="L52">    this.requirements = requirements.clone();</span>
+<span class="fc" id="L53">    this.errorMessages = errorMessages.clone();</span>
+<span class="fc" id="L54">  }</span>
+
+  /**
+   * Gets the Unique Name.
+   *
+   * @return uniqueName
+   */
+  public String getUniqueName() {
+<span class="fc" id="L62">    return uniqueName;</span>
+  }
+
+  /**
+   * Gets the argsFormat.
+   *
+   * @return argsFormat
+   */
+  public String[] getArgsFormat() {
+<span class="fc" id="L71">    return argsFormat.clone();</span>
+  }
+
+  /**
+   * Gets the requirements.
+   *
+   * @return requirements
+   */
+  public StringValidation[] getRequirements() {
+<span class="fc" id="L80">    return requirements.clone();</span>
+  }
+
+  /**
+   * Gets the errorMessages.
+   *
+   * @return errorMessages
+   */
+  public String[] getErrorMessages() {
+<span class="fc" id="L89">    return errorMessages.clone();</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

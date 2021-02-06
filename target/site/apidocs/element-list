@@ -1,5 +1,6 @@
-edu.brown.cs.student.command
-edu.brown.cs.student.csvParse
-edu.brown.cs.student.people
-edu.brown.cs.student.stars
-edu.brown.cs.student.validations
+edu.brown.cs.mji13.command
+edu.brown.cs.mji13.csvParse
+edu.brown.cs.mji13.kdTree
+edu.brown.cs.mji13.people
+edu.brown.cs.mji13.stars
+edu.brown.cs.mji13.validations

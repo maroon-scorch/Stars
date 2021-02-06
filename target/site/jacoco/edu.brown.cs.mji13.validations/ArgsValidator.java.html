@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArgsValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stars</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mji13.validations</a> &gt; <span class="el_source">ArgsValidator.java</span></div><h1>ArgsValidator.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mji13.validations;
+
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * ArgsValidator Object that verifies if a list of Strings are the valid arguments
+ * based on the Map of Argument Informations it is constructed with.
+ */
+public class ArgsValidator {
+
+  /**
+   * the name of the datatype/command using the ArgsValidator.
+   */
+  private final String typeName;
+
+  /**
+   * The map of integers (the size of the arguments) to its correspond list of
+   * ArgsInformation. The reason why each Integer doesn't have just 1 ArgsInformation
+   * is because the same command can have the same number of parameters but do
+   * two different actions based on what the parameters are.
+   */
+  private final Map&lt;Integer, ArgsInformation[]&gt; reqInfoMaps;
+
+  /**
+   * Constructs the ArgsValidator.
+   *
+   * @param typeName    the typeName of the ArgsValidator
+   * @param reqInfoMaps the map of Integers to ArgsValidator of the ArgsValidator
+   */
+<span class="fc" id="L32">  public ArgsValidator(String typeName, Map&lt;Integer, ArgsInformation[]&gt; reqInfoMaps) {</span>
+<span class="fc" id="L33">    this.typeName = typeName;</span>
+<span class="fc" id="L34">    this.reqInfoMaps = reqInfoMaps;</span>
+<span class="fc" id="L35">  }</span>
+
+  /**
+   * Tests the list of arguments passed in against the list of ArgsInformation
+   * given by the size of the arguments.
+   *
+   * @param args the list of arguments
+   * @return the unique name of the ArgsInformation if the list manages to pass
+   * one of the ArgsInformation, otherwise an option of empty is given back.
+   * If no key for the args' size is found, raise an error on incorrect number of types.
+   */
+  public Optional&lt;String&gt; testArgs(ArrayList&lt;String&gt; args) {
+<span class="fc" id="L47">    int argSize = args.size();</span>
+
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">    if (reqInfoMaps.containsKey(argSize)) {</span>
+<span class="fc" id="L50">      ArgsInformation[] reqInfos = reqInfoMaps.get(argSize);</span>
+<span class="fc" id="L51">      ArrayList&lt;String&gt; errorList = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">      for (ArgsInformation reqInfo : reqInfos) {</span>
+<span class="fc" id="L53">        String error = testArgsWithReq(args, reqInfo);</span>
+        // If the test passes, meaning the error was empty
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if (error.isEmpty()) {</span>
+<span class="fc" id="L56">          return Optional.of(reqInfo.getUniqueName());</span>
+        }
+<span class="nc" id="L58">        errorList.add(error);</span>
+      }
+
+<span class="nc" id="L61">      System.out.print(String.join(&quot;&quot;, errorList));</span>
+<span class="nc" id="L62">    } else {</span>
+<span class="nc" id="L63">      System.out.println(&quot;ERROR: Incorrect number of arguments for command &quot; + typeName);</span>
+    }
+    // If all tests failed, option of empty is returned
+<span class="nc" id="L66">    return Optional.empty();</span>
+  }
+
+
+  /**
+   * Tests the list of arguments passed in against the ArgsInformation given.
+   *
+   * @param args    the list of arguments
+   * @param reqInfo the current ArgsInformation to be tested against
+   * @return the String of all the errors that occurred when failing the tests of
+   * the ArgsInformation. If all tests were passed, an empty String would be returned.
+   */
+  public String testArgsWithReq(ArrayList&lt;String&gt; args, ArgsInformation reqInfo) {
+<span class="fc" id="L79">    int argSize = args.size();</span>
+<span class="fc" id="L80">    String[] argsFormat = reqInfo.getArgsFormat();</span>
+<span class="fc" id="L81">    StringValidation[] requirements = reqInfo.getRequirements();</span>
+<span class="fc" id="L82">    String[] errorMessages = reqInfo.getErrorMessages();</span>
+
+<span class="fc" id="L84">    String errorMsgToRaise = &quot;&quot;;</span>
+
+    // For each argument and the StringValidation test is corresponds
+    // test the argument against the StringValidation
+<span class="fc bfc" id="L88" title="All 2 branches covered.">    for (int i = 0; i &lt; argSize; i++) {</span>
+<span class="fc" id="L89">      String currentArg = args.get(i);</span>
+<span class="fc" id="L90">      StringValidation currentReq = requirements[i];</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">      if (!currentReq.validate(currentArg)) {</span>
+<span class="fc" id="L92">        errorMsgToRaise += &quot;ERROR: The value &quot; + currentArg</span>
+            + &quot; is malformed\n&quot; + errorMessages[i] + &quot;\n&quot;;
+      }
+    }
+
+    // The Error Message is not empty, add some general layers of error messages
+    // around the Error Message
+<span class="fc bfc" id="L99" title="All 2 branches covered.">    if (!errorMsgToRaise.isEmpty()) {</span>
+<span class="fc" id="L100">      errorMsgToRaise = &quot;ERROR:----------------------------------------------\n&quot;</span>
+          + &quot;ERROR: If you are trying to use the following format: &quot; + typeName
+<span class="fc" id="L102">          + &quot; &lt;&quot; + String.join(&quot;&gt; &lt;&quot;, argsFormat)</span>
+          + &quot;&gt;,\n&quot; + &quot;ERROR: then the following errors occurred:\n&quot;
+          + errorMsgToRaise
+          + &quot;ERROR:----------------------------------------------\n&quot;;
+    }
+
+<span class="fc" id="L108">    return errorMsgToRaise;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

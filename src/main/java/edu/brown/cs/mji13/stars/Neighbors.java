@@ -16,6 +16,9 @@ import java.util.Random;
 
 import static java.util.Map.entry;
 
+/**
+ * Neighbors Command Object for executing the "neighbors ..." command.
+ */
 public class Neighbors implements Command, StringValFunctions {
 
   /**

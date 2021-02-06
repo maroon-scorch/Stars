@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UpdateStarFile.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">stars</a> &gt; <a href="index.source.html" class="el_package">edu.brown.cs.mji13.stars</a> &gt; <span class="el_source">UpdateStarFile.java</span></div><h1>UpdateStarFile.java</h1><pre class="source lang-java linenums">package edu.brown.cs.mji13.stars;
+
+import edu.brown.cs.mji13.command.Command;
+import edu.brown.cs.mji13.csvParse.CSVParser;
+import edu.brown.cs.mji13.validations.ArgsInformation;
+import edu.brown.cs.mji13.validations.ArgsValidator;
+import edu.brown.cs.mji13.validations.StringValFunctions;
+import edu.brown.cs.mji13.validations.StringValidation;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+
+import static java.util.Map.entry;
+
+/**
+ * Stars Command Object for executing the &quot;stars filepath&quot; command.
+ */
+public class UpdateStarFile implements Command, StringValFunctions {
+
+  /**
+   * The common data-types shared by all the stars-related commands.
+   */
+  private StarStorage starStorage;
+
+  /**
+   * The parser to handle parsing of the CSV File.
+   */
+<span class="pc" id="L30">  private final CSVParser parser = new CSVParser();</span>
+
+  /**
+   * Expected Headers of the CSV File.
+   */
+<span class="pc" id="L35">  private final String[] expectedHeaders = {&quot;StarID&quot;, &quot;ProperName&quot;, &quot;X&quot;, &quot;Y&quot;, &quot;Z&quot;};</span>
+
+  /**
+   * Specifications on the requirements on the argument passed to the command.
+   * filepath - any string.
+   */
+<span class="pc" id="L41">  private final Map&lt;Integer, ArgsInformation[]&gt; reqInfoMaps = Map.ofEntries(</span>
+<span class="pc" id="L42">      entry(1, new ArgsInformation[] {new ArgsInformation(</span>
+          &quot;stars_1&quot;,
+          new String[] {&quot;filepath: any&quot;},
+          new StringValidation[] {this::pass},
+          new String[] {&quot;ERROR: Filepath can be any string&quot;}
+      )}));
+
+  /**
+   * The argument validator for the arguments of the star filepath command.
+   */
+<span class="pc" id="L52">  private final ArgsValidator argsValidator</span>
+      = new ArgsValidator(&quot;stars&quot;, reqInfoMaps);
+
+  /**
+   * Specifications on the requirements on the argument of CSV to be valid to pass to stars
+   * starID - any String
+   * starName - any String
+   * x - numeric
+   * y - numeric
+   * z - numeric.
+   */
+<span class="pc" id="L63">  private final Map&lt;Integer, ArgsInformation[]&gt; starDataValidation</span>
+<span class="pc" id="L64">      = Map.ofEntries(</span>
+<span class="pc" id="L65">      entry(5, new ArgsInformation[] {new ArgsInformation(</span>
+          &quot;star_x_y_z&quot;,
+          new String[] {&quot;starID: any string&quot;, &quot;starName: any string&quot;, &quot;x: number&quot;,
+              &quot;y: number&quot;, &quot;z: number&quot;},
+          new StringValidation[] {this::pass, this::pass, this::isNumeric, this::isNumeric,
+              this::isNumeric},
+          new String[] {&quot;ERROR: Star ID of row is malformed&quot;,
+              &quot;ERROR: Proper Name of row is malformed&quot;,
+              &quot;ERROR: Coordinate X of row must be numeric.&quot;,
+              &quot;ERROR: Coordinate Y of row must be numeric.&quot;,
+              &quot;ERROR: Coordinate Z of row must be numeric.&quot;
+          }
+      )}));
+
+  /**
+   * The argument validator for the arguments of the stars filepath command.
+   */
+<span class="pc" id="L82">  private final ArgsValidator starsValidator</span>
+      = new ArgsValidator(&quot;star:&quot;, starDataValidation);
+
+  /**
+   * Creates a UpdateStarFile object.
+   *
+   * @param starStorage - the storage of relevant stars data shared by files
+   */
+  public UpdateStarFile(
+<span class="nc" id="L91">      StarStorage starStorage) {</span>
+<span class="nc" id="L92">    this.starStorage = starStorage;</span>
+<span class="nc" id="L93">  }</span>
+
+  /**
+   * Creates an empty UpdateStarFile object.
+   */
+<span class="fc" id="L98">  public UpdateStarFile() {</span>
+<span class="fc" id="L99">  }</span>
+
+  /**
+   * Executes the stars Command.
+   * If successful, prints out every line of the MockPerson converted in String.
+   *
+   * @param args - the list of arguments to be operated on
+   */
+  public void execute(ArrayList&lt;String&gt; args) {
+<span class="nc" id="L108">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
+<span class="nc" id="L110">      return;</span>
+    }
+
+<span class="nc" id="L113">    String filepath = args.get(0);</span>
+<span class="nc" id="L114">    ArrayList&lt;Star&gt; tempStarsList = new ArrayList&lt;Star&gt;();</span>
+<span class="nc" id="L115">    boolean isSuccessful =</span>
+<span class="nc" id="L116">        parser.parse(filepath, tempStarsList, expectedHeaders, this::lineToStar);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">    if (isSuccessful) {</span>
+      // If parsing was successful, update the starsList and the currentFile name
+<span class="nc" id="L119">      starStorage.setList(tempStarsList);</span>
+<span class="nc" id="L120">      starStorage.setListToTree(tempStarsList);</span>
+<span class="nc" id="L121">      starStorage.setListToStarsMap(tempStarsList);</span>
+<span class="nc" id="L122">      starStorage.setName(filepath);</span>
+<span class="nc" id="L123">      System.out.printf(&quot;Read %d stars from %s%n&quot;, tempStarsList.size(), filepath);</span>
+    }
+<span class="nc" id="L125">  }</span>
+
+  /**
+   * Match the arguments given to which method (if any) the Command Object should execute,
+   * normally a switch case would handle the methodName to the execution of the method,
+   * but since Stars only has 1 method, this is a check for argument validation.
+   *
+   * @param args the list of arguments to be operated on
+   * @return Option of String - empty if the arguments are invalid, a String if match is found.
+   */
+  public Optional&lt;String&gt; matchArgsToMethod(ArrayList&lt;String&gt; args) {
+<span class="fc" id="L136">    return argsValidator.testArgs(args);</span>
+  }
+
+  /**
+   * Given a line of the CSV File, converts it into a MockPerson object.
+   *
+   * @param line - the line of the file
+   * @return Star if no errors or illegal arguments were present.
+   */
+  public Star lineToStar(String line) {
+<span class="fc" id="L146">    String[] starArgsArray = line.split(&quot;,&quot;);</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">    if (starArgsArray.length != 5) {</span>
+<span class="nc" id="L148">      throw new IllegalArgumentException(&quot;The file's rows are malformed, &quot;</span>
+          + &quot;they have inconsistent number of entries per row&quot;);
+    }
+
+    // Check to see if the arguments are valid
+    // ie. first two fields are string and the last three are numeric
+<span class="fc" id="L154">    ArrayList&lt;String&gt; stringArgs = new ArrayList&lt;&gt;(Arrays.asList(starArgsArray));</span>
+<span class="fc" id="L155">    Optional&lt;String&gt; opMethodName = starsValidator.testArgs(stringArgs);</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
+<span class="nc" id="L157">      throw new IllegalArgumentException(&quot;ERROR: The fields of the row does not&quot;</span>
+          + &quot;match the specifications of stars&quot;);
+    }
+
+    // Adding the coordinates together as an ArrayList
+<span class="fc" id="L162">    double xPos = Double.parseDouble(starArgsArray[2]);</span>
+<span class="fc" id="L163">    double yPos = Double.parseDouble(starArgsArray[3]);</span>
+<span class="fc" id="L164">    double zPos = Double.parseDouble(starArgsArray[4]);</span>
+
+<span class="fc" id="L166">    ArrayList&lt;Double&gt; coordinates = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L167">    coordinates.add(xPos);</span>
+<span class="fc" id="L168">    coordinates.add(yPos);</span>
+<span class="fc" id="L169">    coordinates.add(zPos);</span>
+
+<span class="fc" id="L171">    return new Star(starArgsArray[0],</span>
+        starArgsArray[1],
+        coordinates);
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
