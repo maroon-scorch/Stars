@@ -125,6 +125,18 @@ the space partitioning method would wary as well.
 
 2. Your k-d tree supports most of the methods required by the Collection interface. What would you have to add/change to make code like "Collection<Star> db = new KDTree<Star>()" compile and work properly?
 
+In order for an object to become part of the Collections' interface, it must have to ability to insert and delete elements from the collection, have the ability to know if a given object is in its collection, the ability to signal information about itself such as size, emptiness, etc, the ability to be converted to Arrays, and finally equals and hascodes. First and foremost, addition is relatively easy. Whenever adding an element in, my KD Tree could just compare with the element's corresponding coordinate at each level and determine where to send the element down until eventually it reaches a leaf node and settles. AddAll would then be iterating through a iterable of these objects and adding them one at a time. 
+
+Deletion would be quite tricky, on the other hand because the KD Tree has to maintain its directions and space partitioning while being able to remove said element. A simple, albeit costly way, to implement this is to store the original ArrayList passed into my KD Tree, so whenever a request is asked to delete a Node, the corresponding point on the ArrayList is removed, then the KD Tree would just build a new Tree based on the edited ArrayList. For RemoveAll, we also work with the ArrayList first, after all desired elements has been removed from the ArrayList, then we reconstruct the list.
+
+Then, for the ability to know if an Object is in its collection, the KD Tree would need a search through all nodes of the tree and to compare each Node with the target. ContainsAll would work the same in principle by iteratively searching through the tree again.
+
+For the ability to signal information about itself such as size and emptiness. These are all relatively straight forward, and one only needs to check the private variables already stored to return them.
+
+For turning the Collection into an Array, albeit turning a tree into an Array is quite unintuitive, we could follow either an inorder, postorder, or preorder traversal of all the nodes to concatenate them into an Array.
+
+Finally, for Equals and Hashcodes,for Equality a KD Tree is the same to another if and only if they contain the same nodes in the same exact order, and the Hashcode can be made from the combination of the individual nodes' hashcodes accordingly.
+
 ### Stars1 Questions:
 1. Suppose that in addition to the commands specified in Command Line/REPL Specification, you wanted to support 10+ more commands. How would you change your code - particularly your REPL parsing - to do this? Don't worry about specific algorithmic details; we're interested in the higher-level design.
 
