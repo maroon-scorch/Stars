@@ -9,6 +9,7 @@ import edu.brown.cs.mji13.validations.StringValidation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -155,6 +156,19 @@ public class Neighbors implements Command, StringValFunctions {
     boolean filterName = name.isPresent();
     // Setup for findNearestNeighbors from the KD Tree
     List<Double> cordsList = Arrays.asList(x, y, z);
+
+    if (count >= tree.rootSize()) {
+      ArrayList<Star> starsList = starStorage.getStarsList();
+      if (filterName) {
+        String pName = name.get();
+        starsList.removeIf(star -> star.getName().equals(pName));
+        starsList.sort(Comparator.comparingDouble(star -> star.distanceTo(cordsList)));
+        return starsList;
+      }
+      starsList.sort(Comparator.comparingDouble(star -> star.distanceTo(cordsList)));
+      return starsList;
+    }
+
     ArrayList<Star> resultList = tree.findNearestNeighbors(count, cordsList);
 
     // If we are removing the name, then proceed to remove the star with said name from
