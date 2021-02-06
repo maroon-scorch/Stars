@@ -1,4 +1,4 @@
-package edu.brown.cs.mji13.main;
+package edu.brown.cs.mji13.main.stars;
 
 import edu.brown.cs.mji13.stars.Star;
 import edu.brown.cs.mji13.stars.UpdateStarFile;

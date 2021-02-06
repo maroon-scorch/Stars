@@ -118,7 +118,7 @@ public class KDTree<T extends HasCoordinates> {
    * @param template    - the ArrayList of items to be updated on during Recursion
    * @param currentNode - the currentNode being recurred on
    */
-  public void radiusHelper(double radius, List<Double> cords, int level,
+  private void radiusHelper(double radius, List<Double> cords, int level,
                            ArrayList<T> template, KDNode<T> currentNode) {
     // If the current item is null (empty node) then break
     T currentItem = currentNode.getItem();
@@ -202,8 +202,9 @@ public class KDTree<T extends HasCoordinates> {
    * @param tiedList    - the list of tied items to the first element of the Queue
    * @param currentNode - the currentNode being recurred on
    */
-  public void neighborsHelper(int count, List<Double> cords, int level, PriorityQueue<T> itemQueue,
-                              ArrayList<T> tiedList, KDNode<T> currentNode) {
+  private void neighborsHelper(int count, List<Double> cords, int level,
+                               PriorityQueue<T> itemQueue, ArrayList<T> tiedList,
+                               KDNode<T> currentNode) {
     // If the node is an empty node, break out of the current function call.
     T currentItem = currentNode.getItem();
     if (currentItem == null) {

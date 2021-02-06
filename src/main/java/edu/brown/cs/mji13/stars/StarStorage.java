@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Stars Storage Object for storing common datatypes shared between all stars commands.
@@ -113,6 +114,15 @@ public class StarStorage {
       return Optional.of(starsMap.get(name));
     }
     return Optional.empty();
+  }
+
+  /**
+   * Returns the set of all names stored.
+   *
+   * @return the set of all names stored.
+   */
+  public Set<String> getStarNames() {
+    return starsMap.keySet();
   }
 
   /**

@@ -1,4 +1,4 @@
-package edu.brown.cs.mji13.main;
+package edu.brown.cs.mji13.main.validaitons;
 
 import edu.brown.cs.mji13.validations.ArgsInformation;
 import edu.brown.cs.mji13.validations.ArgsValidator;

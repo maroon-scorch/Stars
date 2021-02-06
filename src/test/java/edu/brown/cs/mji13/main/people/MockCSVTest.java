@@ -1,4 +1,4 @@
-package edu.brown.cs.mji13.main;
+package edu.brown.cs.mji13.main.people;
 
 import edu.brown.cs.mji13.people.MockPerson;
 import edu.brown.cs.mji13.people.MockCSV;

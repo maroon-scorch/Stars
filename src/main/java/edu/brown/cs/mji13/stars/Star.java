@@ -62,6 +62,15 @@ public class Star implements StringValFunctions, HasCoordinates {
   }
 
   /**
+   * Returns the entire coordinate list.
+   *
+   * @return the arrayList of doubles.
+   */
+  public ArrayList<Double> getCoordinates() {
+    return coordinates;
+  }
+
+  /**
    * Gets the distance of the star to a coordinate given.
    *
    * @param cords - the Coordinate given

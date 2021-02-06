@@ -1,4 +1,4 @@
-package edu.brown.cs.mji13.main;
+package edu.brown.cs.mji13.main.stars;
 
 import edu.brown.cs.mji13.stars.Star;
 import org.junit.Test;
@@ -29,6 +29,30 @@ public class StarTest {
     assertEquals(star1.distanceTo(Arrays.asList(-1.0, 2.0, -3.0)), 7.6811, 0.01);
     // Distance to Zero
     assertEquals(star1.distanceTo(Arrays.asList(0.0, 0.0, 0.0)), 5.38516, 0.01);
+  }
+
+  /**
+   ** Tests the numDimensions Method of Star
+   */
+  @Test
+  public void testStarDim() {
+    ArrayList<Double> starCords = new ArrayList<>();
+    starCords.add(2.0);
+    starCords.add(3.0);
+    starCords.add(4.0);
+
+    Star star1 = new Star("Abc", "My life is a joke", starCords);
+    assertEquals(star1.numDimensions(), 3);
+
+    starCords.add(5.7);
+    starCords.add(4.6);
+    Star star2 = new Star("A", "A", starCords);
+    assertEquals(star2.numDimensions(), 5);
+
+    starCords.clear();
+    starCords.add(1.1);
+    Star star3 = new Star("A--", "A", starCords);
+    assertEquals(star3.numDimensions(), 1);
   }
 
   /**

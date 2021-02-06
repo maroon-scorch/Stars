@@ -12,3 +12,4 @@ edu\brown\cs\mji13\stars\Main$FrontHandler.class
 edu\brown\cs\mji13\people\MockCSV.class
 edu\brown\cs\mji13\stars\Main$ExceptionPrinter.class
 edu\brown\cs\mji13\people\MockPerson.class
+edu\brown\cs\mji13\stars\StarsGenerator.class
