@@ -9,7 +9,6 @@ import edu.brown.cs.mji13.validations.StringValidation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -157,18 +156,7 @@ public class Neighbors implements Command, StringValFunctions {
     // Setup for findNearestNeighbors from the KD Tree
     List<Double> cordsList = Arrays.asList(x, y, z);
 
-    if (count >= tree.rootSize()) {
-      ArrayList<Star> starsList = starStorage.getStarsList();
-      if (filterName) {
-        String pName = name.get();
-        starsList.removeIf(star -> star.getName().equals(pName));
-        starsList.sort(Comparator.comparingDouble(star -> star.distanceTo(cordsList)));
-        return starsList;
-      }
-      starsList.sort(Comparator.comparingDouble(star -> star.distanceTo(cordsList)));
-      return starsList;
-    }
-
+    // Invokes the findNearestNeighbors method of the KD Tree
     ArrayList<Star> resultList = tree.findNearestNeighbors(count, cordsList);
 
     // If we are removing the name, then proceed to remove the star with said name from
@@ -182,6 +170,14 @@ public class Neighbors implements Command, StringValFunctions {
     // If the size of the resultlist is the same as the count, then there are no ties,
     // so we can safely return the list.
     if (resultList.size() == count) {
+      return resultList;
+    }
+
+    if (count >= tree.rootSize()) {
+      if (filterName) {
+        String pName = name.get();
+        resultList.removeIf(star -> star.getName().equals(pName));
+      }
       return resultList;
     }
 

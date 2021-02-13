@@ -1,0 +1,24 @@
+input[type="number"] {
+  width: 3em;
+}
+
+/*body {*/
+/*  background: rgb(238,174,202);*/
+/*  background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,183,233,1) 100%);*/
+/*}*/
+
+/*.autocorrect-wrapper {*/
+/*  margin-top: 12rem;*/
+/*  text-align: center;*/
+/*}*/
+
+/*.autocorrect {*/
+/*  display: inline-block;*/
+/*  background: white;*/
+/*  padding: 4rem;*/
+/*  filter: drop-shadow(5px 5px 5px #000000);*/
+/*}*/
+
+/*.suggestions {*/
+/*  white-space: pre-line*/
+/*}*/

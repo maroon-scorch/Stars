@@ -88,10 +88,13 @@ public final class Main {
    * Handle requests to the front page of our Stars website.
    */
   private static class FrontHandler implements TemplateViewRoute {
+    String msg = "hhhhhhhhhhh";
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables = ImmutableMap.of("title",
-          "Stars: Query the database");
+      Map<String, Object> variables = ImmutableMap.of(
+          "title", "Stars: Query the database",
+          "message", msg
+      );
       return new ModelAndView(variables, "query.ftl");
     }
   }

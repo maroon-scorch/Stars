@@ -119,7 +119,7 @@ public class KDTree<T extends HasCoordinates> {
    * @param currentNode - the currentNode being recurred on
    */
   private void radiusHelper(double radius, List<Double> cords, int level,
-                           ArrayList<T> template, KDNode<T> currentNode) {
+                            ArrayList<T> template, KDNode<T> currentNode) {
     // If the current item is null (empty node) then break
     T currentItem = currentNode.getItem();
     if (currentItem == null) {
@@ -176,6 +176,7 @@ public class KDTree<T extends HasCoordinates> {
     // coordinate is the first element of the queue.
     PriorityQueue<T> maxItemQueue = new PriorityQueue<T>((T item1, T item2)
         -> Double.compare(item2.distanceTo(cords), item1.distanceTo(cords)));
+
     // The ArrayList storing all the tied stars.
     ArrayList<T> tiedList = new ArrayList<>();
 

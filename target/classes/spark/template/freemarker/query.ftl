@@ -14,5 +14,7 @@
 </form>
 </p>
 
+  <p>${message}</p>
+
 </#assign>
 <#include "main.ftl">
