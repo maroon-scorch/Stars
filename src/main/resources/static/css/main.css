@@ -1,23 +1,49 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 input[type="number"] {
   width: 3em;
 }
 
-/*body {*/
-/*  background: rgb(238,174,202);*/
-/*  background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,183,233,1) 100%);*/
+/*html {*/
+/*  height: 100%;*/
 /*}*/
 
-/*.autocorrect-wrapper {*/
-/*  margin-top: 12rem;*/
-/*  text-align: center;*/
-/*}*/
+body[class="light"] {
+  --scene-color: linear-gradient(315deg, #f9ea8f 0%, #aff1da 74%);
 
-/*.autocorrect {*/
-/*  display: inline-block;*/
-/*  background: white;*/
-/*  padding: 4rem;*/
-/*  filter: drop-shadow(5px 5px 5px #000000);*/
-/*}*/
+}
+
+body[class="dark"] {
+  --scene-color: linear-gradient(to bottom, #141852, #1f1d58, #29225f, #332865, #3c2d6c,
+  #463271, #503775, #593c7a, #65437d, #704a81, #7b5184, #855988);
+}
+
+.scene {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background-image: var(--scene-color);
+  /*display:block;*/
+  /*z-index: -1;*/
+}
+
+.query-wrapper {
+  margin-top: 12rem;
+  text-align: center;
+}
+
+.query {
+  display: inline-block;
+  background: white;
+  padding: 4rem;
+  filter: drop-shadow(5px 5px 5px #000000);
+}
 
 /*.suggestions {*/
 /*  white-space: pre-line*/

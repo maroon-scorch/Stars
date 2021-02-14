@@ -23,23 +23,6 @@ import static java.util.Map.entry;
  */
 public class REPLRunner {
   /**
-   * The common data-types shared by all the stars-related commands.
-   */
-  private final StarStorage starStorage = new StarStorage("storage");
-
-  /**
-   * The Hashmap of String Keys to which Command Object they correspond to.
-   */
-  private final Map<String, Command> commandMap = Map.ofEntries(
-      entry("stars", new UpdateStarFile(starStorage)),
-      entry("naive_radius", new NaiveRadius(starStorage)),
-      entry("naive_neighbors", new NaiveNeighbors(starStorage)),
-      entry("radius", new Radius(starStorage)),
-      entry("neighbors", new Neighbors(starStorage)),
-      entry("mock", new MockCSV())
-  );
-
-  /**
    * Constructs an empty REPLRunner.
    */
   public REPLRunner() {
@@ -47,8 +30,11 @@ public class REPLRunner {
 
   /**
    * Runs the REPLRunner that takes in each line and executes them.
+   *
+   * @param commandMap - a Hashmap of keywords (name of Command) to Commands, serves as
+   *                   the dictionary of commands available to the REPL.
    */
-  public void run() {
+  public void run(Map<String, Command> commandMap) {
     try (BufferedReader reader = new BufferedReader(
         new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
       String input;

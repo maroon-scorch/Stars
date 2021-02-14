@@ -1,4 +1,6 @@
 <#assign content>
+<div class="query-wrapper">
+  <div class="query">
 
 <h1> Query </h1>
 
@@ -14,7 +16,15 @@
 </form>
 </p>
 
+  <form>
+    Light/Dark
+    <input type="submit">
+  </form>
+
   <p>${message}</p>
+
+  </div>
+</div>
 
 </#assign>
 <#include "main.ftl">

@@ -6,7 +6,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
 
+import edu.brown.cs.mji13.command.Command;
 import edu.brown.cs.mji13.command.REPLRunner;
+import edu.brown.cs.mji13.people.MockCSV;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
@@ -21,12 +23,31 @@ import com.google.common.collect.ImmutableMap;
 
 import freemarker.template.Configuration;
 
+import static java.util.Map.entry;
+
 /**
  * The Main class of our project. This is where execution begins.
  */
 public final class Main {
 
   private static final int DEFAULT_PORT = 4567;
+
+  /**
+   * The common data-types shared by all the stars-related commands.
+   */
+  private final StarStorage starStorage = new StarStorage("storage");
+
+  /**
+   * The Hashmap of String Keys to which Command Object they correspond to.
+   */
+  private final Map<String, Command> commandMap = Map.ofEntries(
+      entry("stars", new UpdateStarFile(starStorage)),
+      entry("naive_radius", new NaiveRadius(starStorage)),
+      entry("naive_neighbors", new NaiveNeighbors(starStorage)),
+      entry("radius", new Radius(starStorage)),
+      entry("neighbors", new Neighbors(starStorage)),
+      entry("mock", new MockCSV())
+  );
 
   /**
    * The initial method called when execution begins.
@@ -57,7 +78,7 @@ public final class Main {
 
     // Creates the REPL Runner and stars the loop
     REPLRunner runner = new REPLRunner();
-    runner.run();
+    runner.run(commandMap);
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -82,13 +103,31 @@ public final class Main {
 
     // Setup Spark Routes
     Spark.get("/stars", new FrontHandler(), freeMarker);
+    Spark.get("/neighbors", new NeighborsHandler(), freeMarker);
   }
 
   /**
    * Handle requests to the front page of our Stars website.
    */
   private static class FrontHandler implements TemplateViewRoute {
-    String msg = "hhhhhhhhhhh";
+    String msg = "";
+
+    @Override
+    public ModelAndView handle(Request req, Response res) {
+      Map<String, Object> variables = ImmutableMap.of(
+          "title", "Stars: Query the database",
+          "message", msg
+      );
+      return new ModelAndView(variables, "query.ftl");
+    }
+  }
+
+  /**
+   *
+   */
+  private static class NeighborsHandler implements TemplateViewRoute {
+    String msg = "HAAAAAAAAAAAAAAAAAA";
+
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables = ImmutableMap.of(

@@ -1,0 +1,17 @@
+.theme-selection {
+    position:absolute;
+    bottom:1rem;
+    left:1rem;
+}
+
+.theme-left, .theme-right {
+    color: white;
+    font-size: 2.5rem;
+    background: none;
+    border: none;
+    outline: none;
+}
+
+.theme-left:hover, .theme-right:hover{
+    color: pink;
+}
