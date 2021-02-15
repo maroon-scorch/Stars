@@ -8,6 +8,7 @@ import java.util.Map;
 
 import edu.brown.cs.mji13.command.Command;
 import edu.brown.cs.mji13.command.REPLRunner;
+import edu.brown.cs.mji13.gui.CommandHandler;
 import edu.brown.cs.mji13.people.MockCSV;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -77,8 +78,8 @@ public final class Main {
     }
 
     // Creates the REPL Runner and stars the loop
-    REPLRunner runner = new REPLRunner();
-    runner.run(commandMap);
+    REPLRunner runner = new REPLRunner(commandMap);
+    runner.run();
   }
 
   private static FreeMarkerEngine createEngine() {
@@ -103,14 +104,15 @@ public final class Main {
 
     // Setup Spark Routes
     Spark.get("/stars", new FrontHandler(), freeMarker);
-    Spark.get("/neighbors", new NeighborsHandler(), freeMarker);
+    Spark.get("/neighbors", new CommandHandler.NeighborsHandler(), freeMarker);
+    Spark.get("/radius", new CommandHandler.RadiusHandler(commandMap), freeMarker);
   }
 
   /**
    * Handle requests to the front page of our Stars website.
    */
   private static class FrontHandler implements TemplateViewRoute {
-    String msg = "";
+    String msg = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
     @Override
     public ModelAndView handle(Request req, Response res) {
@@ -122,21 +124,7 @@ public final class Main {
     }
   }
 
-  /**
-   *
-   */
-  private static class NeighborsHandler implements TemplateViewRoute {
-    String msg = "HAAAAAAAAAAAAAAAAAA";
 
-    @Override
-    public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables = ImmutableMap.of(
-          "title", "Stars: Query the database",
-          "message", msg
-      );
-      return new ModelAndView(variables, "query.ftl");
-    }
-  }
 
   /**
    * Display an error page when an exception occurs in the server.

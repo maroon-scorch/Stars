@@ -10,21 +10,32 @@
 </form>
 </p>
 
-<p> by radius
+<p> by radius coordinates
 <form method="GET" action="/radius">
+      Radius
+      <input type="text" name="radius-input">
+      X Coordinate
+      <input type="text" name="x-input">
+      Y Coordinate
+      <input type="text" name="y-input">
+      Z Coordinate
+      <input type="text" name="z-input">
   <input type="submit">
 </form>
 </p>
 
-  <form>
-    Light/Dark
-    <input type="submit">
-  </form>
+<p> by radius name
+<form method="GET" action="/radius">
+  Radius
+  <input type="text" name="radius-input">
+  Name of Star
+  <input type="text" name="name-input">
+          <input type="submit">
+</form>
+</p>
 
   <p>${message}</p>
-
   </div>
 </div>
-
 </#assign>
 <#include "main.ftl">

@@ -23,18 +23,26 @@ import static java.util.Map.entry;
  */
 public class REPLRunner {
   /**
-   * Constructs an empty REPLRunner.
+   * The map of keywords to the specific Command Object to execute.
+   *
    */
-  public REPLRunner() {
+  private final Map<String, Command> commandMap;
+
+  /**
+   * Constructs an empty REPLRunner.
+   *
+   * @param commandMap - a Hashmap of keywords (name of Command) to Commands, serves as
+   *                   the dictionary of commands available to the REPL.
+   */
+  public REPLRunner(Map<String, Command> commandMap) {
+    this.commandMap = commandMap;
   }
 
   /**
    * Runs the REPLRunner that takes in each line and executes them.
    *
-   * @param commandMap - a Hashmap of keywords (name of Command) to Commands, serves as
-   *                   the dictionary of commands available to the REPL.
    */
-  public void run(Map<String, Command> commandMap) {
+  public void run() {
     try (BufferedReader reader = new BufferedReader(
         new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
       String input;
