@@ -21,4 +21,10 @@ public interface Command {
    * @return Optional of Empty is Arguments are Invalid, some String if method is found
    */
   Optional<String> matchArgsToMethod(ArrayList<String> args);
+
+  boolean hasErrorOccurred();
+
+  ArrayList<String> getMessages();
+
+  void clearMessage();
 }

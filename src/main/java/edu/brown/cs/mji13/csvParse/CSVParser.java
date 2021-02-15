@@ -17,6 +17,8 @@ import java.util.ArrayList;
  */
 public class CSVParser {
 
+  private final ArrayList<String> messages = new ArrayList<>();
+
   /**
    * Creates an Empty CSVParser object.
    */
@@ -41,7 +43,8 @@ public class CSVParser {
       String[] expectedHeaders,
       LineConverter<T> lineConverter) {
 
-    // Clears the Template first and sets up the Path
+    // Clears the Template and Message first and sets up the Path
+    messages.clear();
     template.clear();
     Path path = Paths.get(filepath);
 
@@ -66,18 +69,25 @@ public class CSVParser {
       }
 
     } catch (FileNotFoundException e) {
-      System.out.printf("ERROR: File %s does not exist.%n", filepath);
+      messages.add(String.format("ERROR: File %s does not exist", filepath));
+      // System.out.printf("ERROR: File %s does not exist.%n", filepath);
       return false;
     } catch (IOException e) {
-      System.out.println("ERROR: File Name/Path/Content is not valid");
+      messages.add("ERROR: File Name/Path/Content is not valid");
+      // System.out.println("ERROR: File Name/Path/Content is not valid");
       template.clear();
       return false;
     } catch (Exception e) {
-      System.out.println("ERROR: " + e.getMessage());
+      messages.add("ERROR: " + e.getMessage());
+      // System.out.println("ERROR: " + e.getMessage());
       template.clear();
       return false;
     }
 
     return true;
+  }
+
+  public ArrayList<String> getMessages() {
+    return new ArrayList<>(messages);
   }
 }

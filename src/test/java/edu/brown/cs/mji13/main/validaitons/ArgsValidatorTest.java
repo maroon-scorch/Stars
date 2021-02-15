@@ -126,7 +126,7 @@ public class ArgsValidatorTest implements StringValFunctions{
         "ERROR: then the following errors occurred:\n" +
         "ERROR: The value 6.6 is malformed\n" +
         "ERROR: Name must be surrounded by double quotes.\n" +
-        "ERROR:----------------------------------------------\n");
+        "ERROR:----------------------------------------------");
   }
 
 

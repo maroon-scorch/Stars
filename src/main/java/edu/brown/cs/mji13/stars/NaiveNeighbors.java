@@ -26,6 +26,13 @@ public class NaiveNeighbors implements Command, StringValFunctions {
   private StarStorage starStorage;
 
   /**
+   * The list of messages the command line accumulates during its execution.
+   * And the boolean errorOccurred.
+   */
+  private ArrayList<String> messages = new ArrayList<>();
+  private boolean errorOccurred = false;
+
+  /**
    * Specifications on the requirements on the argument passed to the command.
    * 2 Arguments:
    * - neighbors: non-negative integer
@@ -92,13 +99,16 @@ public class NaiveNeighbors implements Command, StringValFunctions {
   public void execute(ArrayList<String> args) {
     // If no File has been loaded, signal an error
     if (starStorage.getFileName().length() == 0) {
-      System.out.println("ERROR: No file has been loaded yet");
+      errorOccurred = true;
+      messages.add("ERROR: No file has been loaded yet");
       return;
     }
 
     // If the arguments failed the validation check, exit out of execute.
     Optional<String> opMethodName = matchArgsToMethod(args);
     if (opMethodName.isEmpty()) {
+      errorOccurred = true;
+      messages.add(argsValidator.getErrorMessage());
       return;
     }
 
@@ -111,7 +121,8 @@ public class NaiveNeighbors implements Command, StringValFunctions {
         String sName = args.get(1);
         String sStarNoQuotes = sName.substring(1, sName.length() - 1);
         ArrayList<Star> starsInRange2 = performNaiveNeighbors(neighbors, sStarNoQuotes, slist);
-        starsInRange2.forEach(System.out::println);
+        // starsInRange2.forEach(System.out::println);
+        starsInRange2.forEach((str) -> messages.add(str.getStarID()));
         break;
       case "naive_neighbors_4":
         int intNeighbors = Integer.parseInt(args.get(0));
@@ -120,7 +131,8 @@ public class NaiveNeighbors implements Command, StringValFunctions {
         double dPosZ = Double.parseDouble(args.get(3));
         ArrayList<Star> starsInRange4 =
             performNaiveNeighbors(intNeighbors, dPosX, dPosY, dPosZ, slist);
-        starsInRange4.forEach(System.out::println);
+        // starsInRange4.forEach(System.out::println);
+        starsInRange4.forEach((str) -> messages.add(str.getStarID()));
         break;
       default:
         System.out.println("ERROR: Hashmap reqInfoMaps has unregistered names, "
@@ -138,6 +150,31 @@ public class NaiveNeighbors implements Command, StringValFunctions {
   public Optional<String> matchArgsToMethod(ArrayList<String> args) {
     return argsValidator.testArgs(args);
   }
+  /**
+   * Returns the ArrayList of Messages stashed.
+   *
+   * @return - the variable messages
+   */
+  public ArrayList<String> getMessages() {
+    return messages;
+  }
+
+  /**
+   * Clears the Stash After the Execution of a Command.
+   */
+  public void clearMessage() {
+    errorOccurred = false;
+    messages.clear();
+  }
+
+  /**
+   * Checks if an error has occurred during the execution of the program.
+   *
+   * @return - the variable errorOccurred
+   */
+  public boolean hasErrorOccurred() {
+    return errorOccurred;
+  }
 
   /**
    * Finds "count" number of stars whose distance are closest to the star whose name is given.
@@ -150,14 +187,16 @@ public class NaiveNeighbors implements Command, StringValFunctions {
   public ArrayList<Star> performNaiveNeighbors(int count, String name, ArrayList<Star> alos) {
     // If the name given is empty, print an error
     if (name.isEmpty()) {
-      System.out.println("ERROR: Empty String is not a valid name for stars");
+      errorOccurred = true;
+      messages.add("ERROR: Empty String is not a valid name for stars");
       return new ArrayList<>();
     }
 
     // If the star is not found, print an error
     Optional<Star> selectedStar = starStorage.getStarFromMap(name);
     if (selectedStar.isEmpty()) {
-      System.out.printf("ERROR: No Stars with name \"%s\" is found%n", name);
+      errorOccurred = true;
+      messages.add(String.format("ERROR: No Stars with name \"%s\" is found", name));
       return new ArrayList<>();
     } else {
       Star presentStar = selectedStar.get();

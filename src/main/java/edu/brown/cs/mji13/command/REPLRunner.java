@@ -67,6 +67,9 @@ public class REPLRunner {
           if (commandMap.containsKey(commandTitle)) {
             Command currentCommand = commandMap.get(commandTitle);
             currentCommand.execute(separatedCommand);
+            ArrayList<String> messages = currentCommand.getMessages();
+            messages.forEach(System.out::println);
+            currentCommand.clearMessage();
           } else {
             System.out.printf("ERROR: The Command \"%s\" does not exist%n", commandTitle);
           }

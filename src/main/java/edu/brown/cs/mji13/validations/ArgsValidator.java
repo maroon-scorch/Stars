@@ -15,6 +15,8 @@ public class ArgsValidator {
    */
   private final String typeName;
 
+  private final StringBuilder messages = new StringBuilder();
+
   /**
    * The map of integers (the size of the arguments) to its correspond list of
    * ArgsInformation. The reason why each Integer doesn't have just 1 ArgsInformation
@@ -45,6 +47,7 @@ public class ArgsValidator {
    */
   public Optional<String> testArgs(ArrayList<String> args) {
     int argSize = args.size();
+    setMessage("");
 
     if (reqInfoMaps.containsKey(argSize)) {
       ArgsInformation[] reqInfos = reqInfoMaps.get(argSize);
@@ -58,12 +61,18 @@ public class ArgsValidator {
         errorList.add(error);
       }
 
-      System.out.print(String.join("", errorList));
+      setMessage(String.join("", errorList));
+
+      // System.out.print(String.join("", errorList));
     } else {
-      System.out.println("ERROR: Incorrect number of arguments for command " + typeName);
+      setMessage("ERROR: Incorrect number of arguments for command " + typeName);
     }
     // If all tests failed, option of empty is returned
     return Optional.empty();
+  }
+
+  public void setMessage(String newMessage) {
+    messages.replace(0, messages.length(), newMessage);
   }
 
 
@@ -102,10 +111,14 @@ public class ArgsValidator {
           + " <" + String.join("> <", argsFormat)
           + ">,\n" + "ERROR: then the following errors occurred:\n"
           + errorMsgToRaise
-          + "ERROR:----------------------------------------------\n";
+          + "ERROR:----------------------------------------------";
     }
 
     return errorMsgToRaise;
+  }
+
+  public String getErrorMessage() {
+    return messages.toString();
   }
 
 }

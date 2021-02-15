@@ -28,6 +28,13 @@ public class MockCSV implements Command, StringValFunctions {
   private final CSVParser parser = new CSVParser();
 
   /**
+   * The list of messages the command line accumulates during its execution.
+   * And the boolean errorOccurred.
+   */
+  private ArrayList<String> messages = new ArrayList<>();
+  private boolean errorOccurred = false;
+
+  /**
    * Expected Headers of the CSV File.
    */
   private final String[] expectedHeaders
@@ -67,14 +74,19 @@ public class MockCSV implements Command, StringValFunctions {
   public void execute(ArrayList<String> args) {
     Optional<String> opMethodName = matchArgsToMethod(args);
     if (opMethodName.isEmpty()) {
+      messages.add(argsValidator.getErrorMessage());
+      errorOccurred = true;
       return;
     }
     String filepath = args.get(0);
     boolean isSuccessful =
         parser.parse(filepath, peopleList, expectedHeaders, this::lineToPerson);
     if (isSuccessful) {
-      peopleList.forEach(System.out::println);
+      errorOccurred = false;
+      peopleList.forEach((people) -> messages.add(people.toString()));
     }
+    errorOccurred = true;
+    messages.addAll(parser.getMessages());
   }
 
   /**
@@ -87,6 +99,32 @@ public class MockCSV implements Command, StringValFunctions {
    */
   public Optional<String> matchArgsToMethod(ArrayList<String> args) {
     return argsValidator.testArgs(args);
+  }
+
+  /**
+   * Returns the ArrayList of Messages stashed.
+   *
+   * @return - the variable messages
+   */
+  public ArrayList<String> getMessages() {
+    return messages;
+  }
+
+  /**
+   * Clears the Stash After the Execution of a Command.
+   */
+  public void clearMessage() {
+    errorOccurred = false;
+    messages.clear();
+  }
+
+  /**
+   * Checks if an error has occurred during the execution of the program.
+   *
+   * @return - the variable errorOccurred
+   */
+  public boolean hasErrorOccurred() {
+    return errorOccurred;
   }
 
   /**

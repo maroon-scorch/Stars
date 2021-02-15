@@ -1,17 +1,22 @@
+@import 'main.css';
+
 .theme-selection {
     position:absolute;
-    bottom:1rem;
-    left:1rem;
+    bottom: 3vh;
+    right: 0;
+    height: 20%;
+    width: auto;
+    margin-right: 1vw;
+    content: var(--image-card);
 }
 
-.theme-left, .theme-right {
-    color: white;
-    font-size: 2.5rem;
-    background: none;
-    border: none;
-    outline: none;
+.theme-selection:hover {
+    content: var(--image-hover);
 }
 
-.theme-left:hover, .theme-right:hover{
-    color: pink;
+#current-theme-image {
+    height: auto;
+    width: auto;
+    max-height: 150px;
+    max-width: 150px;
 }

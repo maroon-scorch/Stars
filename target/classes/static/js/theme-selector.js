@@ -1,42 +1,53 @@
+/**
+ * Handles the theme selection (light mode, dark mode) of the GUI
+ */
+
+// The list of themes to select from
 const themeList = [
     {
-        className: "light",
-        modeName: "light-mode",
-        image: "assets/day-unselected.png",
-        hover: "assets/day-hover.png"
+        className: "light"
     },
     {
-        className: "dark",
-        modeName: "dark-mode",
-        image: "assets/night-unselected.png",
-        hover: "assets/night-hover.png"
+        className: "dark"
     }
 ]
 
-let currentIndex = 0;
+// Initialization - check what the current theme is after refresh; default: light mode
+let currentIndex = sessionStorage.hasOwnProperty('currentIndex') ? sessionStorage.getItem('currentIndex') : 0;
 let themeLength = themeList.length;
 
-function selectLeft () {
-    currentIndex = ((currentIndex - 1) % themeLength + themeLength) % themeLength;
-    let currentTheme = themeList[currentIndex];
-    themeToDisplay(currentTheme);
-}
 
+/**
+ * When the icon is clicked , the current Index will shift one right modularly in the list of current themes
+ * and apply the changes accordingly
+ *
+ */
 function selectRight () {
     currentIndex = (currentIndex + 1) % themeLength;
-    let currentTheme = themeList[currentIndex];
+    let currentTheme = themeList[currentIndex]
     themeToDisplay(currentTheme);
+    sessionStorage.setItem('currentIndex', currentIndex);
 }
 
+/**
+ * Switches the theme of the HTML to the currentTheme indicated by changing the class name of the
+ * body.
+ *
+ * @param currentTheme - the theme indicated
+ */
 function themeToDisplay(currentTheme) {
     console.log("Switching to " + currentTheme.className + " Mode");
-    document.getElementById("current-theme").className = currentTheme.modeName;
-    let imageTarget = document.getElementById("current-theme-image");
-    imageTarget.src = currentTheme.image;
-    imageTarget.onmouseover = function(){ imageTarget.src = currentTheme.hover };
-    imageTarget.onmouseleave = function(){ imageTarget.src = currentTheme.image };
     document.body.className = currentTheme.className;
 }
 
-document.querySelector(".theme-left").addEventListener("click", selectLeft);
-document.querySelector(".theme-right").addEventListener("click", selectRight);
+/**
+ * Initializes the theme of the webpage after refresh to whatever the session storage or default offers.
+ *
+ */
+function initializeTheme() {
+    let currentTheme = themeList[currentIndex];
+    themeToDisplay(currentTheme);
+}
+
+initializeTheme();
+document.querySelector(".theme-selection").addEventListener("click", selectRight);
