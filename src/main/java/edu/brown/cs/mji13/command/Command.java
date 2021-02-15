@@ -14,6 +14,10 @@ public interface Command {
    */
   void execute(ArrayList<String> args);
 
+  default String executeForGUI(ArrayList<String> args) {
+    return "";
+  }
+
   /**
    * Finds which Method inside the Command Object to execute the Command.
    *

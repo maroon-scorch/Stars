@@ -1,6 +1,7 @@
 package edu.brown.cs.mji13.stars;
 
 import edu.brown.cs.mji13.command.Command;
+import edu.brown.cs.mji13.command.GUICommand;
 import edu.brown.cs.mji13.kdTree.KDTree;
 import edu.brown.cs.mji13.validations.ArgsInformation;
 import edu.brown.cs.mji13.validations.ArgsValidator;
@@ -18,7 +19,7 @@ import static java.util.Map.entry;
 /**
  * Radius Command Object for executing the "radius ..." command.
  */
-public class Radius implements Command, StringValFunctions {
+public class Radius implements Command, GUICommand, StringValFunctions {
 
   /**
    * The common data-types shared by all the stars-related commands.
@@ -30,6 +31,7 @@ public class Radius implements Command, StringValFunctions {
    * And the boolean errorOccurred.
    */
   private ArrayList<String> messages = new ArrayList<>();
+  private ArrayList<Star> answers = new ArrayList<>();
   private boolean errorOccurred = false;
 
   /**
@@ -112,24 +114,35 @@ public class Radius implements Command, StringValFunctions {
         double radius = Double.parseDouble(args.get(0));
         String sName = args.get(1);
         String sStarNoQuotes = sName.substring(1, sName.length() - 1);
-        ArrayList<Star> starsInRange2 = performRadius(radius, sStarNoQuotes, sTree);
+        // ArrayList<Star> starsInRange2
+        answers = performRadius(radius, sStarNoQuotes, sTree);
         // starsInRange2.forEach(System.out::println);
-        starsInRange2.forEach((str) -> messages.add(str.getStarID()));
+        answers.forEach((str) -> messages.add(str.getStarID()));
         break;
       case "radius_4":
         double dRadius = Double.parseDouble(args.get(0));
         double dPosX = Double.parseDouble(args.get(1));
         double dPosY = Double.parseDouble(args.get(2));
         double dPosZ = Double.parseDouble(args.get(3));
-        ArrayList<Star> starsInRange4 = performRadius(dRadius, dPosX, dPosY, dPosZ, sTree);
+        // ArrayList<Star> starsInRange4
+        answers = performRadius(dRadius, dPosX, dPosY, dPosZ, sTree);
         // starsInRange4.forEach(System.out::println);
-        starsInRange4.forEach((str) -> messages.add(str.getStarID()));
+        answers.forEach((str) -> messages.add(str.getStarID()));
         break;
       default:
         System.out.println("ERROR: Hashmap reqInfoMaps has unregistered names, "
             + "shouldn't have reached here");
         break;
     }
+  }
+
+  public String executeForGUI(ArrayList<String> args) {
+    execute(args);
+    String result = String.join("\n", getMessages());
+    ArrayList<Star> answerCopy = new ArrayList<Star>(answers);
+    boolean heoTemp = hasErrorOccurred();
+    clearMessage();
+    return heoTemp ? result : starStorage.starListToHTML(answerCopy);
   }
 
   /**
@@ -148,7 +161,7 @@ public class Radius implements Command, StringValFunctions {
    * @return - the variable messages
    */
   public ArrayList<String> getMessages() {
-    return messages;
+    return new ArrayList<>(messages);
   }
 
   /**
@@ -157,6 +170,7 @@ public class Radius implements Command, StringValFunctions {
   public void clearMessage() {
     errorOccurred = false;
     messages.clear();
+    answers.clear();
   }
 
   /**

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 import edu.brown.cs.mji13.command.Command;
@@ -12,6 +14,7 @@ import edu.brown.cs.mji13.gui.CommandHandler;
 import edu.brown.cs.mji13.people.MockCSV;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import org.checkerframework.checker.units.qual.A;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
 import spark.Request;
@@ -102,29 +105,37 @@ public final class Main {
 
     FreeMarkerEngine freeMarker = createEngine();
 
+    CommandHandler neighborsCords = new CommandHandler(commandMap.get("neighbors"),
+        new ArrayList<String>(Arrays.asList("count-input", "x-input", "y-input", "z-input")));
+    CommandHandler neighborsName = new CommandHandler(commandMap.get("neighbors"),
+        new ArrayList<String>(Arrays.asList("count-input", "name-input")));
+
+    CommandHandler radiusCords = new CommandHandler(commandMap.get("radius"),
+        new ArrayList<String>(Arrays.asList("radius-input", "x-input", "y-input", "z-input")));
+    CommandHandler radiusName = new CommandHandler(commandMap.get("radius"),
+        new ArrayList<String>(Arrays.asList("radius-input", "name-input")));
+
     // Setup Spark Routes
     Spark.get("/stars", new FrontHandler(), freeMarker);
-    Spark.get("/neighbors", new CommandHandler.NeighborsHandler(), freeMarker);
-    Spark.get("/radius", new CommandHandler.RadiusHandler(commandMap), freeMarker);
+    Spark.get("/radius-cord", radiusCords, freeMarker);
+    Spark.get("/radius-name", radiusName, freeMarker);
+    Spark.get("/neighbors-cord", neighborsCords, freeMarker);
+    Spark.get("/neighbors-name", neighborsName, freeMarker);
   }
 
   /**
    * Handle requests to the front page of our Stars website.
    */
   private static class FrontHandler implements TemplateViewRoute {
-    String msg = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables = ImmutableMap.of(
           "title", "Stars: Query the database",
-          "message", msg
+          "message", ""
       );
-      return new ModelAndView(variables, "query.ftl");
+      return new ModelAndView(variables, "modal.ftl");
     }
   }
-
-
 
   /**
    * Display an error page when an exception occurs in the server.

@@ -1,5 +1,6 @@
 edu\brown\cs\mji13\main\people\MockCSVTest.class
 edu\brown\cs\mji13\main\stars\UpdateStarFileTest.class
+edu\brown\cs\mji13\main\stars\PropertyBasedRadiusTest.class
 edu\brown\cs\mji13\main\stars\NaiveNeighborsTest.class
 edu\brown\cs\mji13\main\kdtree\KDTreeTest.class
 edu\brown\cs\mji13\main\validaitons\ArgsValidatorTest.class
@@ -7,7 +8,6 @@ edu\brown\cs\mji13\main\stars\StarsGeneratorTest.class
 edu\brown\cs\mji13\main\people\MockPersonTest.class
 edu\brown\cs\mji13\main\stars\NaiveRadiusTest.class
 edu\brown\cs\mji13\main\validaitons\StringValidationsTest.class
-edu\brown\cs\mji13\main\stars\ModelRadiusTest.class
+edu\brown\cs\mji13\main\stars\PropertyBasedNeighborsTest.class
 edu\brown\cs\mji13\main\kdtree\KDNodeTest.class
-edu\brown\cs\mji13\main\stars\ModelNeighborsTest.class
 edu\brown\cs\mji13\main\stars\StarTest.class

@@ -31,6 +31,7 @@ public class Neighbors implements Command, StringValFunctions {
    * And the boolean errorOccurred.
    */
   private ArrayList<String> messages = new ArrayList<>();
+  private ArrayList<Star> answers = new ArrayList<>();
   private boolean errorOccurred = false;
 
   /**
@@ -117,25 +118,35 @@ public class Neighbors implements Command, StringValFunctions {
         int neighbors = Integer.parseInt(args.get(0));
         String sName = args.get(1);
         String sStarNoQuotes = sName.substring(1, sName.length() - 1);
-        ArrayList<Star> starsInRange2 = performNeighbors(neighbors, sStarNoQuotes, sTree);
+        // ArrayList<Star> starsInRange2
+        answers = performNeighbors(neighbors, sStarNoQuotes, sTree);
         // starsInRange2.forEach(System.out::println);
-        starsInRange2.forEach((str) -> messages.add(str.getStarID()));
+        answers.forEach((str) -> messages.add(str.getStarID()));
         break;
       case "neighbors_4":
         int intNeighbors = Integer.parseInt(args.get(0));
         double dPosX = Double.parseDouble(args.get(1));
         double dPosY = Double.parseDouble(args.get(2));
         double dPosZ = Double.parseDouble(args.get(3));
-        ArrayList<Star> starsInRange4 =
-            performNeighbors(intNeighbors, dPosX, dPosY, dPosZ, sTree, Optional.empty());
+        // ArrayList<Star> starsInRange4 =
+        answers = performNeighbors(intNeighbors, dPosX, dPosY, dPosZ, sTree, Optional.empty());
         // starsInRange4.forEach(System.out::println);
-        starsInRange4.forEach((str) -> messages.add(str.getStarID()));
+        answers.forEach((str) -> messages.add(str.getStarID()));
         break;
       default:
         System.out.println("ERROR: Hashmap reqInfoMaps has unregistered names, "
             + "shouldn't have reached here");
         break;
     }
+  }
+
+  public String executeForGUI(ArrayList<String> args) {
+    execute(args);
+    String result = String.join("\n", getMessages());
+    ArrayList<Star> answerCopy = new ArrayList<Star>(answers);
+    boolean heoTemp = hasErrorOccurred();
+    clearMessage();
+    return heoTemp ? result : starStorage.starListToHTML(answerCopy);
   }
 
   /**
@@ -154,13 +165,14 @@ public class Neighbors implements Command, StringValFunctions {
    * @return - the variable messages
    */
   public ArrayList<String> getMessages() {
-    return messages;
+    return new ArrayList<>(messages);
   }
 
   /**
    * Clears the Stash After the Execution of a Command.
    */
   public void clearMessage() {
+    answers.clear();
     errorOccurred = false;
     messages.clear();
   }

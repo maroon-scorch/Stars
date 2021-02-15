@@ -1,0 +1,77 @@
+1. How might a non-impaired user might benefit from increased web accessibility (that isn’t already discussed above)?
+
+There are several key other benefits that increased web accessibility would bring to non-impaired users who also
+share the same platform. The key benefits of increased web accessibility often implies a increased user base for
+the platform on which the users are using. This can lead to both direct and undirect benefits. For undirected
+benefits, a more expansive and varied user base means a more expansive and varied feedbacks for the develop of
+the platform to improve on, this can lead to better utilities experieces for all users. But also for platforms that
+emphasize on a strong interaction between one user and another,  a more varied user base means more opportunities
+ between users to interact with people whoa re different from them. From these relationships, each individual
+ could also see the perspectives of others and syncretize the experience of others for their own endeavors. For Social
+ Media Platforms especially, having a diverse group of people enables a non-impaired user to also see the experiences
+ and struggles of some impaired users and perhaps change their own mind about certain subjects.
+
+2. What are three design choices that User Inyerface made that harmed your user experience?
+Explain how you would alter each design choice to improve accessibility and usability.
+
+One noticeable annoyance of the User Inyerface is that for text fields, what looks like texts that are just
+suggestions for what to fill in do take up physical textual space, and that in turn forces the user to manually
+remove those text before being able to enter. This is especially detrimental to those who may be visually impaired,
+as they could be confused on why they aren't able to enter in the correct texts or see their text, and the populated
+fields also mess up the readability for a screen reader. I would instead choose to make the prepopualted fields
+how they are usually intended to do - tha they would be gone when focused rather than still being there. This way, less
+users would be confused on the exact placements of the fields.
+
+One especially noticeable harm in user experience is the terms and service field offered on the webpage. Upon clicking
+in on the link, a terms and service agreement was popped up. However, neither clicking on "accept" nor the x mark on
+the top right helped at all. In fact, they simply entrapped me on the same screen with a locked time. It's not
+until refresh that I was able to escape the loop. To improve the usability and accessibility, I would make the most
+intuitive choices to be clear and distinct => accept should close out of the terms and service, and clicking on
+button-shaped or link-shaped sprites should have the intended effects rather than the unintuitve designs here. This
+would be a lot more userfriendly and reach a wider base.
+
+Finally, another point that ticked me off was the animation and constant unexpected pop-ups on the webpage. Now
+this may be because I have been awake for over 30 hours trying to finish stars 3 on time, but seeing those pop-ups
+and animation really gives me, the user, a sense of nausea and some urge to vomit. They are really disorienting and
+is not helping to a positive user experience for me personally whatsoever. For one thing, I feel like the popups here
+can be far less intrusive then they are. Now, this isn't on Windows Alert level of abruptness; however, they can
+certainly move the popups to a corner and let it slightly fade in to appear as a warning rather than abruptly coming
+out. In addition, the constant jumps in cuts can be remedied with a slower sense of progression. Overall, I would
+reduce the popups and animation to a point where it's not as disorientating.
+
+3. What are three changes you made to your site to increase your Lighthouse (or other) audit score?
+Explain how each change increases your site’s performance or accessibility.
+
+There are three changes I made to the program that, albeit seemingly insignificant at first, come a long way
+in showing just how every minute detail in Programming counts. The first change Lighthouse told me was about
+the JQuery library I was using. Since I duplicated the JQuery file (version 2.1.1) directly from the lab, I have
+always taken it for granted and have innately trusted the JQuery file to be reliable and useful in my programming
+endeavors. However, what Lighthouse informed me of was both expected but also unexpected. Lighthouse told me that
+JQuery 2.1.1 has a known security risk in it so that I should not be using it. And I never even realized such
+threat until it had noticed me about it. I think this ties really well to Professor Nelson's Lecture a few days ago,
+where in the beginning he also mentioned that because their database had been passed down from previous years, they
+didn't even think to check the content of the words in those files. JQuery here is much in the same vein, I trusted
+it greatly when I was using it because it was passed down from the lab, and this assumption went and bit me in the
+back right now. To resolve this changes, I figured since my program does not have much Jquery to begin with, I
+rewrote all of my JQuery lines with vanilla javascript instead and removed the JQuery Package from my GUI. This has
+resolved some significant potentials security risks but also made much of the Javascript cleaner and more presentable.
+
+The second change the Lighthouse advised me to do was to add a lang field to my HTML heading. It turns out the purpose
+of adding a default lang field to my HTML heading is so that whenever screenreaders encounters the HTML Document,
+the readers would be able to switch their language profiles to match the type given in order to provide the
+correct service to users who may be visually impaired or need the screenreaders. Without the lang field, the
+screenreader wouldn't know what language it is accessing and will stick to the default one of the user instead,
+and this can lead to some very bad user experience with language mishaps. After learning about this mistake,
+I added the lang field back to the html tag and specified it to be "en" or English.
+
+The third change the Lighthouse advised me to do was to add a meta field with a description of the project. This is
+done so that for visually impaired users who need a screenreader, the screenreader could access this field and read
+out a proper description/introduction of the webpage I am building. Without a description, the screen and display
+itself may not convey the purpose of the webpage at all. Therefore, a meta field with a description of the webpage
+is really crucial. I proceeded to add the following description to my html page:
+
+"A GUI Application of the STARS Project for Brown
+ Spring 2021 CS32. The page enables the user to search through stars via radius or neighbors to the location
+ or the star whose name is specified by the user."
+
+After all 3 changes I made, my overall score was 100, and a proof of that is attached in the ReadME.

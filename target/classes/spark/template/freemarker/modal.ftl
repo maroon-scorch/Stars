@@ -1,9 +1,10 @@
 <#assign display>
-    <div class="modal-package">
-        <div class="modal-exit"></div>
+    <div id="modal-overlay"></div>
+    <div id="modal-package">
         <div class="modal-header">TITLE</div>
+        <div class="modal-exit">X</div>
         <div class="modal-body">
-            a totam possimus eveniet voluptate cum eligendi tempore quod, voluptatum non?
+            ${message}
         </div>
     </div>
 </#assign>

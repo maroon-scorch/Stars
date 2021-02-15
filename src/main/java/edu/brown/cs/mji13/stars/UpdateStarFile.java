@@ -155,7 +155,7 @@ public class UpdateStarFile implements Command, StringValFunctions {
    * @return - the variable messages
    */
   public ArrayList<String> getMessages() {
-    return messages;
+    return new ArrayList<>(messages);
   }
 
   /**

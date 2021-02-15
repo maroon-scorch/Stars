@@ -12,14 +12,7 @@
 
     <div class="theme-selection"></div>
 
-    <div id="modal-overlay"></div>
-        <div id="modal-package">
-            <div class="modal-header">TITLE</div>
-            <div class="modal-exit">X</div>
-            <div class="modal-body">
-                ${message}
-            </div>
-        </div>
+    ${display}
 
 
 <div class="query-wrapper">
@@ -41,9 +34,9 @@
 <br><br>
 
 <div id="neighbors-coordinates" class="possible-form"> Search by Neighbors Coordinates
-<form method="GET" action="/neighbors" class="star-forms">
+<form method="GET" action="/neighbors-cord" class="star-forms" autocomplete="off" >
     <label>Number of Neighbors
-          <input type="number" name="radius-input"><br></label>
+          <input type="number" name="count-input"><br></label>
     <label>X Coordinate
           <input type="number" name="x-input"><br></label>
     <label>Y Coordinate
@@ -55,9 +48,9 @@
 </div>
 
 <div id="neighbors-name" class="possible-form"> Search by Neighbors Name
-<form method="GET" action="/neighbors" class="star-forms">
+<form method="GET" action="/neighbors-name" class="star-forms" autocomplete="off" >
   <label>Number of Neighbors
-    <input type="number" name="radius-input"><br></label>
+    <input type="number" name="count-input"><br></label>
     <label>Name of Star
           <input type="text" name="name-input"><br></label>
   <input type="submit">
@@ -65,7 +58,7 @@
 </div>
 
 <div id="radius-coordinates" class="possible-form"> Search by Radius Coordinates
-<form method="GET" action="/radius" class="star-forms">
+<form method="GET" action="/radius-cord" class="star-forms" autocomplete="off" >
       <label>Radius
       <input type="number" name="radius-input"><br>
       </label>
@@ -83,7 +76,7 @@
 </div>
 
 <div id="radius-name" class="possible-form"> Search by radius name
-<form method="GET" action="/radius" class="star-forms">
+<form method="GET" action="/radius-name" class="star-forms" autocomplete="off" >
   <label>Radius
   <input type="number" name="radius-input"><br>
   </label>

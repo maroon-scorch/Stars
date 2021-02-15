@@ -16,6 +16,7 @@ function removeModal() {
     overlay.style.display = "none";
     modal.style.display = "none";
     sessionStorage.setItem("modalStatus", "none");
+    document.location.href = "/stars";
 }
 
 /**
@@ -43,8 +44,23 @@ document.querySelector("#modal-overlay").addEventListener("click", removeModal);
 // Clicking the Exit Sign removes the Modal
 document.querySelector(".modal-exit").addEventListener("click", removeModal);
 
+/**
+ * Handle Submission of each Form - Add Double Quotes around text fields and shows the Modal
+ *
+ */
+function handleSubmit() {
+    let inputs = this.getElementsByTagName("input");
+    console.log(inputs);
+    Array.from(inputs).forEach(input => {
+        if (input.type === "text") {
+            input.value = "\"" + input.value + "\""
+        }
+    })
+    showModal();
+}
+
 // All Forms with class name "star-forms" when submitted causes the Modal to pop up
 let allForms = document.querySelectorAll(".star-forms");
 Array.from(allForms).forEach(form => {
-    form.addEventListener("submit", showModal);
+    form.addEventListener("submit", handleSubmit);
 });

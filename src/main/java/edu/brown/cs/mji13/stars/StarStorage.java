@@ -141,4 +141,23 @@ public class StarStorage {
     }
   }
 
+  public String starListToHTML(ArrayList<Star> slist) {
+    String header = "<tr>"
+        + "<th>StarID</th>"
+        + "<th>ProperName</th>"
+        + "<th>Coordinates (X, Y, Z)</th>"
+        + "</tr>";
+
+    String body = "";
+
+    for (Star str : slist) {
+      String row = str.toHTML();
+      body += row;
+    }
+
+    String table = "<table>" + header + body + "</table>";
+
+    return table;
+  }
+
 }

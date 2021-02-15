@@ -12,66 +12,34 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-public class CommandHandler {
+public class CommandHandler implements TemplateViewRoute {
   /**
    * The map of keywords to the specific Command Object to execute.
    *
    */
-  private final Map<String, Command> commandMap;
+  private final Command cmd;
+  private final ArrayList<String> args;
 
-  public CommandHandler(Map<String, Command> commandMap) {
-    this.commandMap = commandMap;
+  public CommandHandler(Command cmd, ArrayList<String> args) {
+    this.cmd = cmd;
+    this.args = args;
   }
 
-  /**
-   *
-   */
-  public static class NeighborsHandler implements TemplateViewRoute {
-    String msg = "neighbors";
+  @Override
+  public ModelAndView handle(Request req, Response res) {
+    QueryParamsMap qm = req.queryMap();
+    ArrayList<String> argValues = new ArrayList<>();
+    args.forEach((key) -> argValues.add(qm.value(key)));
 
-    @Override
-    public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables = ImmutableMap.of(
-          "title", "Stars: Query the database",
-          "message", msg
-      );
-      return new ModelAndView(variables, "query.ftl");
-    }
-  }
+    String message = cmd.executeForGUI(argValues);
+//    cmd.execute(argValues);
+//    ArrayList<String> message = cmd.getMessages();
+//    cmd.clearMessage();
 
-  public static class RadiusHandler implements TemplateViewRoute {
-    String msg = "radius";
-    private final Map<String, Command> commandMap;
-    public RadiusHandler(Map<String, Command> commandMap) {
-      this.commandMap = commandMap;
-    }
-
-    @Override
-    public ModelAndView handle(Request req, Response res) {
-      QueryParamsMap qm = req.queryMap();
-      Map<String, String[]> responseMap = qm.toMap();
-      System.out.println(responseMap.keySet());
-      ArrayList<String> args = new ArrayList<>();
-      System.out.println(Arrays.toString(responseMap.get("radius-input")));
-      System.out.println(Arrays.toString(responseMap.get("y-input")));
-
-      String rad = qm.value("radius-input");
-      String x = qm.value("x-input");
-      String y = qm.value("y-input");
-      String z = qm.value("z-input");
-
-      args.add(rad);
-      args.add(x);
-      args.add(y);
-      args.add(z);
-
-      commandMap.get("radius").execute(args);
-
-      Map<String, Object> variables = ImmutableMap.of(
-          "title", "Stars: Query the database",
-          "message", msg
-      );
-      return new ModelAndView(variables, "query.ftl");
-    }
+    Map<String, Object> variables = ImmutableMap.of(
+        "title", "Stars: Query the database",
+        "message", message
+    );
+    return new ModelAndView(variables, "modal.ftl");
   }
 }

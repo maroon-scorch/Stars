@@ -75,4 +75,25 @@
 
 .modal-body {
     margin-top: 20px;
+    white-space: pre-line;
+}
+
+.modal-body > table {
+    width: 100%;
+}
+
+.modal-body > table > tbody > tr > th {
+    background-color: #000000;
+    color: #fff;
+}
+
+.modal-body > table > tbody > tr > td {
+    text-align: center;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border: 1px solid #000;
+}
+
+.modal-body > table > tbody > tr:nth-child(odd) {
+    background: #C0C0C0;
 }
