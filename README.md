@@ -176,7 +176,7 @@ chmod +x cs32-test
 ```
 The localholst can be found under http://localhost:4567/stars
 ## How to run any tests:
-All following commands should be run in the root directory of the Project:
+All following commands should be run in the root directory of the Project:<br/>
 To run system tests for stars2 (student):
 ```
 ./cs32-test tests/mji13/stars/stars2/*.test
@@ -203,6 +203,6 @@ mvn test
 
 ## Notes
 data_modeling.txt can be found under the people package
-accessibility_testing.txt can be found under src/main/resources/accessibility_testing.txt
+<br/>accessibility_testing.txt can be found under src/main/resources/accessibility_testing.txt
 ### Proof of Passing Lighthouse Test:
 ![img.png](img.png)
