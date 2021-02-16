@@ -28,13 +28,6 @@ public class MockCSV implements Command, StringValFunctions {
   private final CSVParser parser = new CSVParser();
 
   /**
-   * The list of messages the command line accumulates during its execution.
-   * And the boolean errorOccurred.
-   */
-  private ArrayList<String> messages = new ArrayList<>();
-  private boolean errorOccurred = false;
-
-  /**
    * Expected Headers of the CSV File.
    */
   private final String[] expectedHeaders
@@ -70,23 +63,28 @@ public class MockCSV implements Command, StringValFunctions {
    * If successful, prints out every line of the MockPerson converted in String.
    *
    * @param args - the list of arguments to be operated on
+   * @return the list of toString of MockPerson to be printed out; returns the error message
+   * if unsuccessful.
    */
-  public void execute(ArrayList<String> args) {
+  public ArrayList<String> execute(ArrayList<String> args) {
+    ArrayList<String> messages = new ArrayList<>();
     Optional<String> opMethodName = matchArgsToMethod(args);
     if (opMethodName.isEmpty()) {
       messages.add(argsValidator.getErrorMessage());
-      errorOccurred = true;
-      return;
+      return messages;
     }
+
     String filepath = args.get(0);
     boolean isSuccessful =
         parser.parse(filepath, peopleList, expectedHeaders, this::lineToPerson);
+
     if (isSuccessful) {
-      errorOccurred = false;
       peopleList.forEach((people) -> messages.add(people.toString()));
+      return messages;
     }
-    errorOccurred = true;
+
     messages.addAll(parser.getMessages());
+    return messages;
   }
 
   /**
@@ -99,32 +97,6 @@ public class MockCSV implements Command, StringValFunctions {
    */
   public Optional<String> matchArgsToMethod(ArrayList<String> args) {
     return argsValidator.testArgs(args);
-  }
-
-  /**
-   * Returns the ArrayList of Messages stashed.
-   *
-   * @return - the variable messages
-   */
-  public ArrayList<String> getMessages() {
-    return new ArrayList<>(messages);
-  }
-
-  /**
-   * Clears the Stash After the Execution of a Command.
-   */
-  public void clearMessage() {
-    errorOccurred = false;
-    messages.clear();
-  }
-
-  /**
-   * Checks if an error has occurred during the execution of the program.
-   *
-   * @return - the variable errorOccurred
-   */
-  public boolean hasErrorOccurred() {
-    return errorOccurred;
   }
 
   /**

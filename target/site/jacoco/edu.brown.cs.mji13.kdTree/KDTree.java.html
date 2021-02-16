@@ -119,7 +119,7 @@ public class KDTree&lt;T extends HasCoordinates&gt; {
    * @param currentNode - the currentNode being recurred on
    */
   private void radiusHelper(double radius, List&lt;Double&gt; cords, int level,
-                           ArrayList&lt;T&gt; template, KDNode&lt;T&gt; currentNode) {
+                            ArrayList&lt;T&gt; template, KDNode&lt;T&gt; currentNode) {
     // If the current item is null (empty node) then break
 <span class="fc" id="L124">    T currentItem = currentNode.getItem();</span>
 <span class="fc bfc" id="L125" title="All 2 branches covered.">    if (currentItem == null) {</span>
@@ -176,19 +176,20 @@ public class KDTree&lt;T extends HasCoordinates&gt; {
     // coordinate is the first element of the queue.
 <span class="fc" id="L177">    PriorityQueue&lt;T&gt; maxItemQueue = new PriorityQueue&lt;T&gt;((T item1, T item2)</span>
 <span class="fc" id="L178">        -&gt; Double.compare(item2.distanceTo(cords), item1.distanceTo(cords)));</span>
+
     // The ArrayList storing all the tied stars.
-<span class="fc" id="L180">    ArrayList&lt;T&gt; tiedList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L181">    ArrayList&lt;T&gt; tiedList = new ArrayList&lt;&gt;();</span>
 
     // Calls the helper function to recur down the tree.
-<span class="fc" id="L183">    neighborsHelper(count, cords, 0, maxItemQueue, tiedList, getTree());</span>
+<span class="fc" id="L184">    neighborsHelper(count, cords, 0, maxItemQueue, tiedList, getTree());</span>
 
     // Converts the completed queue back to the list and sorts it
-<span class="fc" id="L186">    ArrayList&lt;T&gt; resultList = new ArrayList&lt;&gt;(maxItemQueue);</span>
-<span class="fc" id="L187">    resultList.sort(Comparator.comparingDouble(T -&gt; T.distanceTo(cords)));</span>
+<span class="fc" id="L187">    ArrayList&lt;T&gt; resultList = new ArrayList&lt;&gt;(maxItemQueue);</span>
+<span class="fc" id="L188">    resultList.sort(Comparator.comparingDouble(T -&gt; T.distanceTo(cords)));</span>
 
     // Adds all the tiedLists elements to the end of the result list.
-<span class="fc" id="L190">    resultList.addAll(tiedList);</span>
-<span class="fc" id="L191">    return resultList;</span>
+<span class="fc" id="L191">    resultList.addAll(tiedList);</span>
+<span class="fc" id="L192">    return resultList;</span>
   }
 
   /**
@@ -206,62 +207,62 @@ public class KDTree&lt;T extends HasCoordinates&gt; {
                                PriorityQueue&lt;T&gt; itemQueue, ArrayList&lt;T&gt; tiedList,
                                KDNode&lt;T&gt; currentNode) {
     // If the node is an empty node, break out of the current function call.
-<span class="fc" id="L209">    T currentItem = currentNode.getItem();</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">    if (currentItem == null) {</span>
-<span class="fc" id="L211">      return;</span>
+<span class="fc" id="L210">    T currentItem = currentNode.getItem();</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">    if (currentItem == null) {</span>
+<span class="fc" id="L212">      return;</span>
     }
 
     // If the Queue isn't full yet (has a size of count), add the item in.
-<span class="fc bfc" id="L215" title="All 2 branches covered.">    if (itemQueue.size() &lt; count) {</span>
-<span class="fc" id="L216">      itemQueue.add(currentItem);</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">    if (itemQueue.size() &lt; count) {</span>
+<span class="fc" id="L217">      itemQueue.add(currentItem);</span>
     } else {
       // If the Queue is full:
-<span class="fc" id="L219">      T maxItem = itemQueue.element();</span>
+<span class="fc" id="L220">      T maxItem = itemQueue.element();</span>
       // If the distance of the coordinate to the currentItem is less than that
       // to the first element, remove the first element, clear the tied list,
       // and add the current element down.
-<span class="fc bfc" id="L223" title="All 2 branches covered.">      if (currentItem.distanceTo(cords) &lt; maxItem.distanceTo(cords)) {</span>
-<span class="fc" id="L224">        itemQueue.poll();</span>
-<span class="fc" id="L225">        tiedList.clear();</span>
-<span class="fc" id="L226">        itemQueue.add(currentItem);</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">      if (currentItem.distanceTo(cords) &lt; maxItem.distanceTo(cords)) {</span>
+<span class="fc" id="L225">        itemQueue.poll();</span>
+<span class="fc" id="L226">        tiedList.clear();</span>
+<span class="fc" id="L227">        itemQueue.add(currentItem);</span>
         // If the two elements have the same distance, add the currentItem to the tiedlist.
-<span class="fc bfc" id="L228" title="All 2 branches covered.">      } else if (currentItem.distanceTo(cords) == maxItem.distanceTo(cords)) {</span>
-<span class="fc" id="L229">        tiedList.add(currentItem);</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">      } else if (currentItem.distanceTo(cords) == maxItem.distanceTo(cords)) {</span>
+<span class="fc" id="L230">        tiedList.add(currentItem);</span>
       }
     }
 
-<span class="fc" id="L233">    KDNode&lt;T&gt; leftNode = currentNode.getLeft();</span>
-<span class="fc" id="L234">    KDNode&lt;T&gt; rightNode = currentNode.getRight();</span>
+<span class="fc" id="L234">    KDNode&lt;T&gt; leftNode = currentNode.getLeft();</span>
+<span class="fc" id="L235">    KDNode&lt;T&gt; rightNode = currentNode.getRight();</span>
 
     // Determine which Axis Distance to Compare to
-<span class="fc" id="L237">    int choice = level % dimension;</span>
+<span class="fc" id="L238">    int choice = level % dimension;</span>
 
-<span class="fc" id="L239">    double maxDist = itemQueue.element().distanceTo(cords);</span>
-<span class="fc" id="L240">    double currentAxisCord = currentItem.getCoordinate(choice);</span>
-<span class="fc" id="L241">    double fixedAxisCord = cords.get(choice);</span>
-<span class="fc" id="L242">    double axisDist = Math.abs(currentAxisCord - fixedAxisCord);</span>
+<span class="fc" id="L240">    double maxDist = itemQueue.element().distanceTo(cords);</span>
+<span class="fc" id="L241">    double currentAxisCord = currentItem.getCoordinate(choice);</span>
+<span class="fc" id="L242">    double fixedAxisCord = cords.get(choice);</span>
+<span class="fc" id="L243">    double axisDist = Math.abs(currentAxisCord - fixedAxisCord);</span>
 
     // Search both if the distance is less than the maximum distance to the furthest element,
     // otherwise, check direction to determine which subtree to traverse down
-<span class="fc bfc" id="L246" title="All 2 branches covered.">    if (axisDist &lt;= maxDist) {</span>
-<span class="fc" id="L247">      neighborsHelper(count, cords, level + 1, itemQueue, tiedList, leftNode);</span>
-<span class="fc" id="L248">      neighborsHelper(count, cords, level + 1, itemQueue, tiedList, rightNode);</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">    if (axisDist &lt;= maxDist) {</span>
+<span class="fc" id="L248">      neighborsHelper(count, cords, level + 1, itemQueue, tiedList, leftNode);</span>
+<span class="fc" id="L249">      neighborsHelper(count, cords, level + 1, itemQueue, tiedList, rightNode);</span>
     } else {
-<span class="fc bfc" id="L250" title="All 2 branches covered.">      if (fixedAxisCord &lt; currentAxisCord) {</span>
-<span class="fc" id="L251">        neighborsHelper(count, cords, level + 1, itemQueue, tiedList, leftNode);</span>
-<span class="pc bpc" id="L252" title="1 of 2 branches missed.">      } else if (fixedAxisCord &gt;= currentAxisCord) {</span>
-<span class="fc" id="L253">        neighborsHelper(count, cords, level + 1, itemQueue, tiedList, rightNode);</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">      if (fixedAxisCord &lt; currentAxisCord) {</span>
+<span class="fc" id="L252">        neighborsHelper(count, cords, level + 1, itemQueue, tiedList, leftNode);</span>
+<span class="pc bpc" id="L253" title="1 of 2 branches missed.">      } else if (fixedAxisCord &gt;= currentAxisCord) {</span>
+<span class="fc" id="L254">        neighborsHelper(count, cords, level + 1, itemQueue, tiedList, rightNode);</span>
       }
     }
-<span class="fc" id="L256">  }</span>
+<span class="fc" id="L257">  }</span>
 
 
   /**
    * Clears the tree to a new empty tree.
    */
   public void clear() {
-<span class="fc" id="L263">    root = new KDNode&lt;T&gt;();</span>
-<span class="fc" id="L264">  }</span>
+<span class="fc" id="L264">    root = new KDNode&lt;T&gt;();</span>
+<span class="fc" id="L265">  }</span>
 
   /**
    * Find the size of the KD Tree.
@@ -269,7 +270,7 @@ public class KDTree&lt;T extends HasCoordinates&gt; {
    * @return the size of the KD Tree.
    */
   public Integer rootSize() {
-<span class="fc" id="L272">    return treeSize(root);</span>
+<span class="fc" id="L273">    return treeSize(root);</span>
   }
 
   /**
@@ -279,13 +280,13 @@ public class KDTree&lt;T extends HasCoordinates&gt; {
    * @return the size of the Tree.
    */
   private Integer treeSize(KDNode&lt;T&gt; currentNode) {
-<span class="fc bfc" id="L282" title="All 2 branches covered.">    if (currentNode.getItem() == null) {</span>
-<span class="fc" id="L283">      return 0;</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">    if (currentNode.getItem() == null) {</span>
+<span class="fc" id="L284">      return 0;</span>
     }
 
-<span class="fc" id="L286">    KDNode&lt;T&gt; leftNode = currentNode.getLeft();</span>
-<span class="fc" id="L287">    KDNode&lt;T&gt; rightNode = currentNode.getRight();</span>
-<span class="fc" id="L288">    return 1 + treeSize(leftNode) + treeSize(rightNode);</span>
+<span class="fc" id="L287">    KDNode&lt;T&gt; leftNode = currentNode.getLeft();</span>
+<span class="fc" id="L288">    KDNode&lt;T&gt; rightNode = currentNode.getRight();</span>
+<span class="fc" id="L289">    return 1 + treeSize(leftNode) + treeSize(rightNode);</span>
   }
 
   /**
@@ -294,7 +295,7 @@ public class KDTree&lt;T extends HasCoordinates&gt; {
    * @return the KD Tree.
    */
   public KDNode&lt;T&gt; getTree() {
-<span class="fc" id="L297">    return root;</span>
+<span class="fc" id="L298">    return root;</span>
   }
 
 }

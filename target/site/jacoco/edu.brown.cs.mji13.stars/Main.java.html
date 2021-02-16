@@ -4,9 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
+import edu.brown.cs.mji13.command.Command;
 import edu.brown.cs.mji13.command.REPLRunner;
+import edu.brown.cs.mji13.gui.CommandHandler;
+import edu.brown.cs.mji13.people.MockCSV;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
@@ -21,6 +26,8 @@ import com.google.common.collect.ImmutableMap;
 
 import freemarker.template.Configuration;
 
+import static java.util.Map.entry;
+
 /**
  * The Main class of our project. This is where execution begins.
  */
@@ -29,60 +36,109 @@ public final class Main {
   private static final int DEFAULT_PORT = 4567;
 
   /**
+   * The common data-types shared by all the stars-related commands.
+   */
+<span class="nc" id="L41">  private final StarStorage starStorage = new StarStorage(&quot;storage&quot;);</span>
+
+  /**
+   * The Hashmap of String Keys to which Command Object they correspond to.
+   */
+<span class="nc" id="L46">  private final Map&lt;String, Command&gt; commandMap = Map.ofEntries(</span>
+<span class="nc" id="L47">      entry(&quot;stars&quot;, new UpdateStarFile(starStorage)),</span>
+<span class="nc" id="L48">      entry(&quot;naive_radius&quot;, new NaiveRadius(starStorage)),</span>
+<span class="nc" id="L49">      entry(&quot;naive_neighbors&quot;, new NaiveNeighbors(starStorage)),</span>
+<span class="nc" id="L50">      entry(&quot;radius&quot;, new Radius(starStorage)),</span>
+<span class="nc" id="L51">      entry(&quot;neighbors&quot;, new Neighbors(starStorage)),</span>
+<span class="nc" id="L52">      entry(&quot;mock&quot;, new MockCSV())</span>
+  );
+
+  /**
    * The initial method called when execution begins.
    *
    * @param args An array of command line arguments
    */
   public static void main(String[] args) {
-<span class="nc" id="L37">    new Main(args).run();</span>
-<span class="nc" id="L38">  }</span>
+<span class="nc" id="L61">    new Main(args).run();</span>
+<span class="nc" id="L62">  }</span>
 
   private String[] args;
 
-<span class="nc" id="L42">  private Main(String[] args) {</span>
-<span class="nc" id="L43">    this.args = args;</span>
-<span class="nc" id="L44">  }</span>
+<span class="nc" id="L66">  private Main(String[] args) {</span>
+<span class="nc" id="L67">    this.args = args;</span>
+<span class="nc" id="L68">  }</span>
 
   private void run() {
     // Parse command line arguments
-<span class="nc" id="L48">    OptionParser parser = new OptionParser();</span>
-<span class="nc" id="L49">    parser.accepts(&quot;gui&quot;);</span>
-<span class="nc" id="L50">    parser.accepts(&quot;port&quot;).withRequiredArg().ofType(Integer.class)</span>
-<span class="nc" id="L51">        .defaultsTo(DEFAULT_PORT);</span>
-<span class="nc" id="L52">    OptionSet options = parser.parse(args);</span>
+<span class="nc" id="L72">    OptionParser parser = new OptionParser();</span>
+<span class="nc" id="L73">    parser.accepts(&quot;gui&quot;);</span>
+<span class="nc" id="L74">    parser.accepts(&quot;port&quot;).withRequiredArg().ofType(Integer.class)</span>
+<span class="nc" id="L75">        .defaultsTo(DEFAULT_PORT);</span>
+<span class="nc" id="L76">    OptionSet options = parser.parse(args);</span>
 
-<span class="nc bnc" id="L54" title="All 2 branches missed.">    if (options.has(&quot;gui&quot;)) {</span>
-<span class="nc" id="L55">      runSparkServer((int) options.valueOf(&quot;port&quot;));</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">    if (options.has(&quot;gui&quot;)) {</span>
+<span class="nc" id="L79">      runSparkServer((int) options.valueOf(&quot;port&quot;));</span>
     }
 
     // Creates the REPL Runner and stars the loop
-<span class="nc" id="L59">    REPLRunner runner = new REPLRunner();</span>
-<span class="nc" id="L60">    runner.run();</span>
-<span class="nc" id="L61">  }</span>
+<span class="nc" id="L83">    REPLRunner runner = new REPLRunner(commandMap);</span>
+<span class="nc" id="L84">    runner.run();</span>
+<span class="nc" id="L85">  }</span>
 
   private static FreeMarkerEngine createEngine() {
-<span class="nc" id="L64">    Configuration config = new Configuration();</span>
-<span class="nc" id="L65">    File templates = new File(&quot;src/main/resources/spark/template/freemarker&quot;);</span>
+<span class="nc" id="L88">    Configuration config = new Configuration();</span>
+<span class="nc" id="L89">    File templates = new File(&quot;src/main/resources/spark/template/freemarker&quot;);</span>
     try {
-<span class="nc" id="L67">      config.setDirectoryForTemplateLoading(templates);</span>
-<span class="nc" id="L68">    } catch (IOException ioe) {</span>
-<span class="nc" id="L69">      System.out.printf(&quot;ERROR: Unable use %s for template loading.%n&quot;,</span>
+<span class="nc" id="L91">      config.setDirectoryForTemplateLoading(templates);</span>
+<span class="nc" id="L92">    } catch (IOException ioe) {</span>
+<span class="nc" id="L93">      System.out.printf(&quot;ERROR: Unable use %s for template loading.%n&quot;,</span>
           templates);
-<span class="nc" id="L71">      System.exit(1);</span>
-<span class="nc" id="L72">    }</span>
-<span class="nc" id="L73">    return new FreeMarkerEngine(config);</span>
+<span class="nc" id="L95">      System.exit(1);</span>
+<span class="nc" id="L96">    }</span>
+<span class="nc" id="L97">    return new FreeMarkerEngine(config);</span>
   }
 
   private void runSparkServer(int port) {
-<span class="nc" id="L77">    Spark.port(port);</span>
-<span class="nc" id="L78">    Spark.externalStaticFileLocation(&quot;src/main/resources/static&quot;);</span>
-<span class="nc" id="L79">    Spark.exception(Exception.class, new ExceptionPrinter());</span>
+<span class="nc" id="L101">    Spark.port(port);</span>
+<span class="nc" id="L102">    Spark.externalStaticFileLocation(&quot;src/main/resources/static&quot;);</span>
+<span class="nc" id="L103">    Spark.exception(Exception.class, new ExceptionPrinter());</span>
 
-<span class="nc" id="L81">    FreeMarkerEngine freeMarker = createEngine();</span>
+<span class="nc" id="L105">    FreeMarkerEngine freeMarker = createEngine();</span>
+
+    // The Handlers for naive_radius searches
+<span class="nc" id="L108">    CommandHandler naiveRadiusCords = new CommandHandler(commandMap.get(&quot;naive_radius&quot;),</span>
+<span class="nc" id="L109">        new ArrayList&lt;&gt;(Arrays.asList(&quot;radius-input&quot;, &quot;x-input&quot;, &quot;y-input&quot;, &quot;z-input&quot;)));</span>
+<span class="nc" id="L110">    CommandHandler naiveRadiusName = new CommandHandler(commandMap.get(&quot;naive_radius&quot;),</span>
+<span class="nc" id="L111">        new ArrayList&lt;&gt;(Arrays.asList(&quot;radius-input&quot;, &quot;name-input&quot;)));</span>
+
+    // The Handlers for naive_neighbors searches
+<span class="nc" id="L114">    CommandHandler naiveNeighborsCords = new CommandHandler(commandMap.get(&quot;naive_neighbors&quot;),</span>
+<span class="nc" id="L115">        new ArrayList&lt;&gt;(Arrays.asList(&quot;count-input&quot;, &quot;x-input&quot;, &quot;y-input&quot;, &quot;z-input&quot;)));</span>
+<span class="nc" id="L116">    CommandHandler naiveNeighborsName = new CommandHandler(commandMap.get(&quot;naive_neighbors&quot;),</span>
+<span class="nc" id="L117">        new ArrayList&lt;&gt;(Arrays.asList(&quot;count-input&quot;, &quot;name-input&quot;)));</span>
+
+    // The Handlers for radius searches
+<span class="nc" id="L120">    CommandHandler radiusCords = new CommandHandler(commandMap.get(&quot;radius&quot;),</span>
+<span class="nc" id="L121">        new ArrayList&lt;&gt;(Arrays.asList(&quot;radius-input&quot;, &quot;x-input&quot;, &quot;y-input&quot;, &quot;z-input&quot;)));</span>
+<span class="nc" id="L122">    CommandHandler radiusName = new CommandHandler(commandMap.get(&quot;radius&quot;),</span>
+<span class="nc" id="L123">        new ArrayList&lt;&gt;(Arrays.asList(&quot;radius-input&quot;, &quot;name-input&quot;)));</span>
+
+    // The Handlers for neighbors searches
+<span class="nc" id="L126">    CommandHandler neighborsCords = new CommandHandler(commandMap.get(&quot;neighbors&quot;),</span>
+<span class="nc" id="L127">        new ArrayList&lt;&gt;(Arrays.asList(&quot;count-input&quot;, &quot;x-input&quot;, &quot;y-input&quot;, &quot;z-input&quot;)));</span>
+<span class="nc" id="L128">    CommandHandler neighborsName = new CommandHandler(commandMap.get(&quot;neighbors&quot;),</span>
+<span class="nc" id="L129">        new ArrayList&lt;&gt;(Arrays.asList(&quot;count-input&quot;, &quot;name-input&quot;)));</span>
 
     // Setup Spark Routes
-<span class="nc" id="L84">    Spark.get(&quot;/stars&quot;, new FrontHandler(), freeMarker);</span>
-<span class="nc" id="L85">  }</span>
+<span class="nc" id="L132">    Spark.get(&quot;/stars&quot;, new FrontHandler(), freeMarker);</span>
+<span class="nc" id="L133">    Spark.get(&quot;/naive-radius-cord&quot;, naiveRadiusCords, freeMarker);</span>
+<span class="nc" id="L134">    Spark.get(&quot;/naive-radius-name&quot;, naiveRadiusName, freeMarker);</span>
+<span class="nc" id="L135">    Spark.get(&quot;/naive-neighbors-cord&quot;, naiveNeighborsCords, freeMarker);</span>
+<span class="nc" id="L136">    Spark.get(&quot;/naive-neighbors-name&quot;, naiveNeighborsName, freeMarker);</span>
+<span class="nc" id="L137">    Spark.get(&quot;/radius-cord&quot;, radiusCords, freeMarker);</span>
+<span class="nc" id="L138">    Spark.get(&quot;/radius-name&quot;, radiusName, freeMarker);</span>
+<span class="nc" id="L139">    Spark.get(&quot;/neighbors-cord&quot;, neighborsCords, freeMarker);</span>
+<span class="nc" id="L140">    Spark.get(&quot;/neighbors-name&quot;, neighborsName, freeMarker);</span>
+<span class="nc" id="L141">  }</span>
 
   /**
    * Handle requests to the front page of our Stars website.
@@ -90,9 +146,11 @@ public final class Main {
   private static class FrontHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-<span class="nc" id="L93">      Map&lt;String, Object&gt; variables = ImmutableMap.of(&quot;title&quot;,</span>
-          &quot;Stars: Query the database&quot;);
-<span class="nc" id="L95">      return new ModelAndView(variables, &quot;query.ftl&quot;);</span>
+<span class="nc" id="L149">      Map&lt;String, Object&gt; variables = ImmutableMap.of(</span>
+          &quot;title&quot;, &quot;Stars: Query the database&quot;,
+          &quot;message&quot;, &quot;&quot;
+      );
+<span class="nc" id="L153">      return new ModelAndView(variables, &quot;modal.ftl&quot;);</span>
     }
   }
 
@@ -102,15 +160,15 @@ public final class Main {
   private static class ExceptionPrinter implements ExceptionHandler {
     @Override
     public void handle(Exception e, Request req, Response res) {
-<span class="nc" id="L105">      res.status(500);</span>
-<span class="nc" id="L106">      StringWriter stacktrace = new StringWriter();</span>
-<span class="nc" id="L107">      try (PrintWriter pw = new PrintWriter(stacktrace)) {</span>
-<span class="nc" id="L108">        pw.println(&quot;&lt;pre&gt;&quot;);</span>
-<span class="nc" id="L109">        e.printStackTrace(pw);</span>
-<span class="nc" id="L110">        pw.println(&quot;&lt;/pre&gt;&quot;);</span>
+<span class="nc" id="L163">      res.status(500);</span>
+<span class="nc" id="L164">      StringWriter stacktrace = new StringWriter();</span>
+<span class="nc" id="L165">      try (PrintWriter pw = new PrintWriter(stacktrace)) {</span>
+<span class="nc" id="L166">        pw.println(&quot;&lt;pre&gt;&quot;);</span>
+<span class="nc" id="L167">        e.printStackTrace(pw);</span>
+<span class="nc" id="L168">        pw.println(&quot;&lt;/pre&gt;&quot;);</span>
       }
-<span class="nc" id="L112">      res.body(stacktrace.toString());</span>
-<span class="nc" id="L113">    }</span>
+<span class="nc" id="L170">      res.body(stacktrace.toString());</span>
+<span class="nc" id="L171">    }</span>
   }
 
 }

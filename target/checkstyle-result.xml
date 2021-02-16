@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <checkstyle version="8.19">
-<file name="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Neighbors.java">
-</file>
-<file name="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Radius.java">
+<file name="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\StarsGenerator.java">
 </file>
 </checkstyle>

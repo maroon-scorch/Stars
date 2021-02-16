@@ -81,50 +81,88 @@ public class Neighbors implements Command, StringValFunctions {
 <span class="nc" id="L81">  }</span>
 
   /**
+   * Execute Specific Variables
+   * The list of answers (Stars) the command line finds during its execution.
+   * And the boolean hasErrorOccurred checking if error occurred during execution
+   */
+<span class="pc" id="L88">  private ArrayList&lt;Star&gt; answers = new ArrayList&lt;&gt;();</span>
+<span class="pc" id="L89">  private boolean hasErrorOccurred = false;</span>
+
+  /**
    * Executes the naive_neighbors Command.
-   * If successful, prints out the closest n number of stars to the specified location.
+   * If successful, finds the closest n number of stars to the specified location.
    *
    * @param args - the list of arguments to be operated on.
+   * @return the Arraylist of starIDs to be print out if Successful. If unSuccessful,
+   * prints the error messages instead.
    */
-  public void execute(ArrayList&lt;String&gt; args) {
+  public ArrayList&lt;String&gt; execute(ArrayList&lt;String&gt; args) {
+<span class="fc" id="L100">    ArrayList&lt;String&gt; messages = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L101">    hasErrorOccurred = false;</span>
+<span class="fc" id="L102">    answers.clear();</span>
+
     // If no File has been loaded, signal an error
-<span class="nc bnc" id="L91" title="All 2 branches missed.">    if (starStorage.getFileName().length() == 0) {</span>
-<span class="nc" id="L92">      System.out.println(&quot;ERROR: No file has been loaded yet&quot;);</span>
-<span class="nc" id="L93">      return;</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">    if (starStorage.getFileName().length() == 0) {</span>
+<span class="nc" id="L106">      hasErrorOccurred = true;</span>
+<span class="nc" id="L107">      messages.add(&quot;ERROR: No file has been loaded yet&quot;);</span>
+<span class="nc" id="L108">      return messages;</span>
     }
 
     // If the arguments failed the validation check, exit out of execute.
-<span class="nc" id="L97">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
-<span class="nc bnc" id="L98" title="All 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
-<span class="nc" id="L99">      return;</span>
+<span class="fc" id="L112">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
+<span class="nc" id="L114">      hasErrorOccurred = true;</span>
+<span class="nc" id="L115">      messages.add(argsValidator.getErrorMessage());</span>
+<span class="nc" id="L116">      return messages;</span>
     }
 
     // If a valid method name has been found, then operate:
-<span class="nc" id="L103">    String methodName = opMethodName.get();</span>
-<span class="nc" id="L104">    KDTree&lt;Star&gt; sTree = starStorage.getStarsTree();</span>
-<span class="nc bnc" id="L105" title="All 3 branches missed.">    switch (methodName) {</span>
+<span class="fc" id="L120">    String methodName = opMethodName.get();</span>
+<span class="fc" id="L121">    KDTree&lt;Star&gt; sTree = starStorage.getStarsTree();</span>
+<span class="pc bpc" id="L122" title="1 of 3 branches missed.">    switch (methodName) {</span>
       case &quot;neighbors_2&quot;:
-<span class="nc" id="L107">        int neighbors = Integer.parseInt(args.get(0));</span>
-<span class="nc" id="L108">        String sName = args.get(1);</span>
-<span class="nc" id="L109">        String sStarNoQuotes = sName.substring(1, sName.length() - 1);</span>
-<span class="nc" id="L110">        ArrayList&lt;Star&gt; starsInRange2 = performNeighbors(neighbors, sStarNoQuotes, sTree);</span>
-<span class="nc" id="L111">        starsInRange2.forEach(System.out::println);</span>
-<span class="nc" id="L112">        break;</span>
+<span class="fc" id="L124">        int neighbors = Integer.parseInt(args.get(0));</span>
+<span class="fc" id="L125">        String sName = args.get(1);</span>
+<span class="fc" id="L126">        String sStarNoQuotes = sName.substring(1, sName.length() - 1);</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        if (starStorage.isNameInStorage(sStarNoQuotes)) {</span>
+<span class="fc" id="L128">          answers = performNeighbors(neighbors, sStarNoQuotes, sTree);</span>
+<span class="fc" id="L129">          answers.forEach((str) -&gt; messages.add(str.getStarID()));</span>
+        } else {
+<span class="nc" id="L131">          hasErrorOccurred = true;</span>
+<span class="nc" id="L132">          messages.add(String.format(&quot;ERROR: No Stars with name \&quot;%s\&quot; &quot;</span>
+              + &quot;is found or name is empty&quot;, sStarNoQuotes));
+        }
+<span class="fc" id="L135">        return messages;</span>
+
       case &quot;neighbors_4&quot;:
-<span class="nc" id="L114">        int intNeighbors = Integer.parseInt(args.get(0));</span>
-<span class="nc" id="L115">        double dPosX = Double.parseDouble(args.get(1));</span>
-<span class="nc" id="L116">        double dPosY = Double.parseDouble(args.get(2));</span>
-<span class="nc" id="L117">        double dPosZ = Double.parseDouble(args.get(3));</span>
-<span class="nc" id="L118">        ArrayList&lt;Star&gt; starsInRange4 =</span>
-<span class="nc" id="L119">            performNeighbors(intNeighbors, dPosX, dPosY, dPosZ, sTree, Optional.empty());</span>
-<span class="nc" id="L120">        starsInRange4.forEach(System.out::println);</span>
-<span class="nc" id="L121">        break;</span>
+<span class="fc" id="L138">        int intNeighbors = Integer.parseInt(args.get(0));</span>
+<span class="fc" id="L139">        double dPosX = Double.parseDouble(args.get(1));</span>
+<span class="fc" id="L140">        double dPosY = Double.parseDouble(args.get(2));</span>
+<span class="fc" id="L141">        double dPosZ = Double.parseDouble(args.get(3));</span>
+        // ArrayList&lt;Star&gt; starsInRange4 =
+<span class="fc" id="L143">        answers = performNeighbors(intNeighbors, dPosX, dPosY, dPosZ, sTree, Optional.empty());</span>
+        // starsInRange4.forEach(System.out::println);
+<span class="fc" id="L145">        answers.forEach((str) -&gt; messages.add(str.getStarID()));</span>
+<span class="fc" id="L146">        return messages;</span>
       default:
-<span class="nc" id="L123">        System.out.println(&quot;ERROR: Hashmap reqInfoMaps has unregistered names, &quot;</span>
+        // Only occurs if Programmer made an Error
+<span class="nc" id="L149">        System.out.println(&quot;ERROR: Hashmap reqInfoMaps has unregistered names, &quot;</span>
             + &quot;shouldn't have reached here&quot;);
-        break;
+<span class="nc" id="L151">        return new ArrayList&lt;&gt;();</span>
     }
-<span class="nc" id="L127">  }</span>
+  }
+
+  /**
+   * Executes the neighbors Command for the GUI.
+   *
+   * @param args - the list of arguments to be operated on.
+   * @return the String of the HTML Table formed by the list of Stars.
+   */
+  public String executeForGUI(ArrayList&lt;String&gt; args) {
+<span class="fc" id="L162">    String result = String.join(&quot;\n&quot;, execute(args));</span>
+<span class="fc" id="L163">    ArrayList&lt;Star&gt; answerCopy = new ArrayList&lt;Star&gt;(answers);</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">    return hasErrorOccurred ? result : starStorage.starListToHTML(answerCopy);</span>
+  }
 
   /**
    * Match the arguments given to which method (if any) the Command Object should execute.
@@ -133,7 +171,7 @@ public class Neighbors implements Command, StringValFunctions {
    * @return Option of String - empty if the arguments are invalid, a String if match is found.
    */
   public Optional&lt;String&gt; matchArgsToMethod(ArrayList&lt;String&gt; args) {
-<span class="nc" id="L136">    return argsValidator.testArgs(args);</span>
+<span class="fc" id="L174">    return argsValidator.testArgs(args);</span>
   }
 
   /**
@@ -152,40 +190,50 @@ public class Neighbors implements Command, StringValFunctions {
   public ArrayList&lt;Star&gt; performNeighbors(
       int count, double x, double y, double z, KDTree&lt;Star&gt; tree, Optional&lt;String&gt; name) {
 
-<span class="fc" id="L155">    boolean filterName = name.isPresent();</span>
+<span class="fc" id="L193">    boolean filterName = name.isPresent();</span>
     // Setup for findNearestNeighbors from the KD Tree
-<span class="fc" id="L157">    List&lt;Double&gt; cordsList = Arrays.asList(x, y, z);</span>
-<span class="fc" id="L158">    ArrayList&lt;Star&gt; resultList = tree.findNearestNeighbors(count, cordsList);</span>
+<span class="fc" id="L195">    List&lt;Double&gt; cordsList = Arrays.asList(x, y, z);</span>
+
+    // Invokes the findNearestNeighbors method of the KD Tree
+<span class="fc" id="L198">    ArrayList&lt;Star&gt; resultList = tree.findNearestNeighbors(count, cordsList);</span>
 
     // If we are removing the name, then proceed to remove the star with said name from
     // the list.
-<span class="fc bfc" id="L162" title="All 2 branches covered.">    if (filterName) {</span>
-<span class="fc" id="L163">      String pName = name.get();</span>
-<span class="fc" id="L164">      resultList.removeIf(star -&gt; star.getName().equals(pName));</span>
-<span class="fc" id="L165">      count = count - 1;</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">    if (filterName) {</span>
+<span class="fc" id="L203">      String pName = name.get();</span>
+<span class="fc" id="L204">      resultList.removeIf(star -&gt; star.getName().equals(pName));</span>
+<span class="fc" id="L205">      count = count - 1;</span>
     }
 
     // If the size of the resultlist is the same as the count, then there are no ties,
     // so we can safely return the list.
-<span class="pc bpc" id="L170" title="1 of 2 branches missed.">    if (resultList.size() == count) {</span>
-<span class="fc" id="L171">      return resultList;</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">    if (resultList.size() == count) {</span>
+<span class="fc" id="L211">      return resultList;</span>
+    }
+
+<span class="fc bfc" id="L214" title="All 2 branches covered.">    if (count &gt;= tree.rootSize()) {</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">      if (filterName) {</span>
+<span class="fc" id="L216">        String pName = name.get();</span>
+<span class="fc" id="L217">        resultList.removeIf(star -&gt; star.getName().equals(pName));</span>
+      }
+<span class="fc" id="L219">      return resultList;</span>
     }
 
     // If the list is tied, find the distance at which the stars are tied.
-<span class="nc" id="L175">    ArrayList&lt;Star&gt; fullTiedList = new ArrayList&lt;&gt;(resultList);</span>
-<span class="nc" id="L176">    double distAtCount = resultList.get(count - 1).distanceTo(cordsList);</span>
-<span class="nc bnc" id="L177" title="All 2 branches missed.">    resultList.removeIf(star -&gt; star.distanceTo(cordsList) == distAtCount);</span>
-<span class="nc bnc" id="L178" title="All 2 branches missed.">    fullTiedList.removeIf(star -&gt; star.distanceTo(cordsList) != distAtCount);</span>
+<span class="fc" id="L223">    ArrayList&lt;Star&gt; fullTiedList = new ArrayList&lt;&gt;(resultList);</span>
+<span class="fc" id="L224">    double distAtCount = resultList.get(count - 1).distanceTo(cordsList);</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">    resultList.removeIf(star -&gt; star.distanceTo(cordsList) == distAtCount);</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">    fullTiedList.removeIf(star -&gt; star.distanceTo(cordsList) != distAtCount);</span>
 
     // For the remaining gap in the result list, randomly remove stars from the fully
     // tied list until the result list is full.
-<span class="nc" id="L182">    Random ran = new Random();</span>
-<span class="nc bnc" id="L183" title="All 2 branches missed.">    for (int i = 0; i &lt; (count - resultList.size() + 1); i++) {</span>
-<span class="nc" id="L184">      int selected = ran.nextInt(fullTiedList.size());</span>
-<span class="nc" id="L185">      resultList.add(fullTiedList.remove(selected));</span>
+<span class="fc" id="L230">    Random ran = new Random();</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">    for (int i = 0; i &lt; (count - resultList.size() + 1); i++) {</span>
+<span class="fc" id="L232">      int selected = ran.nextInt(fullTiedList.size());</span>
+<span class="fc" id="L233">      resultList.add(fullTiedList.remove(selected));</span>
     }
 
-<span class="nc" id="L188">    return resultList;</span>
+<span class="fc" id="L236">    return resultList;</span>
   }
 
   /**
@@ -197,33 +245,21 @@ public class Neighbors implements Command, StringValFunctions {
    * @param tree  the KD Tree of stars to search through
    * @return the list of stars from least distance to greatest within count given
    */
-  public ArrayList&lt;Star&gt; performNeighbors(
-      int count, String name, KDTree&lt;Star&gt; tree) {
-    // If the name is empty, print an error
-<span class="pc bpc" id="L203" title="1 of 2 branches missed.">    if (name.isEmpty()) {</span>
-<span class="nc" id="L204">      System.out.println(&quot;ERROR: Empty String is not a valid name for stars&quot;);</span>
-<span class="nc" id="L205">      return new ArrayList&lt;&gt;();</span>
-    }
+  public ArrayList&lt;Star&gt; performNeighbors(int count, String name, KDTree&lt;Star&gt; tree) {
+    // Gets the Star from StarStorage, because the program checked if the name is in the
+    // storage before, error handling is taken care of already.
+<span class="fc" id="L251">    Star presentStar = starStorage.getStarFromMap(name);</span>
 
-    // If the selected star is not found, print an error
-<span class="fc" id="L209">    Optional&lt;Star&gt; selectedStar = starStorage.getStarFromMap(name);</span>
-<span class="pc bpc" id="L210" title="1 of 2 branches missed.">    if (selectedStar.isEmpty()) {</span>
-<span class="nc" id="L211">      System.out.printf(&quot;ERROR: No Stars with name \&quot;%s\&quot; is found%n&quot;, name);</span>
-<span class="nc" id="L212">      return new ArrayList&lt;&gt;();</span>
-    }
-
-<span class="fc" id="L215">    Star presentStar = selectedStar.get();</span>
-
-<span class="fc" id="L217">    double selectedX = presentStar.getCoordinate(0);</span>
-<span class="fc" id="L218">    double selectedY = presentStar.getCoordinate(1);</span>
-<span class="fc" id="L219">    double selectedZ = presentStar.getCoordinate(2);</span>
+<span class="fc" id="L253">    double selectedX = presentStar.getCoordinate(0);</span>
+<span class="fc" id="L254">    double selectedY = presentStar.getCoordinate(1);</span>
+<span class="fc" id="L255">    double selectedZ = presentStar.getCoordinate(2);</span>
 
     // Calls performNeighbors in the coordinate form.
-<span class="fc" id="L222">    ArrayList&lt;Star&gt; resultList</span>
-<span class="fc" id="L223">        = performNeighbors(count + 1, selectedX, selectedY, selectedZ, tree,</span>
-<span class="fc" id="L224">        Optional.of(name));</span>
+<span class="fc" id="L258">    ArrayList&lt;Star&gt; resultList</span>
+<span class="fc" id="L259">        = performNeighbors(count + 1, selectedX, selectedY, selectedZ, tree,</span>
+<span class="fc" id="L260">        Optional.of(name));</span>
 
-<span class="fc" id="L226">    return resultList;</span>
+<span class="fc" id="L262">    return resultList;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

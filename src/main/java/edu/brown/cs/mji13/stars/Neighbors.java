@@ -27,14 +27,6 @@ public class Neighbors implements Command, StringValFunctions {
   private StarStorage starStorage;
 
   /**
-   * The list of messages the command line accumulates during its execution.
-   * And the boolean errorOccurred.
-   */
-  private ArrayList<String> messages = new ArrayList<>();
-  private ArrayList<Star> answers = new ArrayList<>();
-  private boolean errorOccurred = false;
-
-  /**
    * Specifications on the requirements on the argument passed to the command.
    * 2 Arguments:
    * - neighbors: non-negative integer
@@ -89,25 +81,39 @@ public class Neighbors implements Command, StringValFunctions {
   }
 
   /**
+   * Execute Specific Variables
+   * The list of answers (Stars) the command line finds during its execution.
+   * And the boolean hasErrorOccurred checking if error occurred during execution
+   */
+  private ArrayList<Star> answers = new ArrayList<>();
+  private boolean hasErrorOccurred = false;
+
+  /**
    * Executes the naive_neighbors Command.
-   * If successful, prints out the closest n number of stars to the specified location.
+   * If successful, finds the closest n number of stars to the specified location.
    *
    * @param args - the list of arguments to be operated on.
+   * @return the Arraylist of starIDs to be print out if Successful. If unSuccessful,
+   * prints the error messages instead.
    */
-  public void execute(ArrayList<String> args) {
+  public ArrayList<String> execute(ArrayList<String> args) {
+    ArrayList<String> messages = new ArrayList<>();
+    hasErrorOccurred = false;
+    answers.clear();
+
     // If no File has been loaded, signal an error
     if (starStorage.getFileName().length() == 0) {
-      errorOccurred = true;
+      hasErrorOccurred = true;
       messages.add("ERROR: No file has been loaded yet");
-      return;
+      return messages;
     }
 
     // If the arguments failed the validation check, exit out of execute.
     Optional<String> opMethodName = matchArgsToMethod(args);
     if (opMethodName.isEmpty()) {
-      errorOccurred = true;
+      hasErrorOccurred = true;
       messages.add(argsValidator.getErrorMessage());
-      return;
+      return messages;
     }
 
     // If a valid method name has been found, then operate:
@@ -118,11 +124,16 @@ public class Neighbors implements Command, StringValFunctions {
         int neighbors = Integer.parseInt(args.get(0));
         String sName = args.get(1);
         String sStarNoQuotes = sName.substring(1, sName.length() - 1);
-        // ArrayList<Star> starsInRange2
-        answers = performNeighbors(neighbors, sStarNoQuotes, sTree);
-        // starsInRange2.forEach(System.out::println);
-        answers.forEach((str) -> messages.add(str.getStarID()));
-        break;
+        if (starStorage.isNameInStorage(sStarNoQuotes)) {
+          answers = performNeighbors(neighbors, sStarNoQuotes, sTree);
+          answers.forEach((str) -> messages.add(str.getStarID()));
+        } else {
+          hasErrorOccurred = true;
+          messages.add(String.format("ERROR: No Stars with name \"%s\" "
+              + "is found or name is empty", sStarNoQuotes));
+        }
+        return messages;
+
       case "neighbors_4":
         int intNeighbors = Integer.parseInt(args.get(0));
         double dPosX = Double.parseDouble(args.get(1));
@@ -132,21 +143,25 @@ public class Neighbors implements Command, StringValFunctions {
         answers = performNeighbors(intNeighbors, dPosX, dPosY, dPosZ, sTree, Optional.empty());
         // starsInRange4.forEach(System.out::println);
         answers.forEach((str) -> messages.add(str.getStarID()));
-        break;
+        return messages;
       default:
+        // Only occurs if Programmer made an Error
         System.out.println("ERROR: Hashmap reqInfoMaps has unregistered names, "
             + "shouldn't have reached here");
-        break;
+        return new ArrayList<>();
     }
   }
 
+  /**
+   * Executes the neighbors Command for the GUI.
+   *
+   * @param args - the list of arguments to be operated on.
+   * @return the String of the HTML Table formed by the list of Stars.
+   */
   public String executeForGUI(ArrayList<String> args) {
-    execute(args);
-    String result = String.join("\n", getMessages());
+    String result = String.join("\n", execute(args));
     ArrayList<Star> answerCopy = new ArrayList<Star>(answers);
-    boolean heoTemp = hasErrorOccurred();
-    clearMessage();
-    return heoTemp ? result : starStorage.starListToHTML(answerCopy);
+    return hasErrorOccurred ? result : starStorage.starListToHTML(answerCopy);
   }
 
   /**
@@ -157,33 +172,6 @@ public class Neighbors implements Command, StringValFunctions {
    */
   public Optional<String> matchArgsToMethod(ArrayList<String> args) {
     return argsValidator.testArgs(args);
-  }
-
-  /**
-   * Returns the ArrayList of Messages stashed.
-   *
-   * @return - the variable messages
-   */
-  public ArrayList<String> getMessages() {
-    return new ArrayList<>(messages);
-  }
-
-  /**
-   * Clears the Stash After the Execution of a Command.
-   */
-  public void clearMessage() {
-    answers.clear();
-    errorOccurred = false;
-    messages.clear();
-  }
-
-  /**
-   * Checks if an error has occurred during the execution of the program.
-   *
-   * @return - the variable errorOccurred
-   */
-  public boolean hasErrorOccurred() {
-    return errorOccurred;
   }
 
   /**
@@ -257,24 +245,10 @@ public class Neighbors implements Command, StringValFunctions {
    * @param tree  the KD Tree of stars to search through
    * @return the list of stars from least distance to greatest within count given
    */
-  public ArrayList<Star> performNeighbors(
-      int count, String name, KDTree<Star> tree) {
-    // If the name is empty, print an error
-    if (name.isEmpty()) {
-      errorOccurred = true;
-      messages.add("ERROR: Empty String is not a valid name for stars");
-      return new ArrayList<>();
-    }
-
-    // If the selected star is not found, print an error
-    Optional<Star> selectedStar = starStorage.getStarFromMap(name);
-    if (selectedStar.isEmpty()) {
-      errorOccurred = true;
-      messages.add(String.format("ERROR: No Stars with name \"%s\" is found", name));
-      return new ArrayList<>();
-    }
-
-    Star presentStar = selectedStar.get();
+  public ArrayList<Star> performNeighbors(int count, String name, KDTree<Star> tree) {
+    // Gets the Star from StarStorage, because the program checked if the name is in the
+    // storage before, error handling is taken care of already.
+    Star presentStar = starStorage.getStarFromMap(name);
 
     double selectedX = presentStar.getCoordinate(0);
     double selectedY = presentStar.getCoordinate(1);

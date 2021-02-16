@@ -25,13 +25,6 @@ public class UpdateStarFile implements Command, StringValFunctions {
   private StarStorage starStorage;
 
   /**
-   * The list of messages the command line accumulates during its execution.
-   * And the boolean errorOccurred.
-   */
-  private final ArrayList<String> messages = new ArrayList<>();
-  private boolean errorOccurred = false;
-
-  /**
    * The parser to handle parsing of the CSV File.
    */
   private final CSVParser parser = new CSVParser();
@@ -107,16 +100,17 @@ public class UpdateStarFile implements Command, StringValFunctions {
 
   /**
    * Executes the stars Command.
-   * If successful, prints out every line of the MockPerson converted in String.
+   * If successful, prints out how many stars were loaded in the file.
    *
    * @param args - the list of arguments to be operated on
+   * @return the message of the command if successful, the error if unsuccessful.
    */
-  public void execute(ArrayList<String> args) {
+  public ArrayList<String> execute(ArrayList<String> args) {
+    ArrayList<String> messages = new ArrayList<>();
     Optional<String> opMethodName = matchArgsToMethod(args);
     if (opMethodName.isEmpty()) {
       messages.add(argsValidator.getErrorMessage());
-      errorOccurred = true;
-      return;
+      return messages;
     }
 
     String filepath = args.get(0);
@@ -129,12 +123,11 @@ public class UpdateStarFile implements Command, StringValFunctions {
       starStorage.setListToTree(tempStarsList);
       starStorage.setListToStarsMap(tempStarsList);
       starStorage.setName(filepath);
-      errorOccurred = false;
       messages.add(String.format("Read %d stars from %s", tempStarsList.size(), filepath));
-      ///System.out.printf("Read %d stars from %s%n", tempStarsList.size(), filepath);
+      return messages;
     }
-    errorOccurred = true;
     messages.addAll(parser.getMessages());
+    return messages;
   }
 
   /**
@@ -147,32 +140,6 @@ public class UpdateStarFile implements Command, StringValFunctions {
    */
   public Optional<String> matchArgsToMethod(ArrayList<String> args) {
     return argsValidator.testArgs(args);
-  }
-
-  /**
-   * Returns the ArrayList of Messages stashed.
-   *
-   * @return - the variable messages
-   */
-  public ArrayList<String> getMessages() {
-    return new ArrayList<>(messages);
-  }
-
-  /**
-   * Clears the Stash After the Execution of a Command.
-   */
-  public void clearMessage() {
-    errorOccurred = false;
-    messages.clear();
-  }
-
-  /**
-   * Checks if an error has occurred during the execution of the program.
-   *
-   * @return - the variable errorOccurred
-   */
-  public boolean hasErrorOccurred() {
-    return errorOccurred;
   }
 
   /**

@@ -27,12 +27,14 @@ public class PropertyBasedNeighborsTest {
   private NaiveNeighbors naive_neighbors;
   private Neighbors neighbors;
   private StarStorage starStorage;
+  private StarsGenerator generator;
+
   /**
    * Sets up the generator to be passed into the two Commands
    */
   @Before
   public void setUp() {
-    StarsGenerator generator = new StarsGenerator(-100, 200, 5, 26);
+    generator = new StarsGenerator(-100, 200, 5, 26);
     testStars = generator.generateInput(100);
 
     starStorage = new StarStorage("test");
@@ -58,7 +60,13 @@ public class PropertyBasedNeighborsTest {
   }
 
   /**
-   * Testing for Coordinate Implementation of Neighbors
+   * Testing for Coordinate Implementation of Neighbors and Naive_Neighbors:
+   * Check if the two lists outputted both satisfy the same properties:
+   * 1. That all stars when converted to the distance from the coordiante specified,
+   * is the same
+   * 2. The size of both lists are the count specified
+   * 3. Both lists are in ascending order of distances
+   * 4. All the stars selected in the lists are all in the original list.
    */
   @Test
   public void testAtScaleForCords() {
@@ -77,15 +85,13 @@ public class PropertyBasedNeighborsTest {
       ArrayList<Star> nResult
           = neighbors.performNeighbors(ct, xPos, yPos, zPos, starTree, Optional.empty());
 
-      // Checking if their distances are equivalent because order of stars may be different
-      List<Double> nnDist = nnResult.stream()
-          .map(star -> star.distanceTo(Arrays.asList(xPos, yPos, zPos)))
-          .collect(Collectors.toList());
-      List<Double> nDist = nResult.stream()
-          .map(star -> star.distanceTo(Arrays.asList(xPos, yPos, zPos)))
-          .collect(Collectors.toList());
+      ArrayList<Double> cords = new ArrayList<>();
+      cords.add(xPos);
+      cords.add(yPos);
+      cords.add(zPos);
 
-      isEqual = isEqual && (nnDist.equals(nDist));
+      isEqual = isEqual
+          && (generator.areNeighborsListValid(ct, testStars, cords, nnResult, nResult));
     }
 
     assertTrue(isEqual);
@@ -93,7 +99,14 @@ public class PropertyBasedNeighborsTest {
   }
 
   /**
-   * Testing for Name Implementation of Neighbors
+   * Testing for Name Implementation of Neighbors and Naive_Neighbors:
+   * Check if the two lists outputted both satisfy the same properties:
+   * 1. That all stars when converted to the distance from the coordiante specified,
+   * is the same
+   * 2. The size of both lists are the count specified
+   * 3. Both lists are in ascending order of distances
+   * 4. All the stars selected in the lists are all in the original list.
+   * 5. The name specified isn't in the list of stars
    */
   @Test
   public void testAtScaleForNames() {
@@ -108,18 +121,20 @@ public class PropertyBasedNeighborsTest {
       ArrayList<Star> nResult
           = neighbors.performNeighbors(ct, target, starTree);
 
-      Optional<Star> currentStar = starStorage.getStarFromMap(target);
-      Star presentStar = currentStar.get();
+      Star presentStar = starStorage.getStarFromMap(target);
 
-      // Checking if their distances are equivalent because order of stars may be different
-      List<Double> nnDist = nnResult.stream()
-          .map(star -> star.distanceTo(presentStar.getCoordinates()))
+      // Checking if the String is in the name outputted
+      List<String> strList1 = nnResult.stream()
+          .map(Star::getName)
           .collect(Collectors.toList());
-      List<Double> nDist = nResult.stream()
-          .map(star -> star.distanceTo(presentStar.getCoordinates()))
+      List<String> strList2 = nResult.stream()
+          .map(Star::getName)
           .collect(Collectors.toList());
 
-      isEqual = isEqual && (nnDist.equals(nDist));
+      isEqual = isEqual
+          && (generator.areNeighborsListValid(ct, testStars,
+          presentStar.getCoordinates(), nnResult, nResult) && !strList1.contains(target)
+      && !strList2.contains(target));
     }
 
     assertTrue(isEqual);

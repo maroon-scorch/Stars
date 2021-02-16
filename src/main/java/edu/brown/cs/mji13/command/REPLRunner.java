@@ -1,13 +1,5 @@
 package edu.brown.cs.mji13.command;
 
-import edu.brown.cs.mji13.people.MockCSV;
-import edu.brown.cs.mji13.stars.NaiveNeighbors;
-import edu.brown.cs.mji13.stars.NaiveRadius;
-import edu.brown.cs.mji13.stars.Neighbors;
-import edu.brown.cs.mji13.stars.Radius;
-import edu.brown.cs.mji13.stars.StarStorage;
-import edu.brown.cs.mji13.stars.UpdateStarFile;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -15,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static java.util.Map.entry;
 
 /**
  * REPLRunner that initiates the REPL Loop until being terminated.
@@ -43,6 +33,7 @@ public class REPLRunner {
    *
    */
   public void run() {
+    // Runs indefinitely until an exit is signaled
     try (BufferedReader reader = new BufferedReader(
         new InputStreamReader(System.in, StandardCharsets.UTF_8))) {
       String input;
@@ -56,21 +47,24 @@ public class REPLRunner {
           // Separates the Command into different Strings without splitting between ""
           Pattern pattern = Pattern.compile("(\"[^\"]*\"|[\\S]+)+");
           Matcher matcher = pattern.matcher(input);
-
           while (matcher.find()) {
             separatedCommand.add(matcher.group());
           }
 
+          // Removes all Empty Strings in the Command
           separatedCommand.removeIf(String::isEmpty);
+          // The title/keyword of the command is the first string found
           String commandTitle = separatedCommand.remove(0);
 
+          // Check if command map has said keyword
           if (commandMap.containsKey(commandTitle)) {
             Command currentCommand = commandMap.get(commandTitle);
-            currentCommand.execute(separatedCommand);
-            ArrayList<String> messages = currentCommand.getMessages();
+            // Executes the Command
+            ArrayList<String> messages = currentCommand.execute(separatedCommand);
+            // Prints each message out
             messages.forEach(System.out::println);
-            currentCommand.clearMessage();
           } else {
+            // Signals said command is not found
             System.out.printf("ERROR: The Command \"%s\" does not exist%n", commandTitle);
           }
         } catch (RuntimeException e) {

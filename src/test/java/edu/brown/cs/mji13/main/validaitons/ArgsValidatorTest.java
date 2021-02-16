@@ -86,7 +86,22 @@ public class ArgsValidatorTest implements StringValFunctions{
     correctParameters.add("0.67");
     Optional<String> name4 = validator.testArgs(correctParameters);
     assertEquals(name4.get(), "naive_neighbors_4");
+
+    assertEquals(validator.getErrorMessage(), "");
   }
+
+  /**
+   * Test Get Set Error Method
+   */
+  @Test
+  public void testErrorGetSet() {
+    validator.setMessage("A");
+    assertEquals(validator.getErrorMessage(), "A");
+    validator.setMessage("B");
+    assertEquals(validator.getErrorMessage(), "B");
+    validator.setMessage("");
+  }
+
 
   /**
    * Testing testArgsWithReq method when No Error is triggered

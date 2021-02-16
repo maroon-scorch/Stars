@@ -14,7 +14,6 @@ import edu.brown.cs.mji13.gui.CommandHandler;
 import edu.brown.cs.mji13.people.MockCSV;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import org.checkerframework.checker.units.qual.A;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
 import spark.Request;
@@ -105,18 +104,36 @@ public final class Main {
 
     FreeMarkerEngine freeMarker = createEngine();
 
-    CommandHandler neighborsCords = new CommandHandler(commandMap.get("neighbors"),
-        new ArrayList<String>(Arrays.asList("count-input", "x-input", "y-input", "z-input")));
-    CommandHandler neighborsName = new CommandHandler(commandMap.get("neighbors"),
-        new ArrayList<String>(Arrays.asList("count-input", "name-input")));
+    // The Handlers for naive_radius searches
+    CommandHandler naiveRadiusCords = new CommandHandler(commandMap.get("naive_radius"),
+        new ArrayList<>(Arrays.asList("radius-input", "x-input", "y-input", "z-input")));
+    CommandHandler naiveRadiusName = new CommandHandler(commandMap.get("naive_radius"),
+        new ArrayList<>(Arrays.asList("radius-input", "name-input")));
 
+    // The Handlers for naive_neighbors searches
+    CommandHandler naiveNeighborsCords = new CommandHandler(commandMap.get("naive_neighbors"),
+        new ArrayList<>(Arrays.asList("count-input", "x-input", "y-input", "z-input")));
+    CommandHandler naiveNeighborsName = new CommandHandler(commandMap.get("naive_neighbors"),
+        new ArrayList<>(Arrays.asList("count-input", "name-input")));
+
+    // The Handlers for radius searches
     CommandHandler radiusCords = new CommandHandler(commandMap.get("radius"),
-        new ArrayList<String>(Arrays.asList("radius-input", "x-input", "y-input", "z-input")));
+        new ArrayList<>(Arrays.asList("radius-input", "x-input", "y-input", "z-input")));
     CommandHandler radiusName = new CommandHandler(commandMap.get("radius"),
-        new ArrayList<String>(Arrays.asList("radius-input", "name-input")));
+        new ArrayList<>(Arrays.asList("radius-input", "name-input")));
+
+    // The Handlers for neighbors searches
+    CommandHandler neighborsCords = new CommandHandler(commandMap.get("neighbors"),
+        new ArrayList<>(Arrays.asList("count-input", "x-input", "y-input", "z-input")));
+    CommandHandler neighborsName = new CommandHandler(commandMap.get("neighbors"),
+        new ArrayList<>(Arrays.asList("count-input", "name-input")));
 
     // Setup Spark Routes
     Spark.get("/stars", new FrontHandler(), freeMarker);
+    Spark.get("/naive-radius-cord", naiveRadiusCords, freeMarker);
+    Spark.get("/naive-radius-name", naiveRadiusName, freeMarker);
+    Spark.get("/naive-neighbors-cord", naiveNeighborsCords, freeMarker);
+    Spark.get("/naive-neighbors-name", naiveNeighborsName, freeMarker);
     Spark.get("/radius-cord", radiusCords, freeMarker);
     Spark.get("/radius-name", radiusName, freeMarker);
     Spark.get("/neighbors-cord", neighborsCords, freeMarker);

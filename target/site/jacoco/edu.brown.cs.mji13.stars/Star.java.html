@@ -119,5 +119,15 @@ public class Star implements StringValFunctions, HasCoordinates {
 <span class="fc" id="L119">    return starID;</span>
   }
 
+  /**
+   * Enables the star object to be printable.
+   *
+   * @return the HTML Literal of the Star, which is a row of its information.
+   */
+  public String toHTML() {
+<span class="fc" id="L128">    return &quot;&lt;tr&gt;&quot; + &quot;&lt;td&gt;&quot; + starID + &quot;&lt;/td&gt;&quot; + &quot;&lt;td&gt;&quot; + starName + &quot;&lt;/td&gt;&quot;</span>
+<span class="fc" id="L129">        + &quot;&lt;td&gt;&quot; + coordinates.toString() + &quot;&lt;/td&gt;&quot; + &quot;&lt;/tr&gt;&quot;;</span>
+  }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

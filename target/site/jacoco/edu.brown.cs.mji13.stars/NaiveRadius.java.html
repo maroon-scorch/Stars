@@ -80,6 +80,14 @@ public class NaiveRadius implements Command, StringValFunctions {
 <span class="nc" id="L80">  }</span>
 
   /**
+   * Execute Specific Variables
+   * The list of answers (Stars) the command line finds during its execution.
+   * And the boolean hasErrorOccurred checking if error occurred during execution
+   */
+<span class="pc" id="L87">  private ArrayList&lt;Star&gt; answers = new ArrayList&lt;&gt;();</span>
+<span class="pc" id="L88">  private boolean hasErrorOccurred = false;</span>
+
+  /**
    * Executes the naive_radius Command.
    * If successful, prints out every stars with radius less than or equal to that of
    * the specified radius.
@@ -88,46 +96,75 @@ public class NaiveRadius implements Command, StringValFunctions {
    * since naive_radius gets all the stars within range in, there are no tiebreakers to decide
    * which &quot;star&quot; gets in.
    * @param args - the list of arguments to be operated on.
+   * @return the Arraylist of starIDs to be print out if Successful. If unSuccessful,
+   * prints the error messages instead.
    */
-  public void execute(ArrayList&lt;String&gt; args) {
+  public ArrayList&lt;String&gt; execute(ArrayList&lt;String&gt; args) {
+<span class="fc" id="L103">    ArrayList&lt;String&gt; messages = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L104">    hasErrorOccurred = false;</span>
+<span class="fc" id="L105">    answers.clear();</span>
 
     // If the current file is empty, print an error
-<span class="nc bnc" id="L95" title="All 2 branches missed.">    if (starStorage.getFileName().length() == 0) {</span>
-<span class="nc" id="L96">      System.out.println(&quot;ERROR: No file has been loaded yet&quot;);</span>
-<span class="nc" id="L97">      return;</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">    if (starStorage.getFileName().length() == 0) {</span>
+<span class="nc" id="L109">      hasErrorOccurred = true;</span>
+<span class="nc" id="L110">      messages.add(&quot;ERROR: No file has been loaded yet&quot;);</span>
+<span class="nc" id="L111">      return messages;</span>
     }
 
     // If no methods are matched, exits the command
-<span class="nc" id="L101">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
-<span class="nc bnc" id="L102" title="All 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
-<span class="nc" id="L103">      return;</span>
+<span class="fc" id="L115">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
+<span class="nc" id="L117">      hasErrorOccurred = true;</span>
+<span class="nc" id="L118">      messages.add(argsValidator.getErrorMessage());</span>
+<span class="nc" id="L119">      return messages;</span>
     }
 
     // If a method name has been found, determines which method it maps to and executes it
-<span class="nc" id="L107">    String methodName = opMethodName.get();</span>
-<span class="nc" id="L108">    ArrayList&lt;Star&gt; slist = starStorage.getStarsList();</span>
-<span class="nc bnc" id="L109" title="All 3 branches missed.">    switch (methodName) {</span>
+<span class="fc" id="L123">    String methodName = opMethodName.get();</span>
+<span class="fc" id="L124">    ArrayList&lt;Star&gt; slist = starStorage.getStarsList();</span>
+<span class="pc bpc" id="L125" title="1 of 3 branches missed.">    switch (methodName) {</span>
       case &quot;naive_radius_2&quot;:
-<span class="nc" id="L111">        double radius = Double.parseDouble(args.get(0));</span>
-<span class="nc" id="L112">        String sName = args.get(1);</span>
-<span class="nc" id="L113">        String sStarNoQuotes = sName.substring(1, sName.length() - 1);</span>
-<span class="nc" id="L114">        ArrayList&lt;Star&gt; starsInRange2 = performNaiveRadius(radius, sStarNoQuotes, slist);</span>
-<span class="nc" id="L115">        starsInRange2.forEach(System.out::println);</span>
-<span class="nc" id="L116">        break;</span>
+<span class="fc" id="L127">        double radius = Double.parseDouble(args.get(0));</span>
+<span class="fc" id="L128">        String sName = args.get(1);</span>
+<span class="fc" id="L129">        String sStarNoQuotes = sName.substring(1, sName.length() - 1);</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">        if (starStorage.isNameInStorage(sStarNoQuotes)) {</span>
+<span class="fc" id="L131">          answers = performNaiveRadius(radius, sStarNoQuotes, slist);</span>
+<span class="fc" id="L132">          answers.forEach((str) -&gt; messages.add(str.getStarID()));</span>
+        } else {
+<span class="nc" id="L134">          hasErrorOccurred = true;</span>
+<span class="nc" id="L135">          messages.add(String.format(&quot;ERROR: No Stars with name \&quot;%s\&quot; &quot;</span>
+              + &quot;is found or name is empty&quot;, sStarNoQuotes));
+        }
+<span class="fc" id="L138">        return messages;</span>
+
       case &quot;naive_radius_4&quot;:
-<span class="nc" id="L118">        double dRadius = Double.parseDouble(args.get(0));</span>
-<span class="nc" id="L119">        double dPosX = Double.parseDouble(args.get(1));</span>
-<span class="nc" id="L120">        double dPosY = Double.parseDouble(args.get(2));</span>
-<span class="nc" id="L121">        double dPosZ = Double.parseDouble(args.get(3));</span>
-<span class="nc" id="L122">        ArrayList&lt;Star&gt; starsInRange4 = performNaiveRadius(dRadius, dPosX, dPosY, dPosZ, slist);</span>
-<span class="nc" id="L123">        starsInRange4.forEach(System.out::println);</span>
-<span class="nc" id="L124">        break;</span>
+<span class="fc" id="L141">        double dRadius = Double.parseDouble(args.get(0));</span>
+<span class="fc" id="L142">        double dPosX = Double.parseDouble(args.get(1));</span>
+<span class="fc" id="L143">        double dPosY = Double.parseDouble(args.get(2));</span>
+<span class="fc" id="L144">        double dPosZ = Double.parseDouble(args.get(3));</span>
+<span class="fc" id="L145">        answers = performNaiveRadius(dRadius, dPosX, dPosY, dPosZ, slist);</span>
+<span class="fc" id="L146">        answers.forEach((str) -&gt; messages.add(str.getStarID()));</span>
+<span class="fc" id="L147">        return messages;</span>
+
       default:
-<span class="nc" id="L126">        System.out.println(&quot;ERROR: Hashmap reqInfoMaps has unregistered names, &quot;</span>
+        // Only occurs if Programmer made an Error
+<span class="nc" id="L151">        System.out.println(&quot;ERROR: Hashmap reqInfoMaps has unregistered names, &quot;</span>
             + &quot;shouldn't have reached here&quot;);
-        break;
+<span class="nc" id="L153">        return new ArrayList&lt;&gt;();</span>
     }
-<span class="nc" id="L130">  }</span>
+  }
+
+  /**
+   * Executes the naive_radius Command for the GUI.
+   *
+   * @param args - the list of arguments to be operated on.
+   * @return the String of the HTML Table formed by the list of Stars.
+   */
+  public String executeForGUI(ArrayList&lt;String&gt; args) {
+<span class="fc" id="L164">    String result = String.join(&quot;\n&quot;, execute(args));</span>
+<span class="fc" id="L165">    ArrayList&lt;Star&gt; answerCopy = new ArrayList&lt;Star&gt;(answers);</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">    return hasErrorOccurred ? result : starStorage.starListToHTML(answerCopy);</span>
+  }
 
   /**
    * Match the arguments given to which method (if any) the Command Object should execute.
@@ -136,9 +173,8 @@ public class NaiveRadius implements Command, StringValFunctions {
    * @return Optional of String - empty if the arguments are invalid, a String if match is found.
    */
   public Optional&lt;String&gt; matchArgsToMethod(ArrayList&lt;String&gt; args) {
-<span class="fc" id="L139">    return argsValidator.testArgs(args);</span>
+<span class="fc" id="L176">    return argsValidator.testArgs(args);</span>
   }
-
 
   /**
    * Finds all stars whose distance to the star specified with the name is less than or equal to
@@ -150,29 +186,19 @@ public class NaiveRadius implements Command, StringValFunctions {
    * @return the list of stars within range inclusive.
    */
   public ArrayList&lt;Star&gt; performNaiveRadius(double r, String name, ArrayList&lt;Star&gt; alos) {
-    // If the name is empty, print an error
-<span class="pc bpc" id="L154" title="1 of 2 branches missed.">    if (name.isEmpty()) {</span>
-<span class="nc" id="L155">      System.out.println(&quot;ERROR: Empty String is not a valid name for stars&quot;);</span>
-<span class="nc" id="L156">      return new ArrayList&lt;&gt;();</span>
-    }
+    // Gets the Star from StarStorage, because the program checked if the name is in the
+    // storage before, error handling is taken care of already.
+<span class="fc" id="L191">    Star presentStar = starStorage.getStarFromMap(name);</span>
 
-    // If the selected star is not found, print an error
-<span class="fc" id="L160">    Optional&lt;Star&gt; selectedStar = starStorage.getStarFromMap(name);</span>
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">    if (selectedStar.isEmpty()) {</span>
-<span class="nc" id="L162">      System.out.printf(&quot;ERROR: No Stars with name \&quot;%s\&quot; is found%n&quot;, name);</span>
-<span class="nc" id="L163">      return new ArrayList&lt;&gt;();</span>
-    }
+<span class="fc" id="L193">    double selectedX = presentStar.getCoordinate(0);</span>
+<span class="fc" id="L194">    double selectedY = presentStar.getCoordinate(1);</span>
+<span class="fc" id="L195">    double selectedZ = presentStar.getCoordinate(2);</span>
 
-<span class="fc" id="L166">    Star presentStar = selectedStar.get();</span>
+<span class="fc" id="L197">    ArrayList&lt;Star&gt; template = new ArrayList&lt;&gt;(alos);</span>
+    // Removes the star from the list returned after search.
+<span class="fc" id="L199">    template.removeIf(star -&gt; star.getName().equals(name));</span>
 
-<span class="fc" id="L168">    double selectedX = presentStar.getCoordinate(0);</span>
-<span class="fc" id="L169">    double selectedY = presentStar.getCoordinate(1);</span>
-<span class="fc" id="L170">    double selectedZ = presentStar.getCoordinate(2);</span>
-
-<span class="fc" id="L172">    ArrayList&lt;Star&gt; template = new ArrayList&lt;&gt;(alos);</span>
-<span class="fc" id="L173">    template.removeIf(star -&gt; star.getName().equals(name));</span>
-
-<span class="fc" id="L175">    return performNaiveRadius(r, selectedX, selectedY, selectedZ, template);</span>
+<span class="fc" id="L201">    return performNaiveRadius(r, selectedX, selectedY, selectedZ, template);</span>
   }
 
   /**
@@ -188,10 +214,10 @@ public class NaiveRadius implements Command, StringValFunctions {
    */
   public ArrayList&lt;Star&gt; performNaiveRadius(
       double r, double x, double y, double z, ArrayList&lt;Star&gt; alos) {
-<span class="fc" id="L191">    ArrayList&lt;Star&gt; template = new ArrayList&lt;&gt;(alos);</span>
-<span class="fc bfc" id="L192" title="All 2 branches covered.">    template.removeIf(star -&gt; (star.distanceTo(Arrays.asList(x, y, z)) &gt; r));</span>
-<span class="fc" id="L193">    template.sort(Comparator.comparingDouble(star -&gt; star.distanceTo(Arrays.asList(x, y, z))));</span>
-<span class="fc" id="L194">    return template;</span>
+<span class="fc" id="L217">    ArrayList&lt;Star&gt; template = new ArrayList&lt;&gt;(alos);</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">    template.removeIf(star -&gt; (star.distanceTo(Arrays.asList(x, y, z)) &gt; r));</span>
+<span class="fc" id="L219">    template.sort(Comparator.comparingDouble(star -&gt; star.distanceTo(Arrays.asList(x, y, z))));</span>
+<span class="fc" id="L220">    return template;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

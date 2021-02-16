@@ -12,12 +12,15 @@ import java.util.Arrays;
 import java.util.ArrayList;
 
 /**
- * Parser responsisble for reading the CSV File and ensuring the file is properly
+ * Parser responsible for reading the CSV File and ensuring the file is properly
  * formatted according to standards set.
  */
 public class CSVParser {
 
-  private final ArrayList<String> messages = new ArrayList<>();
+  /**
+   * The errorMessages that may occur during each run of the Parser.
+   */
+  private final ArrayList<String> errorMessages = new ArrayList<>();
 
   /**
    * Creates an Empty CSVParser object.
@@ -43,8 +46,8 @@ public class CSVParser {
       String[] expectedHeaders,
       LineConverter<T> lineConverter) {
 
-    // Clears the Template and Message first and sets up the Path
-    messages.clear();
+    // Clears the Template and error messages first and sets up the Path
+    errorMessages.clear();
     template.clear();
     Path path = Paths.get(filepath);
 
@@ -67,19 +70,16 @@ public class CSVParser {
       while ((line = csvReader.readLine()) != null) {
         template.add(lineConverter.accept(line));
       }
-
+      // Add the Error to the errorMessages if any occurs.
     } catch (FileNotFoundException e) {
-      messages.add(String.format("ERROR: File %s does not exist", filepath));
-      // System.out.printf("ERROR: File %s does not exist.%n", filepath);
+      errorMessages.add(String.format("ERROR: File %s does not exist", filepath));
       return false;
     } catch (IOException e) {
-      messages.add("ERROR: File Name/Path/Content is not valid");
-      // System.out.println("ERROR: File Name/Path/Content is not valid");
+      errorMessages.add("ERROR: File Name/Path/Content is not valid");
       template.clear();
       return false;
     } catch (Exception e) {
-      messages.add("ERROR: " + e.getMessage());
-      // System.out.println("ERROR: " + e.getMessage());
+      errorMessages.add("ERROR: " + e.getMessage());
       template.clear();
       return false;
     }
@@ -87,7 +87,12 @@ public class CSVParser {
     return true;
   }
 
+  /**
+   * Returns the errorMessage generated after the current run of the Parser.
+   *
+   * @return the errorMessage.
+   */
   public ArrayList<String> getMessages() {
-    return new ArrayList<>(messages);
+    return new ArrayList<>(errorMessages);
   }
 }

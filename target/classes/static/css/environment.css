@@ -1,5 +1,7 @@
 @import "main.css";
 
+/*Background of the GUI*/
+
 .current-mode {
     position:absolute;
     top:0;

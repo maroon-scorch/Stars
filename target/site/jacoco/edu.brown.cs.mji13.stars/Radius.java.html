@@ -75,50 +75,87 @@ public class Radius implements Command, StringValFunctions {
 <span class="fc" id="L75">  }</span>
 
   /**
+   * Execute Specific Variables
+   * The list of answers (Stars) the command line finds during its execution.
+   * And the boolean hasErrorOccurred checking if error occurred during execution
+   */
+<span class="fc" id="L82">  private ArrayList&lt;Star&gt; answers = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L83">  private boolean hasErrorOccurred = false;</span>
+
+  /**
    * Executes the radius Command.
-   * If successful, prints out every stars with radius less than or equal to that of
+   * If successful, finds out every stars with radius less than or equal to that of
    * the specified radius.
    *
    * @param args - the list of arguments to be operated on.
+   * @return the Arraylist of starIDs to be print out if Successful. If unSuccessful,
+   * prints the error messages instead.
    */
-  public void execute(ArrayList&lt;String&gt; args) {
+  public ArrayList&lt;String&gt; execute(ArrayList&lt;String&gt; args) {
+<span class="fc" id="L95">    ArrayList&lt;String&gt; messages = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L96">    hasErrorOccurred = false;</span>
+<span class="fc" id="L97">    answers.clear();</span>
+
     // If the current file is empty, print an error
-<span class="nc bnc" id="L86" title="All 2 branches missed.">    if (starStorage.getFileName().length() == 0) {</span>
-<span class="nc" id="L87">      System.out.println(&quot;ERROR: No file has been loaded yet&quot;);</span>
-<span class="nc" id="L88">      return;</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">    if (starStorage.getFileName().length() == 0) {</span>
+<span class="nc" id="L101">      hasErrorOccurred = true;</span>
+<span class="nc" id="L102">      messages.add(&quot;ERROR: No file has been loaded yet&quot;);</span>
+<span class="nc" id="L103">      return messages;</span>
     }
 
     // If no methods are matched, exits the command
-<span class="nc" id="L92">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
-<span class="nc bnc" id="L93" title="All 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
-<span class="nc" id="L94">      return;</span>
+<span class="fc" id="L107">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
+<span class="nc" id="L109">      hasErrorOccurred = true;</span>
+<span class="nc" id="L110">      messages.add(argsValidator.getErrorMessage());</span>
+<span class="nc" id="L111">      return messages;</span>
     }
 
     // If a method name has been found, determines which method it maps to and executes it
-<span class="nc" id="L98">    String methodName = opMethodName.get();</span>
-<span class="nc" id="L99">    KDTree&lt;Star&gt; sTree = starStorage.getStarsTree();</span>
-<span class="nc bnc" id="L100" title="All 3 branches missed.">    switch (methodName) {</span>
+<span class="fc" id="L115">    String methodName = opMethodName.get();</span>
+<span class="fc" id="L116">    KDTree&lt;Star&gt; sTree = starStorage.getStarsTree();</span>
+<span class="pc bpc" id="L117" title="1 of 3 branches missed.">    switch (methodName) {</span>
       case &quot;radius_2&quot;:
-<span class="nc" id="L102">        double radius = Double.parseDouble(args.get(0));</span>
-<span class="nc" id="L103">        String sName = args.get(1);</span>
-<span class="nc" id="L104">        String sStarNoQuotes = sName.substring(1, sName.length() - 1);</span>
-<span class="nc" id="L105">        ArrayList&lt;Star&gt; starsInRange2 = performRadius(radius, sStarNoQuotes, sTree);</span>
-<span class="nc" id="L106">        starsInRange2.forEach(System.out::println);</span>
-<span class="nc" id="L107">        break;</span>
+<span class="fc" id="L119">        double radius = Double.parseDouble(args.get(0));</span>
+<span class="fc" id="L120">        String sName = args.get(1);</span>
+<span class="fc" id="L121">        String sStarNoQuotes = sName.substring(1, sName.length() - 1);</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">        if (starStorage.isNameInStorage(sStarNoQuotes)) {</span>
+<span class="fc" id="L123">          answers = performRadius(radius, sStarNoQuotes, sTree);</span>
+<span class="fc" id="L124">          answers.forEach((str) -&gt; messages.add(str.getStarID()));</span>
+        } else {
+<span class="nc" id="L126">          hasErrorOccurred = true;</span>
+<span class="nc" id="L127">          messages.add(String.format(&quot;ERROR: No Stars with name \&quot;%s\&quot; &quot;</span>
+              + &quot;is found or name is empty&quot;, sStarNoQuotes));
+        }
+<span class="fc" id="L130">        return messages;</span>
+
       case &quot;radius_4&quot;:
-<span class="nc" id="L109">        double dRadius = Double.parseDouble(args.get(0));</span>
-<span class="nc" id="L110">        double dPosX = Double.parseDouble(args.get(1));</span>
-<span class="nc" id="L111">        double dPosY = Double.parseDouble(args.get(2));</span>
-<span class="nc" id="L112">        double dPosZ = Double.parseDouble(args.get(3));</span>
-<span class="nc" id="L113">        ArrayList&lt;Star&gt; starsInRange4 = performRadius(dRadius, dPosX, dPosY, dPosZ, sTree);</span>
-<span class="nc" id="L114">        starsInRange4.forEach(System.out::println);</span>
-<span class="nc" id="L115">        break;</span>
+<span class="fc" id="L133">        double dRadius = Double.parseDouble(args.get(0));</span>
+<span class="fc" id="L134">        double dPosX = Double.parseDouble(args.get(1));</span>
+<span class="fc" id="L135">        double dPosY = Double.parseDouble(args.get(2));</span>
+<span class="fc" id="L136">        double dPosZ = Double.parseDouble(args.get(3));</span>
+<span class="fc" id="L137">        answers = performRadius(dRadius, dPosX, dPosY, dPosZ, sTree);</span>
+<span class="fc" id="L138">        answers.forEach((str) -&gt; messages.add(str.getStarID()));</span>
+<span class="fc" id="L139">        return messages;</span>
       default:
-<span class="nc" id="L117">        System.out.println(&quot;ERROR: Hashmap reqInfoMaps has unregistered names, &quot;</span>
+        // Only occurs if Programmer made an Error
+<span class="nc" id="L142">        System.out.println(&quot;ERROR: Hashmap reqInfoMaps has unregistered names, &quot;</span>
             + &quot;shouldn't have reached here&quot;);
-        break;
+<span class="nc" id="L144">        return new ArrayList&lt;&gt;();</span>
     }
-<span class="nc" id="L121">  }</span>
+  }
+
+  /**
+   * Executes the radius Command for the GUI.
+   *
+   * @param args - the list of arguments to be operated on.
+   * @return the String of the HTML Table formed by the list of Stars.
+   */
+  public String executeForGUI(ArrayList&lt;String&gt; args) {
+<span class="fc" id="L155">    String result = String.join(&quot;\n&quot;, execute(args));</span>
+<span class="fc" id="L156">    ArrayList&lt;Star&gt; answerCopy = new ArrayList&lt;Star&gt;(answers);</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">    return hasErrorOccurred ? result : starStorage.starListToHTML(answerCopy);</span>
+  }
 
   /**
    * Match the arguments given to which method (if any) the Command Object should execute.
@@ -127,7 +164,7 @@ public class Radius implements Command, StringValFunctions {
    * @return Optional of String - empty if the arguments are invalid, a String if match is found.
    */
   public Optional&lt;String&gt; matchArgsToMethod(ArrayList&lt;String&gt; args) {
-<span class="nc" id="L130">    return argsValidator.testArgs(args);</span>
+<span class="fc" id="L167">    return argsValidator.testArgs(args);</span>
   }
 
   /**
@@ -143,8 +180,8 @@ public class Radius implements Command, StringValFunctions {
    */
   public ArrayList&lt;Star&gt; performRadius(
       double r, double x, double y, double z, KDTree&lt;Star&gt; tree) {
-<span class="fc" id="L146">    List&lt;Double&gt; cords = Arrays.asList(x, y, z);</span>
-<span class="fc" id="L147">    return tree.findNodesInRadius(r, cords);</span>
+<span class="fc" id="L183">    List&lt;Double&gt; cords = Arrays.asList(x, y, z);</span>
+<span class="fc" id="L184">    return tree.findNodesInRadius(r, cords);</span>
   }
 
   /**
@@ -157,31 +194,20 @@ public class Radius implements Command, StringValFunctions {
    * @return the list of stars within range inclusive.
    */
   public ArrayList&lt;Star&gt; performRadius(double r, String name, KDTree&lt;Star&gt; tree) {
-    // If the name is empty, print an error
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">    if (name.isEmpty()) {</span>
-<span class="nc" id="L162">      System.out.println(&quot;ERROR: Empty String is not a valid name for stars&quot;);</span>
-<span class="nc" id="L163">      return new ArrayList&lt;&gt;();</span>
-    }
+    // Gets the Star from StarStorage, because the program checked if the name is in the
+    // storage before, error handling is taken care of already.
+<span class="fc" id="L199">    Star presentStar = starStorage.getStarFromMap(name);</span>
 
-    // If the selected star is not found, print an error
-<span class="fc" id="L167">    Optional&lt;Star&gt; selectedStar = starStorage.getStarFromMap(name);</span>
-<span class="pc bpc" id="L168" title="1 of 2 branches missed.">    if (selectedStar.isEmpty()) {</span>
-<span class="nc" id="L169">      System.out.printf(&quot;ERROR: No Stars with name \&quot;%s\&quot; is found%n&quot;, name);</span>
-<span class="nc" id="L170">      return new ArrayList&lt;&gt;();</span>
-    }
+<span class="fc" id="L201">    double selectedX = presentStar.getCoordinate(0);</span>
+<span class="fc" id="L202">    double selectedY = presentStar.getCoordinate(1);</span>
+<span class="fc" id="L203">    double selectedZ = presentStar.getCoordinate(2);</span>
 
-<span class="fc" id="L173">    Star presentStar = selectedStar.get();</span>
-
-<span class="fc" id="L175">    double selectedX = presentStar.getCoordinate(0);</span>
-<span class="fc" id="L176">    double selectedY = presentStar.getCoordinate(1);</span>
-<span class="fc" id="L177">    double selectedZ = presentStar.getCoordinate(2);</span>
-
-<span class="fc" id="L179">    ArrayList&lt;Star&gt; resultList</span>
-<span class="fc" id="L180">        = performRadius(r, selectedX, selectedY, selectedZ, tree);</span>
+<span class="fc" id="L205">    ArrayList&lt;Star&gt; resultList</span>
+<span class="fc" id="L206">        = performRadius(r, selectedX, selectedY, selectedZ, tree);</span>
     // Remove the name from the list generated
-<span class="fc" id="L182">    resultList.removeIf(star -&gt; star.getName().equals(name));</span>
+<span class="fc" id="L208">    resultList.removeIf(star -&gt; star.getName().equals(name));</span>
 
-<span class="fc" id="L184">    return resultList;</span>
+<span class="fc" id="L210">    return resultList;</span>
   }
 
 }

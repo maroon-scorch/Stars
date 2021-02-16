@@ -15,6 +15,10 @@ public class ArgsValidator {
    */
   private final String typeName;
 
+  /**
+   * Stores the errorMessage that may occur during each run of the Argument Validator.
+   * Cleans the message before the start of each run.
+   */
   private final StringBuilder messages = new StringBuilder();
 
   /**
@@ -46,35 +50,58 @@ public class ArgsValidator {
    * If no key for the args' size is found, raise an error on incorrect number of types.
    */
   public Optional<String> testArgs(ArrayList<String> args) {
-    int argSize = args.size();
+    // Cleans the message before the start of each run.
     setMessage("");
+    // Finds the size of the arguments
+    int argSize = args.size();
 
+    // Checks if the Map has ArgsInformation for that size
     if (reqInfoMaps.containsKey(argSize)) {
+      // If so, gets the information.
       ArgsInformation[] reqInfos = reqInfoMaps.get(argSize);
+      // Initialize the list of errors.
       ArrayList<String> errorList = new ArrayList<>();
       for (ArgsInformation reqInfo : reqInfos) {
+
         String error = testArgsWithReq(args, reqInfo);
         // If the test passes, meaning the error was empty
         if (error.isEmpty()) {
+          // Returns the name associated with that ArgsInformation, which is the
+          // name for the switch case in the Command to decide which method to execute.
           return Optional.of(reqInfo.getUniqueName());
         }
+        // Error list accumulates each error.
         errorList.add(error);
       }
 
+      // Populate the message with the errorList
       setMessage(String.join("", errorList));
 
-      // System.out.print(String.join("", errorList));
     } else {
       setMessage("ERROR: Incorrect number of arguments for command " + typeName);
     }
+
     // If all tests failed, option of empty is returned
     return Optional.empty();
   }
 
+  /**
+   * Sets the current error message (hopefully none) of the message variable.
+   *
+   * @param newMessage - the new message to replace the current message.
+   */
   public void setMessage(String newMessage) {
     messages.replace(0, messages.length(), newMessage);
   }
 
+  /**
+   * Get the current error message.
+   *
+   * @return the current message
+   */
+  public String getErrorMessage() {
+    return messages.toString();
+  }
 
   /**
    * Tests the list of arguments passed in against the ArgsInformation given.
@@ -115,10 +142,6 @@ public class ArgsValidator {
     }
 
     return errorMsgToRaise;
-  }
-
-  public String getErrorMessage() {
-    return messages.toString();
   }
 
 }

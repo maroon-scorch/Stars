@@ -1,5 +1,6 @@
 edu.brown.cs.mji13.command
 edu.brown.cs.mji13.csvParse
+edu.brown.cs.mji13.gui
 edu.brown.cs.mji13.kdTree
 edu.brown.cs.mji13.people
 edu.brown.cs.mji13.stars

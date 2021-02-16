@@ -1,7 +1,6 @@
 package edu.brown.cs.mji13.stars;
 
 import edu.brown.cs.mji13.command.Command;
-import edu.brown.cs.mji13.command.GUICommand;
 import edu.brown.cs.mji13.kdTree.KDTree;
 import edu.brown.cs.mji13.validations.ArgsInformation;
 import edu.brown.cs.mji13.validations.ArgsValidator;
@@ -19,20 +18,12 @@ import static java.util.Map.entry;
 /**
  * Radius Command Object for executing the "radius ..." command.
  */
-public class Radius implements Command, GUICommand, StringValFunctions {
+public class Radius implements Command, StringValFunctions {
 
   /**
    * The common data-types shared by all the stars-related commands.
    */
   private StarStorage starStorage;
-
-  /**
-   * The list of messages the command line accumulates during its execution.
-   * And the boolean errorOccurred.
-   */
-  private ArrayList<String> messages = new ArrayList<>();
-  private ArrayList<Star> answers = new ArrayList<>();
-  private boolean errorOccurred = false;
 
   /**
    * Specifications on the requirements on the argument passed to the command.
@@ -84,26 +75,40 @@ public class Radius implements Command, GUICommand, StringValFunctions {
   }
 
   /**
+   * Execute Specific Variables
+   * The list of answers (Stars) the command line finds during its execution.
+   * And the boolean hasErrorOccurred checking if error occurred during execution
+   */
+  private ArrayList<Star> answers = new ArrayList<>();
+  private boolean hasErrorOccurred = false;
+
+  /**
    * Executes the radius Command.
-   * If successful, prints out every stars with radius less than or equal to that of
+   * If successful, finds out every stars with radius less than or equal to that of
    * the specified radius.
    *
    * @param args - the list of arguments to be operated on.
+   * @return the Arraylist of starIDs to be print out if Successful. If unSuccessful,
+   * prints the error messages instead.
    */
-  public void execute(ArrayList<String> args) {
+  public ArrayList<String> execute(ArrayList<String> args) {
+    ArrayList<String> messages = new ArrayList<>();
+    hasErrorOccurred = false;
+    answers.clear();
+
     // If the current file is empty, print an error
     if (starStorage.getFileName().length() == 0) {
-      errorOccurred = true;
+      hasErrorOccurred = true;
       messages.add("ERROR: No file has been loaded yet");
-      return;
+      return messages;
     }
 
     // If no methods are matched, exits the command
     Optional<String> opMethodName = matchArgsToMethod(args);
     if (opMethodName.isEmpty()) {
-      errorOccurred = true;
+      hasErrorOccurred = true;
       messages.add(argsValidator.getErrorMessage());
-      return;
+      return messages;
     }
 
     // If a method name has been found, determines which method it maps to and executes it
@@ -114,35 +119,42 @@ public class Radius implements Command, GUICommand, StringValFunctions {
         double radius = Double.parseDouble(args.get(0));
         String sName = args.get(1);
         String sStarNoQuotes = sName.substring(1, sName.length() - 1);
-        // ArrayList<Star> starsInRange2
-        answers = performRadius(radius, sStarNoQuotes, sTree);
-        // starsInRange2.forEach(System.out::println);
-        answers.forEach((str) -> messages.add(str.getStarID()));
-        break;
+        if (starStorage.isNameInStorage(sStarNoQuotes)) {
+          answers = performRadius(radius, sStarNoQuotes, sTree);
+          answers.forEach((str) -> messages.add(str.getStarID()));
+        } else {
+          hasErrorOccurred = true;
+          messages.add(String.format("ERROR: No Stars with name \"%s\" "
+              + "is found or name is empty", sStarNoQuotes));
+        }
+        return messages;
+
       case "radius_4":
         double dRadius = Double.parseDouble(args.get(0));
         double dPosX = Double.parseDouble(args.get(1));
         double dPosY = Double.parseDouble(args.get(2));
         double dPosZ = Double.parseDouble(args.get(3));
-        // ArrayList<Star> starsInRange4
         answers = performRadius(dRadius, dPosX, dPosY, dPosZ, sTree);
-        // starsInRange4.forEach(System.out::println);
         answers.forEach((str) -> messages.add(str.getStarID()));
-        break;
+        return messages;
       default:
+        // Only occurs if Programmer made an Error
         System.out.println("ERROR: Hashmap reqInfoMaps has unregistered names, "
             + "shouldn't have reached here");
-        break;
+        return new ArrayList<>();
     }
   }
 
+  /**
+   * Executes the radius Command for the GUI.
+   *
+   * @param args - the list of arguments to be operated on.
+   * @return the String of the HTML Table formed by the list of Stars.
+   */
   public String executeForGUI(ArrayList<String> args) {
-    execute(args);
-    String result = String.join("\n", getMessages());
+    String result = String.join("\n", execute(args));
     ArrayList<Star> answerCopy = new ArrayList<Star>(answers);
-    boolean heoTemp = hasErrorOccurred();
-    clearMessage();
-    return heoTemp ? result : starStorage.starListToHTML(answerCopy);
+    return hasErrorOccurred ? result : starStorage.starListToHTML(answerCopy);
   }
 
   /**
@@ -153,33 +165,6 @@ public class Radius implements Command, GUICommand, StringValFunctions {
    */
   public Optional<String> matchArgsToMethod(ArrayList<String> args) {
     return argsValidator.testArgs(args);
-  }
-
-  /**
-   * Returns the ArrayList of Messages stashed.
-   *
-   * @return - the variable messages
-   */
-  public ArrayList<String> getMessages() {
-    return new ArrayList<>(messages);
-  }
-
-  /**
-   * Clears the Stash After the Execution of a Command.
-   */
-  public void clearMessage() {
-    errorOccurred = false;
-    messages.clear();
-    answers.clear();
-  }
-
-  /**
-   * Checks if an error has occurred during the execution of the program.
-   *
-   * @return - the variable errorOccurred
-   */
-  public boolean hasErrorOccurred() {
-    return errorOccurred;
   }
 
   /**
@@ -209,22 +194,9 @@ public class Radius implements Command, GUICommand, StringValFunctions {
    * @return the list of stars within range inclusive.
    */
   public ArrayList<Star> performRadius(double r, String name, KDTree<Star> tree) {
-    // If the name is empty, print an error
-    if (name.isEmpty()) {
-      errorOccurred = true;
-      messages.add("ERROR: Empty String is not a valid name for stars");
-      return new ArrayList<>();
-    }
-
-    // If the selected star is not found, print an error
-    Optional<Star> selectedStar = starStorage.getStarFromMap(name);
-    if (selectedStar.isEmpty()) {
-      errorOccurred = true;
-      messages.add(String.format("ERROR: No Stars with name \"%s\" is found", name));
-      return new ArrayList<>();
-    }
-
-    Star presentStar = selectedStar.get();
+    // Gets the Star from StarStorage, because the program checked if the name is in the
+    // storage before, error handling is taken care of already.
+    Star presentStar = starStorage.getStarFromMap(name);
 
     double selectedX = presentStar.getCoordinate(0);
     double selectedY = presentStar.getCoordinate(1);

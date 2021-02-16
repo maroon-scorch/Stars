@@ -119,6 +119,11 @@ public class Star implements StringValFunctions, HasCoordinates {
     return starID;
   }
 
+  /**
+   * Enables the star object to be printable.
+   *
+   * @return the HTML Literal of the Star, which is a row of its information.
+   */
   public String toHTML() {
     return "<tr>" + "<td>" + starID + "</td>" + "<td>" + starName + "</td>"
         + "<td>" + coordinates.toString() + "</td>" + "</tr>";

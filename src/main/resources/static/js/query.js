@@ -3,7 +3,7 @@
  */
 
 // Initial/Default Values for the SearchType and Input Mode
-let searchType = "radius";
+let searchType = "naive-radius";
 let inputMode = "coordinates";
 
 /**

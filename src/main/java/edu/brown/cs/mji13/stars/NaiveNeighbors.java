@@ -26,13 +26,6 @@ public class NaiveNeighbors implements Command, StringValFunctions {
   private StarStorage starStorage;
 
   /**
-   * The list of messages the command line accumulates during its execution.
-   * And the boolean errorOccurred.
-   */
-  private ArrayList<String> messages = new ArrayList<>();
-  private boolean errorOccurred = false;
-
-  /**
    * Specifications on the requirements on the argument passed to the command.
    * 2 Arguments:
    * - neighbors: non-negative integer
@@ -87,29 +80,42 @@ public class NaiveNeighbors implements Command, StringValFunctions {
   }
 
   /**
+   * Execute Specific Variables
+   * The list of answers (Stars) the command line finds during its execution.
+   * And the boolean hasErrorOccurred checking if error occurred during execution
+   */
+  private ArrayList<Star> answers = new ArrayList<>();
+  private boolean hasErrorOccurred = false;
+
+  /**
    * Executes the naive_neighbors Command.
    * If successful, prints out the closest n number of stars to the specified location.
-   * <p>
    * Note: TA Colton said that the randomization is meant for tiebreakers to include on the list
    * so if there are stars with same distance away but including them does not exceed that number
    * asked, they will be included just as normal.
    *
    * @param args - the list of arguments to be operated on.
+   * @return the Arraylist of starIDs to be print out if Successful. If unSuccessful,
+   * prints the error messages instead.
    */
-  public void execute(ArrayList<String> args) {
+  public ArrayList<String> execute(ArrayList<String> args) {
+    ArrayList<String> messages = new ArrayList<>();
+    hasErrorOccurred = false;
+    answers.clear();
+
     // If no File has been loaded, signal an error
     if (starStorage.getFileName().length() == 0) {
-      errorOccurred = true;
+      hasErrorOccurred = true;
       messages.add("ERROR: No file has been loaded yet");
-      return;
+      return messages;
     }
 
     // If the arguments failed the validation check, exit out of execute.
     Optional<String> opMethodName = matchArgsToMethod(args);
     if (opMethodName.isEmpty()) {
-      errorOccurred = true;
+      hasErrorOccurred = true;
       messages.add(argsValidator.getErrorMessage());
-      return;
+      return messages;
     }
 
     // If a valid method name has been found, then operate:
@@ -120,25 +126,42 @@ public class NaiveNeighbors implements Command, StringValFunctions {
         int neighbors = Integer.parseInt(args.get(0));
         String sName = args.get(1);
         String sStarNoQuotes = sName.substring(1, sName.length() - 1);
-        ArrayList<Star> starsInRange2 = performNaiveNeighbors(neighbors, sStarNoQuotes, slist);
-        // starsInRange2.forEach(System.out::println);
-        starsInRange2.forEach((str) -> messages.add(str.getStarID()));
-        break;
+        if (starStorage.isNameInStorage(sStarNoQuotes)) {
+          answers = performNaiveNeighbors(neighbors, sStarNoQuotes, slist);
+          answers.forEach((str) -> messages.add(str.getStarID()));
+        } else {
+          hasErrorOccurred = true;
+          messages.add(String.format("ERROR: No Stars with name \"%s\" "
+              + "is found or name is empty", sStarNoQuotes));
+        }
+        return messages;
+
       case "naive_neighbors_4":
         int intNeighbors = Integer.parseInt(args.get(0));
         double dPosX = Double.parseDouble(args.get(1));
         double dPosY = Double.parseDouble(args.get(2));
         double dPosZ = Double.parseDouble(args.get(3));
-        ArrayList<Star> starsInRange4 =
-            performNaiveNeighbors(intNeighbors, dPosX, dPosY, dPosZ, slist);
-        // starsInRange4.forEach(System.out::println);
-        starsInRange4.forEach((str) -> messages.add(str.getStarID()));
-        break;
+        answers = performNaiveNeighbors(intNeighbors, dPosX, dPosY, dPosZ, slist);
+        answers.forEach((str) -> messages.add(str.getStarID()));
+        return messages;
+
       default:
         System.out.println("ERROR: Hashmap reqInfoMaps has unregistered names, "
             + "shouldn't have reached here");
-        break;
+        return new ArrayList<>();
     }
+  }
+
+  /**
+   * Executes the naive_neighbors Command for the GUI.
+   *
+   * @param args - the list of arguments to be operated on.
+   * @return the String of the HTML Table formed by the list of Stars.
+   */
+  public String executeForGUI(ArrayList<String> args) {
+    String result = String.join("\n", execute(args));
+    ArrayList<Star> answerCopy = new ArrayList<Star>(answers);
+    return hasErrorOccurred ? result : starStorage.starListToHTML(answerCopy);
   }
 
   /**
@@ -150,31 +173,6 @@ public class NaiveNeighbors implements Command, StringValFunctions {
   public Optional<String> matchArgsToMethod(ArrayList<String> args) {
     return argsValidator.testArgs(args);
   }
-  /**
-   * Returns the ArrayList of Messages stashed.
-   *
-   * @return - the variable messages
-   */
-  public ArrayList<String> getMessages() {
-    return new ArrayList<>(messages);
-  }
-
-  /**
-   * Clears the Stash After the Execution of a Command.
-   */
-  public void clearMessage() {
-    errorOccurred = false;
-    messages.clear();
-  }
-
-  /**
-   * Checks if an error has occurred during the execution of the program.
-   *
-   * @return - the variable errorOccurred
-   */
-  public boolean hasErrorOccurred() {
-    return errorOccurred;
-  }
 
   /**
    * Finds "count" number of stars whose distance are closest to the star whose name is given.
@@ -185,31 +183,16 @@ public class NaiveNeighbors implements Command, StringValFunctions {
    * @return the list of stars from least distance to greatest within count given
    */
   public ArrayList<Star> performNaiveNeighbors(int count, String name, ArrayList<Star> alos) {
-    // If the name given is empty, print an error
-    if (name.isEmpty()) {
-      errorOccurred = true;
-      messages.add("ERROR: Empty String is not a valid name for stars");
-      return new ArrayList<>();
-    }
+    Star presentStar = starStorage.getStarFromMap(name);
 
-    // If the star is not found, print an error
-    Optional<Star> selectedStar = starStorage.getStarFromMap(name);
-    if (selectedStar.isEmpty()) {
-      errorOccurred = true;
-      messages.add(String.format("ERROR: No Stars with name \"%s\" is found", name));
-      return new ArrayList<>();
-    } else {
-      Star presentStar = selectedStar.get();
+    double selectedX = presentStar.getCoordinate(0);
+    double selectedY = presentStar.getCoordinate(1);
+    double selectedZ = presentStar.getCoordinate(2);
 
-      double selectedX = presentStar.getCoordinate(0);
-      double selectedY = presentStar.getCoordinate(1);
-      double selectedZ = presentStar.getCoordinate(2);
+    ArrayList<Star> template = new ArrayList<>(alos);
+    template.removeIf(star -> star.getName().equals(name));
 
-      ArrayList<Star> template = new ArrayList<>(alos);
-      template.removeIf(star -> star.getName().equals(name));
-
-      return performNaiveNeighbors(count, selectedX, selectedY, selectedZ, template);
-    }
+    return performNaiveNeighbors(count, selectedX, selectedY, selectedZ, template);
   }
 
   /**

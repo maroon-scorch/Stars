@@ -8,27 +8,30 @@ import java.util.Optional;
  */
 public interface Command {
   /**
-   * Executes the command based on the arguments.
+   * Executes the command based on the arguments. This is intended for the REPL
    *
    * @param args the ArrayList of arguments passed into the command
+   * @return an ArrayList of Messages to be printed out line by line
    */
-  void execute(ArrayList<String> args);
+  ArrayList<String> execute(ArrayList<String> args);
 
+  /**
+   * Executes the command based on the arguments. This is intended for the GUI.
+   * If a command is not made for the GUI, by default it returns an empty string.
+   *
+   * @param args the ArrayList of arguments passed into the command
+   * @return the String value to be passed down to the GUI
+   */
   default String executeForGUI(ArrayList<String> args) {
     return "";
   }
 
   /**
-   * Finds which Method inside the Command Object to execute the Command.
+   * Finds which Method inside the Command Object to execute the Command based on
+   * the arguments passed in.
    *
    * @param args the ArrayList of arguments passed into the command
-   * @return Optional of Empty is Arguments are Invalid, some String if method is found
+   * @return Optional of Empty if Arguments are Invalid, some String if method is found
    */
   Optional<String> matchArgsToMethod(ArrayList<String> args);
-
-  boolean hasErrorOccurred();
-
-  ArrayList<String> getMessages();
-
-  void clearMessage();
 }

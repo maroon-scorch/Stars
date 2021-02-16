@@ -95,4 +95,25 @@ public class StarTest {
     assertEquals(star2.toString(), "A");
   }
 
+  /**
+   ** Tests the toHTML Methods of Star
+   */
+  @Test
+  public void testStarToHTML() {
+    ArrayList<Double> starCords = new ArrayList<>();
+    starCords.add(1.9);
+    starCords.add(2.0);
+    starCords.add(3.1);
+
+    // Simple Get
+    Star star1 = new Star("Abc", "My life is a joke", starCords);
+    assertEquals(star1.toHTML(),
+        "<tr><td>Abc</td><td>My life is a joke</td><td>[1.9, 2.0, 3.1]</td></tr>");
+
+    // Construct With String
+    Star star2 = new Star("A", "B", starCords);
+    assertEquals(star2.toHTML(),
+        "<tr><td>A</td><td>B</td><td>[1.9, 2.0, 3.1]</td></tr>");
+  }
+
 }

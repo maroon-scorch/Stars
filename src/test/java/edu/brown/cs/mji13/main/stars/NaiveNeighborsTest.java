@@ -3,6 +3,7 @@ package edu.brown.cs.mji13.main.stars;
 import edu.brown.cs.mji13.stars.Star;
 import edu.brown.cs.mji13.stars.NaiveNeighbors;
 import edu.brown.cs.mji13.stars.StarStorage;
+import edu.brown.cs.mji13.stars.UpdateStarFile;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -48,6 +49,67 @@ public class NaiveNeighborsTest<starsStorage> {
   public void tearDown() {
     naive_neighbors = null;
     starsList.clear();
+  }
+
+  /**
+   ** Tests Execute Methods of Naive Neighbors
+   */
+  @Test
+  public void testNNExecute() {
+    StarStorage storage = new StarStorage("Test");
+    UpdateStarFile upd = new UpdateStarFile(storage);
+    NaiveNeighbors cmd = new NaiveNeighbors(storage);
+
+    upd.execute(new ArrayList<String>() {
+      { add("data/stars/ten-star.csv"); }});
+
+    // For Coordinates
+    ArrayList<String> msgCord = cmd.execute(new ArrayList<String>() {
+      { add("5"); add("0"); add("0"); add("0"); }});
+    assertEquals(msgCord.size(), 5);
+    assertEquals(msgCord.get(0), "0");
+    assertEquals(msgCord.get(1), "70667");
+    assertEquals(msgCord.get(2), "71454");
+    assertEquals(msgCord.get(3), "71457");
+    assertEquals(msgCord.get(4), "87666");
+
+    // For Names
+    ArrayList<String> msgName = cmd.execute(new ArrayList<String>() {
+      { add("5"); add("\"Sol\""); }});
+    assertEquals(msgName.size(), 5);
+    assertEquals(msgName.size(), 5);
+    assertEquals(msgName.get(0), "70667");
+    assertEquals(msgName.get(1), "71454");
+    assertEquals(msgName.get(2), "71457");
+    assertEquals(msgName.get(3), "87666");
+    assertEquals(msgName.get(4), "118721");
+  }
+
+  /**
+   ** Tests Execute for GUI Methods of Naive Radius
+   */
+  @Test
+  public void testNNExecuteGUI() {
+    StarStorage storage = new StarStorage("Test");
+    UpdateStarFile upd = new UpdateStarFile(storage);
+    NaiveNeighbors cmd = new NaiveNeighbors(storage);
+
+    upd.execute(new ArrayList<String>() {
+      { add("data/stars/ten-star.csv"); }});
+
+    // For Coordinates
+    String msgCord = cmd.executeForGUI(new ArrayList<String>() {
+      { add("1"); add("0"); add("0"); add("0"); }});
+    assertEquals(msgCord, "<table><tr><th>StarID</th><th>ProperName</th>" +
+        "<th>Coordinates (X, Y, Z)</th></tr><tr><td>0</td><td>Sol</td><td>[0.0, 0.0, 0.0]</td></tr>" +
+        "</table>");
+
+    // For Names
+    String msgName = cmd.executeForGUI(new ArrayList<String>() {
+      { add("1"); add("\"Sol\""); }});
+    assertEquals(msgName, "<table><tr><th>StarID</th><th>ProperName</th>" +
+        "<th>Coordinates (X, Y, Z)</th></tr><tr><td>70667</td><td>Proxima Centauri</td>" +
+        "<td>[-0.47175, -0.36132, -1.15037]</td></tr></table>");
   }
 
   /**

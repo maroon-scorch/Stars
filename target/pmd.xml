@@ -2,7 +2,7 @@
 <pmd xmlns="http://pmd.sourceforge.net/report/2.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 http://pmd.sourceforge.net/report_2_0_0.xsd"
-    version="6.13.0" timestamp="2021-02-06T16:55:35.309">
+    version="6.13.0" timestamp="2021-02-16T17:38:43.965">
 <file name="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\people\MockPerson.java">
 <violation beginline="100" endline="100" begincolumn="13" endcolumn="27" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.mji13.people" class="MockPerson" method="formatEmpty" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
 Useless parentheses.
@@ -36,21 +36,35 @@ Useless parentheses.
 </violation>
 </file>
 <file name="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveNeighbors.java">
-<violation beginline="231" endline="231" begincolumn="10" endcolumn="38" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.mji13.stars" class="NaiveNeighbors" method="performNaiveNeighbors" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+<violation beginline="253" endline="253" begincolumn="10" endcolumn="38" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.mji13.stars" class="NaiveNeighbors" method="performNaiveNeighbors" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
 Useless parentheses.
 </violation>
-<violation beginline="231" endline="231" begincolumn="45" endcolumn="73" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.mji13.stars" class="NaiveNeighbors" method="performNaiveNeighbors" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+<violation beginline="253" endline="253" begincolumn="45" endcolumn="73" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.mji13.stars" class="NaiveNeighbors" method="performNaiveNeighbors" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
 Useless parentheses.
 </violation>
 </file>
 <file name="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveRadius.java">
-<violation beginline="192" endline="192" begincolumn="32" endcolumn="74" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.mji13.stars" class="NaiveRadius" method="performNaiveRadius" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+<violation beginline="218" endline="218" begincolumn="32" endcolumn="74" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.mji13.stars" class="NaiveRadius" method="performNaiveRadius" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
 Useless parentheses.
 </violation>
 </file>
 <file name="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\StarStorage.java">
 <violation beginline="18" endline="18" begincolumn="18" endcolumn="22" rule="UnusedPrivateField" ruleset="Best Practices" package="edu.brown.cs.mji13.stars" class="StarStorage" variable="title" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_bestpractices.html#unusedprivatefield" priority="3">
 Avoid unused private fields such as 'title'.
+</violation>
+</file>
+<file name="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\StarsGenerator.java">
+<violation beginline="159" endline="159" begincolumn="13" endcolumn="37" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.mji13.stars" class="StarsGenerator" method="areNeighborsListValid" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+<violation beginline="160" endline="160" begincolumn="13" endcolumn="37" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.mji13.stars" class="StarsGenerator" method="areNeighborsListValid" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+<violation beginline="191" endline="191" begincolumn="27" endcolumn="50" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.mji13.stars" class="StarsGenerator" method="isListInRange" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
+</violation>
+<violation beginline="209" endline="209" begincolumn="27" endcolumn="49" rule="UselessParentheses" ruleset="Code Style" package="edu.brown.cs.mji13.stars" class="StarsGenerator" method="isAscending" externalInfoUrl="https://pmd.github.io/pmd-6.13.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses.
 </violation>
 </file>
 <file name="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\validations\ArgsInformation.java">

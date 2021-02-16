@@ -1,5 +1,6 @@
 @import 'main.css';
 
+/*Modal of the GUI, displays the result of the searches*/
 #modal-overlay {
     position:absolute;
     top:0;

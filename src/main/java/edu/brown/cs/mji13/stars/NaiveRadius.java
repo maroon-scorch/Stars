@@ -25,13 +25,6 @@ public class NaiveRadius implements Command, StringValFunctions {
   private StarStorage starStorage;
 
   /**
-   * The list of messages the command line accumulates during its execution.
-   * And the boolean errorOccurred.
-   */
-  private ArrayList<String> messages = new ArrayList<>();
-  private boolean errorOccurred = false;
-
-  /**
    * Specifications on the requirements on the argument passed to the command.
    * 2 Arguments:
    *   - radius: non-negative number
@@ -87,6 +80,14 @@ public class NaiveRadius implements Command, StringValFunctions {
   }
 
   /**
+   * Execute Specific Variables
+   * The list of answers (Stars) the command line finds during its execution.
+   * And the boolean hasErrorOccurred checking if error occurred during execution
+   */
+  private ArrayList<Star> answers = new ArrayList<>();
+  private boolean hasErrorOccurred = false;
+
+  /**
    * Executes the naive_radius Command.
    * If successful, prints out every stars with radius less than or equal to that of
    * the specified radius.
@@ -95,22 +96,27 @@ public class NaiveRadius implements Command, StringValFunctions {
    * since naive_radius gets all the stars within range in, there are no tiebreakers to decide
    * which "star" gets in.
    * @param args - the list of arguments to be operated on.
+   * @return the Arraylist of starIDs to be print out if Successful. If unSuccessful,
+   * prints the error messages instead.
    */
-  public void execute(ArrayList<String> args) {
+  public ArrayList<String> execute(ArrayList<String> args) {
+    ArrayList<String> messages = new ArrayList<>();
+    hasErrorOccurred = false;
+    answers.clear();
 
     // If the current file is empty, print an error
     if (starStorage.getFileName().length() == 0) {
-      errorOccurred = true;
+      hasErrorOccurred = true;
       messages.add("ERROR: No file has been loaded yet");
-      return;
+      return messages;
     }
 
     // If no methods are matched, exits the command
     Optional<String> opMethodName = matchArgsToMethod(args);
     if (opMethodName.isEmpty()) {
-      errorOccurred = true;
+      hasErrorOccurred = true;
       messages.add(argsValidator.getErrorMessage());
-      return;
+      return messages;
     }
 
     // If a method name has been found, determines which method it maps to and executes it
@@ -121,24 +127,43 @@ public class NaiveRadius implements Command, StringValFunctions {
         double radius = Double.parseDouble(args.get(0));
         String sName = args.get(1);
         String sStarNoQuotes = sName.substring(1, sName.length() - 1);
-        ArrayList<Star> starsInRange2 = performNaiveRadius(radius, sStarNoQuotes, slist);
-        starsInRange2.forEach((str) -> messages.add(str.getStarID()));
-        // starsInRange2.forEach(System.out::println);
-        break;
+        if (starStorage.isNameInStorage(sStarNoQuotes)) {
+          answers = performNaiveRadius(radius, sStarNoQuotes, slist);
+          answers.forEach((str) -> messages.add(str.getStarID()));
+        } else {
+          hasErrorOccurred = true;
+          messages.add(String.format("ERROR: No Stars with name \"%s\" "
+              + "is found or name is empty", sStarNoQuotes));
+        }
+        return messages;
+
       case "naive_radius_4":
         double dRadius = Double.parseDouble(args.get(0));
         double dPosX = Double.parseDouble(args.get(1));
         double dPosY = Double.parseDouble(args.get(2));
         double dPosZ = Double.parseDouble(args.get(3));
-        ArrayList<Star> starsInRange4 = performNaiveRadius(dRadius, dPosX, dPosY, dPosZ, slist);
-        starsInRange4.forEach((str) -> messages.add(str.getStarID()));
-        // starsInRange4.forEach(System.out::println);
-        break;
+        answers = performNaiveRadius(dRadius, dPosX, dPosY, dPosZ, slist);
+        answers.forEach((str) -> messages.add(str.getStarID()));
+        return messages;
+
       default:
+        // Only occurs if Programmer made an Error
         System.out.println("ERROR: Hashmap reqInfoMaps has unregistered names, "
             + "shouldn't have reached here");
-        break;
+        return new ArrayList<>();
     }
+  }
+
+  /**
+   * Executes the naive_radius Command for the GUI.
+   *
+   * @param args - the list of arguments to be operated on.
+   * @return the String of the HTML Table formed by the list of Stars.
+   */
+  public String executeForGUI(ArrayList<String> args) {
+    String result = String.join("\n", execute(args));
+    ArrayList<Star> answerCopy = new ArrayList<Star>(answers);
+    return hasErrorOccurred ? result : starStorage.starListToHTML(answerCopy);
   }
 
   /**
@@ -152,32 +177,6 @@ public class NaiveRadius implements Command, StringValFunctions {
   }
 
   /**
-   * Returns the ArrayList of Messages stashed.
-   *
-   * @return - the variable messages
-   */
-  public ArrayList<String> getMessages() {
-    return new ArrayList<>(messages);
-  }
-
-  /**
-   * Clears the Stash After the Execution of a Command.
-   */
-  public void clearMessage() {
-    errorOccurred = false;
-    messages.clear();
-  }
-
-  /**
-   * Checks if an error has occurred during the execution of the program.
-   *
-   * @return - the variable errorOccurred
-   */
-  public boolean hasErrorOccurred() {
-    return errorOccurred;
-  }
-
-  /**
    * Finds all stars whose distance to the star specified with the name is less than or equal to
    * the radius given.
    *
@@ -187,28 +186,16 @@ public class NaiveRadius implements Command, StringValFunctions {
    * @return the list of stars within range inclusive.
    */
   public ArrayList<Star> performNaiveRadius(double r, String name, ArrayList<Star> alos) {
-    // If the name is empty, print an error
-    if (name.isEmpty()) {
-      errorOccurred = true;
-      messages.add("ERROR: Empty String is not a valid name for stars");
-      return new ArrayList<>();
-    }
-
-    // If the selected star is not found, print an error
-    Optional<Star> selectedStar = starStorage.getStarFromMap(name);
-    if (selectedStar.isEmpty()) {
-      errorOccurred = true;
-      messages.add(String.format("ERROR: No Stars with name \"%s\" is found", name));
-      return new ArrayList<>();
-    }
-
-    Star presentStar = selectedStar.get();
+    // Gets the Star from StarStorage, because the program checked if the name is in the
+    // storage before, error handling is taken care of already.
+    Star presentStar = starStorage.getStarFromMap(name);
 
     double selectedX = presentStar.getCoordinate(0);
     double selectedY = presentStar.getCoordinate(1);
     double selectedZ = presentStar.getCoordinate(2);
 
     ArrayList<Star> template = new ArrayList<>(alos);
+    // Removes the star from the list returned after search.
     template.removeIf(star -> star.getName().equals(name));
 
     return performNaiveRadius(r, selectedX, selectedY, selectedZ, template);

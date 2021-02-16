@@ -5,11 +5,11 @@ import edu.brown.cs.mji13.kdTree.KDTree;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 /**
- * Stars Storage Object for storing common datatypes shared between all stars commands.
+ * Stars Storage Object for storing common datatypes, commands, and utilities
+ * shared between all stars commands.
  */
 public class StarStorage {
   /**
@@ -106,14 +106,21 @@ public class StarStorage {
    * Given a name, searches if the Hashmap contains a star with said name.
    *
    * @param name - the key to find the corresponding star.
-   * @return an Optional of stars if a star with the name is found, an Optional of empty if
-   * no such star is found.
+   * @return the star associated with the name, if found. In the command,
+   * isNameInStorage is used to check before executing said command here.
    */
-  public Optional<Star> getStarFromMap(String name) {
-    if (starsMap.containsKey(name)) {
-      return Optional.of(starsMap.get(name));
-    }
-    return Optional.empty();
+  public Star getStarFromMap(String name) {
+    return starsMap.get(name);
+  }
+
+  /**
+   * Given a name, searches if the Hashmap contains a star with said name.
+   *
+   * @param name - the key to find the corresponding star.
+   * @return if the storage contains said name or not.
+   */
+  public Boolean isNameInStorage(String name) {
+    return starsMap.containsKey(name) && !name.isEmpty();
   }
 
   /**
@@ -141,6 +148,13 @@ public class StarStorage {
     }
   }
 
+  /**
+   * Takes in a list of stars and uses it to construct a HTML Table with each Star
+   * as a row. This is intended for the GUI.
+   *
+   * @param slist - the list of stars to be used to construct the Hashmap.
+   * @return the HTML Table of the Stars
+   */
   public String starListToHTML(ArrayList<Star> slist) {
     String header = "<tr>"
         + "<th>StarID</th>"
@@ -156,7 +170,6 @@ public class StarStorage {
     }
 
     String table = "<table>" + header + body + "</table>";
-
     return table;
   }
 

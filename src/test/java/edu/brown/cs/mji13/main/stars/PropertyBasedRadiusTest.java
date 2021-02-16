@@ -25,15 +25,17 @@ public class PropertyBasedRadiusTest {
   private Set<String> names;
   private NaiveRadius naive_radius;
   private Radius radius;
+  private StarsGenerator generator;
+  private StarStorage starStorage;
   /**
    * Sets up the generator to be passed into the two Commands
    */
   @Before
   public void setUp() {
-    StarsGenerator generator = new StarsGenerator(-100, 200, 5, 26);
+    generator = new StarsGenerator(-100, 200, 5, 26);
     testStars = generator.generateInput(100);
 
-    StarStorage starStorage = new StarStorage("test");
+    starStorage = new StarStorage("test");
     starStorage.setList(testStars);
     starStorage.setListToTree(testStars);
     starStorage.setListToStarsMap(testStars);
@@ -51,6 +53,7 @@ public class PropertyBasedRadiusTest {
   @After
   public void tearDown() {
     testStars.clear();
+    generator = null;
     naive_radius = null;
     radius = null;
   }
@@ -58,6 +61,10 @@ public class PropertyBasedRadiusTest {
 
   /**
    * Testing for Coordinate Implementation of Radius
+   * 1. That all stars when converted to the distance from the coordiante specified,
+   * is the same
+   * 2. The distances are in Ascending Order and below the radius
+   * 3. All the stars selected in the lists are all in the original list.
    */
   @Test
   public void testAtScaleForCords() {
@@ -72,12 +79,18 @@ public class PropertyBasedRadiusTest {
       double yPos = -100 + (200) * rand.nextDouble();
       double zPos = -100 + (200) * rand.nextDouble();
 
+      ArrayList<Double> cords = new ArrayList<>();
+      cords.add(xPos);
+      cords.add(yPos);
+      cords.add(zPos);
+
       ArrayList<Star> nrResult
           = naive_radius.performNaiveRadius(r, xPos, yPos, zPos, testStars);
       ArrayList<Star> rResult
           = radius.performRadius(r, xPos, yPos, zPos, starTree);
 
-      isEqual = isEqual && (nrResult.equals(rResult));
+      assertTrue(nrResult.equals(rResult));
+      isEqual = isEqual && generator.areRadiusListsValid(r, testStars, cords, nrResult, rResult);
     }
 
     assertTrue(isEqual);
@@ -86,6 +99,11 @@ public class PropertyBasedRadiusTest {
 
   /**
    * Testing for Names Implementation of Radius
+   * 1. That all stars when converted to the distance from the coordiante specified,
+   * is the same
+   * 2. The distances are in Ascending Order and below the radius
+   * 3. All the stars selected in the lists are all in the original list.
+   * 4. Name of the target is not in the list.
    */
   @Test
   public void testAtScaleForNames() {
@@ -101,7 +119,20 @@ public class PropertyBasedRadiusTest {
       ArrayList<Star> rResult
           = radius.performRadius(r, target, starTree);
 
-      isEqual = isEqual && (nrResult.equals(rResult));
+      assertTrue(nrResult.equals(rResult));
+
+      // Checking if the String is in the name outputted
+      List<String> strList1 = nrResult.stream()
+          .map(Star::getName)
+          .collect(Collectors.toList());
+      List<String> strList2 = rResult.stream()
+          .map(Star::getName)
+          .collect(Collectors.toList());
+
+      ArrayList<Double> cords = starStorage.getStarFromMap(target).getCoordinates();
+      isEqual = isEqual && generator.areRadiusListsValid(r, testStars, cords, nrResult, rResult)
+          && !strList1.contains(target)
+          && !strList2.contains(target);
     }
 
     assertTrue(isEqual);

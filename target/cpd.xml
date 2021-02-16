@@ -1,61 +1,308 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pmd-cpd>
-   <duplication lines="23" tokens="116">
-      <file line="201"
-            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Neighbors.java"/>
-      <file line="159"
-            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Radius.java"/>
-      <codefragment><![CDATA[      int count, String name, KDTree<Star> tree) {
-    // If the name is empty, print an error
-    if (name.isEmpty()) {
-      System.out.println("ERROR: Empty String is not a valid name for stars");
-      return new ArrayList<>();
-    }
-
-    // If the selected star is not found, print an error
-    Optional<Star> selectedStar = starStorage.getStarFromMap(name);
-    if (selectedStar.isEmpty()) {
-      System.out.printf("ERROR: No Stars with name \"%s\" is found%n", name);
-      return new ArrayList<>();
-    }
-
-    Star presentStar = selectedStar.get();
-
-    double selectedX = presentStar.getCoordinate(0);
-    double selectedY = presentStar.getCoordinate(1);
-    double selectedZ = presentStar.getCoordinate(2);
-
-    // Calls performNeighbors in the coordinate form.
-    ArrayList<Star> resultList
-        = performNeighbors(count + 1, selectedX, selectedY, selectedZ, tree,]]></codefragment>
-   </duplication>
-   <duplication lines="21" tokens="105">
-      <file line="152"
+   <duplication lines="47" tokens="143">
+      <file line="79"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveNeighbors.java"/>
+      <file line="79"
             path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveRadius.java"/>
-      <file line="201"
+      <codefragment><![CDATA[  public NaiveNeighbors() {
+  }
+
+  /**
+   * Execute Specific Variables
+   * The list of answers (Stars) the command line finds during its execution.
+   * And the boolean hasErrorOccurred checking if error occurred during execution
+   */
+  private ArrayList<Star> answers = new ArrayList<>();
+  private boolean hasErrorOccurred = false;
+
+  /**
+   * Executes the naive_neighbors Command.
+   * If successful, prints out the closest n number of stars to the specified location.
+   * Note: TA Colton said that the randomization is meant for tiebreakers to include on the list
+   * so if there are stars with same distance away but including them does not exceed that number
+   * asked, they will be included just as normal.
+   *
+   * @param args - the list of arguments to be operated on.
+   * @return the Arraylist of starIDs to be print out if Successful. If unSuccessful,
+   * prints the error messages instead.
+   */
+  public ArrayList<String> execute(ArrayList<String> args) {
+    ArrayList<String> messages = new ArrayList<>();
+    hasErrorOccurred = false;
+    answers.clear();
+
+    // If no File has been loaded, signal an error
+    if (starStorage.getFileName().length() == 0) {
+      hasErrorOccurred = true;
+      messages.add("ERROR: No file has been loaded yet");
+      return messages;
+    }
+
+    // If the arguments failed the validation check, exit out of execute.
+    Optional<String> opMethodName = matchArgsToMethod(args);
+    if (opMethodName.isEmpty()) {
+      hasErrorOccurred = true;
+      messages.add(argsValidator.getErrorMessage());
+      return messages;
+    }
+
+    // If a valid method name has been found, then operate:
+    String methodName = opMethodName.get();
+    ArrayList<Star> slist = starStorage.getStarsList();
+    switch (methodName) {
+      case "naive_neighbors_2":]]></codefragment>
+   </duplication>
+   <duplication lines="43" tokens="140">
+      <file line="81"
             path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Neighbors.java"/>
-      <file line="159"
+      <file line="75"
             path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Radius.java"/>
-      <codefragment><![CDATA[  public ArrayList<Star> performNaiveRadius(double r, String name, ArrayList<Star> alos) {
-    // If the name is empty, print an error
-    if (name.isEmpty()) {
-      System.out.println("ERROR: Empty String is not a valid name for stars");
-      return new ArrayList<>();
+      <codefragment><![CDATA[  }
+
+  /**
+   * Execute Specific Variables
+   * The list of answers (Stars) the command line finds during its execution.
+   * And the boolean hasErrorOccurred checking if error occurred during execution
+   */
+  private ArrayList<Star> answers = new ArrayList<>();
+  private boolean hasErrorOccurred = false;
+
+  /**
+   * Executes the naive_neighbors Command.
+   * If successful, finds the closest n number of stars to the specified location.
+   *
+   * @param args - the list of arguments to be operated on.
+   * @return the Arraylist of starIDs to be print out if Successful. If unSuccessful,
+   * prints the error messages instead.
+   */
+  public ArrayList<String> execute(ArrayList<String> args) {
+    ArrayList<String> messages = new ArrayList<>();
+    hasErrorOccurred = false;
+    answers.clear();
+
+    // If no File has been loaded, signal an error
+    if (starStorage.getFileName().length() == 0) {
+      hasErrorOccurred = true;
+      messages.add("ERROR: No file has been loaded yet");
+      return messages;
     }
 
-    // If the selected star is not found, print an error
-    Optional<Star> selectedStar = starStorage.getStarFromMap(name);
-    if (selectedStar.isEmpty()) {
-      System.out.printf("ERROR: No Stars with name \"%s\" is found%n", name);
-      return new ArrayList<>();
+    // If the arguments failed the validation check, exit out of execute.
+    Optional<String> opMethodName = matchArgsToMethod(args);
+    if (opMethodName.isEmpty()) {
+      hasErrorOccurred = true;
+      messages.add(argsValidator.getErrorMessage());
+      return messages;
     }
 
-    Star presentStar = selectedStar.get();
+    // If a valid method name has been found, then operate:
+    String methodName = opMethodName.get();
+    KDTree<Star> sTree = starStorage.getStarsTree();
+    switch (methodName) {
+      case "neighbors_2":]]></codefragment>
+   </duplication>
+   <duplication lines="42" tokens="129">
+      <file line="144"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveNeighbors.java"/>
+      <file line="145"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveRadius.java"/>
+      <codefragment><![CDATA[        answers = performNaiveNeighbors(intNeighbors, dPosX, dPosY, dPosZ, slist);
+        answers.forEach((str) -> messages.add(str.getStarID()));
+        return messages;
 
-    double selectedX = presentStar.getCoordinate(0);
-    double selectedY = presentStar.getCoordinate(1);
-    double selectedZ = presentStar.getCoordinate(2);
+      default:
+        System.out.println("ERROR: Hashmap reqInfoMaps has unregistered names, "
+            + "shouldn't have reached here");
+        return new ArrayList<>();
+    }
+  }
 
-    ArrayList<Star> template = new ArrayList<>(alos);]]></codefragment>
+  /**
+   * Executes the naive_neighbors Command for the GUI.
+   *
+   * @param args - the list of arguments to be operated on.
+   * @return the String of the HTML Table formed by the list of Stars.
+   */
+  public String executeForGUI(ArrayList<String> args) {
+    String result = String.join("\n", execute(args));
+    ArrayList<Star> answerCopy = new ArrayList<Star>(answers);
+    return hasErrorOccurred ? result : starStorage.starListToHTML(answerCopy);
+  }
+
+  /**
+   * Match the arguments given to which method (if any) the Command Object should execute.
+   *
+   * @param args the list of arguments to be operated on
+   * @return Option of String - empty if the arguments are invalid, a String if match is found.
+   */
+  public Optional<String> matchArgsToMethod(ArrayList<String> args) {
+    return argsValidator.testArgs(args);
+  }
+
+  /**
+   * Finds "count" number of stars whose distance are closest to the star whose name is given.
+   *
+   * @param count the number of stars allowed for the list
+   * @param name  the name of the destination star
+   * @param alos  the list of stars to search through
+   * @return the list of stars from least distance to greatest within count given
+   */
+  public ArrayList<Star> performNaiveNeighbors(int count, String name, ArrayList<Star> alos) {]]></codefragment>
+   </duplication>
+   <duplication lines="44" tokens="126">
+      <file line="79"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveNeighbors.java"/>
+      <file line="79"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveRadius.java"/>
+      <file line="80"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Neighbors.java"/>
+      <codefragment><![CDATA[  public NaiveNeighbors() {
+  }
+
+  /**
+   * Execute Specific Variables
+   * The list of answers (Stars) the command line finds during its execution.
+   * And the boolean hasErrorOccurred checking if error occurred during execution
+   */
+  private ArrayList<Star> answers = new ArrayList<>();
+  private boolean hasErrorOccurred = false;
+
+  /**
+   * Executes the naive_neighbors Command.
+   * If successful, prints out the closest n number of stars to the specified location.
+   * Note: TA Colton said that the randomization is meant for tiebreakers to include on the list
+   * so if there are stars with same distance away but including them does not exceed that number
+   * asked, they will be included just as normal.
+   *
+   * @param args - the list of arguments to be operated on.
+   * @return the Arraylist of starIDs to be print out if Successful. If unSuccessful,
+   * prints the error messages instead.
+   */
+  public ArrayList<String> execute(ArrayList<String> args) {
+    ArrayList<String> messages = new ArrayList<>();
+    hasErrorOccurred = false;
+    answers.clear();
+
+    // If no File has been loaded, signal an error
+    if (starStorage.getFileName().length() == 0) {
+      hasErrorOccurred = true;
+      messages.add("ERROR: No file has been loaded yet");
+      return messages;
+    }
+
+    // If the arguments failed the validation check, exit out of execute.
+    Optional<String> opMethodName = matchArgsToMethod(args);
+    if (opMethodName.isEmpty()) {
+      hasErrorOccurred = true;
+      messages.add(argsValidator.getErrorMessage());
+      return messages;
+    }
+
+    // If a valid method name has been found, then operate:
+    String methodName = opMethodName.get();]]></codefragment>
+   </duplication>
+   <duplication lines="43" tokens="123">
+      <file line="80"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveNeighbors.java"/>
+      <file line="80"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveRadius.java"/>
+      <file line="75"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Radius.java"/>
+      <codefragment><![CDATA[  }
+
+  /**
+   * Execute Specific Variables
+   * The list of answers (Stars) the command line finds during its execution.
+   * And the boolean hasErrorOccurred checking if error occurred during execution
+   */
+  private ArrayList<Star> answers = new ArrayList<>();
+  private boolean hasErrorOccurred = false;
+
+  /**
+   * Executes the naive_neighbors Command.
+   * If successful, prints out the closest n number of stars to the specified location.
+   * Note: TA Colton said that the randomization is meant for tiebreakers to include on the list
+   * so if there are stars with same distance away but including them does not exceed that number
+   * asked, they will be included just as normal.
+   *
+   * @param args - the list of arguments to be operated on.
+   * @return the Arraylist of starIDs to be print out if Successful. If unSuccessful,
+   * prints the error messages instead.
+   */
+  public ArrayList<String> execute(ArrayList<String> args) {
+    ArrayList<String> messages = new ArrayList<>();
+    hasErrorOccurred = false;
+    answers.clear();
+
+    // If no File has been loaded, signal an error
+    if (starStorage.getFileName().length() == 0) {
+      hasErrorOccurred = true;
+      messages.add("ERROR: No file has been loaded yet");
+      return messages;
+    }
+
+    // If the arguments failed the validation check, exit out of execute.
+    Optional<String> opMethodName = matchArgsToMethod(args);
+    if (opMethodName.isEmpty()) {
+      hasErrorOccurred = true;
+      messages.add(argsValidator.getErrorMessage());
+      return messages;
+    }
+
+    // If a valid method name has been found, then operate:
+    String methodName = opMethodName.get();]]></codefragment>
+   </duplication>
+   <duplication lines="42" tokens="121">
+      <file line="144"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveNeighbors.java"/>
+      <file line="145"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\NaiveRadius.java"/>
+      <file line="143"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Neighbors.java"/>
+      <file line="137"
+            path="C:\Users\matt\Desktop\cs0320\projects\stars-maroon-scorch\stars-maroon-scorch\src\main\java\edu\brown\cs\mji13\stars\Radius.java"/>
+      <codefragment><![CDATA[        answers = performNaiveNeighbors(intNeighbors, dPosX, dPosY, dPosZ, slist);
+        answers.forEach((str) -> messages.add(str.getStarID()));
+        return messages;
+
+      default:
+        System.out.println("ERROR: Hashmap reqInfoMaps has unregistered names, "
+            + "shouldn't have reached here");
+        return new ArrayList<>();
+    }
+  }
+
+  /**
+   * Executes the naive_neighbors Command for the GUI.
+   *
+   * @param args - the list of arguments to be operated on.
+   * @return the String of the HTML Table formed by the list of Stars.
+   */
+  public String executeForGUI(ArrayList<String> args) {
+    String result = String.join("\n", execute(args));
+    ArrayList<Star> answerCopy = new ArrayList<Star>(answers);
+    return hasErrorOccurred ? result : starStorage.starListToHTML(answerCopy);
+  }
+
+  /**
+   * Match the arguments given to which method (if any) the Command Object should execute.
+   *
+   * @param args the list of arguments to be operated on
+   * @return Option of String - empty if the arguments are invalid, a String if match is found.
+   */
+  public Optional<String> matchArgsToMethod(ArrayList<String> args) {
+    return argsValidator.testArgs(args);
+  }
+
+  /**
+   * Finds "count" number of stars whose distance are closest to the star whose name is given.
+   *
+   * @param count the number of stars allowed for the list
+   * @param name  the name of the destination star
+   * @param alos  the list of stars to search through
+   * @return the list of stars from least distance to greatest within count given
+   */
+  public ArrayList<Star> performNaiveNeighbors(int count, String name, ArrayList<Star> alos) {]]></codefragment>
    </duplication>
 </pmd-cpd>

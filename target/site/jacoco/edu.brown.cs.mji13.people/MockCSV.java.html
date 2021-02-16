@@ -63,19 +63,29 @@ public class MockCSV implements Command, StringValFunctions {
    * If successful, prints out every line of the MockPerson converted in String.
    *
    * @param args - the list of arguments to be operated on
+   * @return the list of toString of MockPerson to be printed out; returns the error message
+   * if unsuccessful.
    */
-  public void execute(ArrayList&lt;String&gt; args) {
-<span class="nc" id="L68">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
-<span class="nc bnc" id="L69" title="All 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
-<span class="nc" id="L70">      return;</span>
+  public ArrayList&lt;String&gt; execute(ArrayList&lt;String&gt; args) {
+<span class="nc" id="L70">    ArrayList&lt;String&gt; messages = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L71">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
+<span class="nc" id="L73">      messages.add(argsValidator.getErrorMessage());</span>
+<span class="nc" id="L74">      return messages;</span>
     }
-<span class="nc" id="L72">    String filepath = args.get(0);</span>
-<span class="nc" id="L73">    boolean isSuccessful =</span>
-<span class="nc" id="L74">        parser.parse(filepath, peopleList, expectedHeaders, this::lineToPerson);</span>
-<span class="nc bnc" id="L75" title="All 2 branches missed.">    if (isSuccessful) {</span>
-<span class="nc" id="L76">      peopleList.forEach(System.out::println);</span>
+
+<span class="nc" id="L77">    String filepath = args.get(0);</span>
+<span class="nc" id="L78">    boolean isSuccessful =</span>
+<span class="nc" id="L79">        parser.parse(filepath, peopleList, expectedHeaders, this::lineToPerson);</span>
+
+<span class="nc bnc" id="L81" title="All 2 branches missed.">    if (isSuccessful) {</span>
+<span class="nc" id="L82">      peopleList.forEach((people) -&gt; messages.add(people.toString()));</span>
+<span class="nc" id="L83">      return messages;</span>
     }
-<span class="nc" id="L78">  }</span>
+
+<span class="nc" id="L86">    messages.addAll(parser.getMessages());</span>
+<span class="nc" id="L87">    return messages;</span>
+  }
 
   /**
    * Match the arguments given to which method (if any) the Command Object should execute,
@@ -86,7 +96,7 @@ public class MockCSV implements Command, StringValFunctions {
    * @return Option of String - empty if the arguments are invalid, a String if a match is found.
    */
   public Optional&lt;String&gt; matchArgsToMethod(ArrayList&lt;String&gt; args) {
-<span class="fc" id="L89">    return argsValidator.testArgs(args);</span>
+<span class="fc" id="L99">    return argsValidator.testArgs(args);</span>
   }
 
   /**
@@ -96,19 +106,19 @@ public class MockCSV implements Command, StringValFunctions {
    * @return MockPerson if no errors or illegal arguments were present.
    */
   public MockPerson lineToPerson(String line) {
-<span class="fc" id="L99">    String[] personAttributes = line.split(&quot;,&quot;, -1);</span>
-<span class="pc bpc" id="L100" title="1 of 2 branches missed.">    if (personAttributes.length != 6) {</span>
-<span class="nc" id="L101">      throw new IllegalArgumentException(&quot;The file's rows are malformed, &quot;</span>
+<span class="fc" id="L109">    String[] personAttributes = line.split(&quot;,&quot;, -1);</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">    if (personAttributes.length != 6) {</span>
+<span class="nc" id="L111">      throw new IllegalArgumentException(&quot;The file's rows are malformed, &quot;</span>
           + &quot;they have inconsistent number of entries per row&quot;);
     }
-<span class="fc" id="L104">    String firstName = personAttributes[0];</span>
-<span class="fc" id="L105">    String lastName = personAttributes[1];</span>
-<span class="fc" id="L106">    String birthDate = personAttributes[2];</span>
-<span class="fc" id="L107">    String email = personAttributes[3];</span>
-<span class="fc" id="L108">    String gender = personAttributes[4];</span>
-<span class="fc" id="L109">    String streetAddress = personAttributes[5];</span>
+<span class="fc" id="L114">    String firstName = personAttributes[0];</span>
+<span class="fc" id="L115">    String lastName = personAttributes[1];</span>
+<span class="fc" id="L116">    String birthDate = personAttributes[2];</span>
+<span class="fc" id="L117">    String email = personAttributes[3];</span>
+<span class="fc" id="L118">    String gender = personAttributes[4];</span>
+<span class="fc" id="L119">    String streetAddress = personAttributes[5];</span>
 
-<span class="fc" id="L111">    return new MockPerson(firstName, lastName, birthDate, email, gender, streetAddress);</span>
+<span class="fc" id="L121">    return new MockPerson(firstName, lastName, birthDate, email, gender, streetAddress);</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

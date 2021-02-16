@@ -103,7 +103,28 @@
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>      assertEquals(star2.toString(), <span class="jxr_string">"A"</span>);
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>    }
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  }
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>    <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">   ** Tests the toHTML Methods of Star</em>
+<a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>   @Test
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testStarToHTML() {
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>     ArrayList&lt;Double&gt; starCords = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     starCords.add(1.9);
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>     starCords.add(2.0);
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>     starCords.add(3.1);
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> 
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>     <em class="jxr_comment">// Simple Get</em>
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>     Star star1 = <strong class="jxr_keyword">new</strong> Star(<span class="jxr_string">"Abc"</span>, <span class="jxr_string">"My life is a joke"</span>, starCords);
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>     assertEquals(star1.toHTML(),
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>         <span class="jxr_string">"&lt;tr&gt;&lt;td&gt;Abc&lt;/td&gt;&lt;td&gt;My life is a joke&lt;/td&gt;&lt;td&gt;[1.9, 2.0, 3.1]&lt;/td&gt;&lt;/tr&gt;"</span>);
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> 
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>     <em class="jxr_comment">// Construct With String</em>
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>     Star star2 = <strong class="jxr_keyword">new</strong> Star(<span class="jxr_string">"A"</span>, <span class="jxr_string">"B"</span>, starCords);
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>     assertEquals(star2.toHTML(),
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>         <span class="jxr_string">"&lt;tr&gt;&lt;td&gt;A&lt;/td&gt;&lt;td&gt;B&lt;/td&gt;&lt;td&gt;[1.9, 2.0, 3.1]&lt;/td&gt;&lt;/tr&gt;"</span>);
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>   }
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> 
+<a class="jxr_linenumber" name="L119" href="#L119">119</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2021. All rights reserved.</div>

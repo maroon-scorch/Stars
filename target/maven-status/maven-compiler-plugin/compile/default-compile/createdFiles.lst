@@ -9,7 +9,6 @@ edu\brown\cs\mji13\stars\StarsGenerator.class
 edu\brown\cs\mji13\validations\ArgsInformation.class
 edu\brown\cs\mji13\stars\Main.class
 edu\brown\cs\mji13\csvParse\CSVParser.class
-edu\brown\cs\mji13\command\GUICommand.class
 edu\brown\cs\mji13\csvParse\LineConverter.class
 edu\brown\cs\mji13\validations\StringValidation.class
 edu\brown\cs\mji13\gui\CommandHandler.class

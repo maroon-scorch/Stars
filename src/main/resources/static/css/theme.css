@@ -1,5 +1,5 @@
 @import 'main.css';
-
+/*CSS Responsible for the Theme Selector (The Card)*/
 .theme-selection {
     position:absolute;
     bottom: 3vh;

@@ -3,17 +3,20 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * The Stars Generator Object used to generate random test cases.
+ * The Stars Generator Object used to generate random test cases and handle Model Based
+ * and Property Based Testing.
  */
 public class StarsGenerator {
   /**
    * The Random Library below is the main mechanism of randomness behind this Generator Object.
    */
-<span class="fc" id="L16">  private Random generator = new Random();</span>
+<span class="fc" id="L19">  private Random generator = new Random();</span>
 
   /**
    * The fields for StarsGenerator.
@@ -29,12 +32,12 @@ public class StarsGenerator {
    * @param maxNameLength - the maximum length of a random name
    * @param wordRange     - the range of ASCILL Value to take from (usually 26 for alphabet)
    */
-<span class="fc" id="L32">  public StarsGenerator(double min, double range, int maxNameLength, int wordRange) {</span>
-<span class="fc" id="L33">    this.min = min;</span>
-<span class="fc" id="L34">    this.range = range;</span>
-<span class="fc" id="L35">    this.maxNameLength = maxNameLength;</span>
-<span class="fc" id="L36">    this.wordRange = wordRange;</span>
-<span class="fc" id="L37">  }</span>
+<span class="fc" id="L35">  public StarsGenerator(double min, double range, int maxNameLength, int wordRange) {</span>
+<span class="fc" id="L36">    this.min = min;</span>
+<span class="fc" id="L37">    this.range = range;</span>
+<span class="fc" id="L38">    this.maxNameLength = maxNameLength;</span>
+<span class="fc" id="L39">    this.wordRange = wordRange;</span>
+<span class="fc" id="L40">  }</span>
 
   /**
    * Generates an ArrayList of randomly generated Stars of size n.
@@ -43,23 +46,23 @@ public class StarsGenerator {
    * @return  - A list of size n of randomly generated stars.
    */
   public ArrayList&lt;Star&gt; generateInput(int n) {
-<span class="pc bpc" id="L46" title="1 of 2 branches missed.">    if (n &lt;= 0) {</span>
-<span class="nc" id="L47">      return new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">    if (n &lt;= 0) {</span>
+<span class="nc" id="L50">      return new ArrayList&lt;&gt;();</span>
     }
 
-<span class="fc" id="L50">    ArrayList&lt;Star&gt; template = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L51">    Set&lt;String&gt; nameSet = new HashSet&lt;String&gt;();</span>
+<span class="fc" id="L53">    ArrayList&lt;Star&gt; template = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L54">    Set&lt;String&gt; nameSet = new HashSet&lt;String&gt;();</span>
 
-<span class="fc bfc" id="L53" title="All 2 branches covered.">    for (int i = 0; i &lt; n; i++) {</span>
-<span class="fc" id="L54">      Star randStar = randomStar(i);</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">      if (nameSet.contains(randStar.getName())) {</span>
-<span class="fc" id="L56">        i--;</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">    for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L57">      Star randStar = randomStar(i);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">      if (nameSet.contains(randStar.getName())) {</span>
+<span class="fc" id="L59">        i--;</span>
       } else {
-<span class="fc" id="L58">        nameSet.add(randStar.getName());</span>
-<span class="fc" id="L59">        template.add(randStar);</span>
+<span class="fc" id="L61">        nameSet.add(randStar.getName());</span>
+<span class="fc" id="L62">        template.add(randStar);</span>
       }
     }
-<span class="fc" id="L62">    return template;</span>
+<span class="fc" id="L65">    return template;</span>
   }
 
   /**
@@ -69,14 +72,14 @@ public class StarsGenerator {
    * @return  - A randomly generated star with that id
    */
   public Star randomStar(int id) {
-<span class="fc" id="L72">    String starID = Integer.toString(id);</span>
-<span class="fc" id="L73">    String name = randomName();</span>
+<span class="fc" id="L75">    String starID = Integer.toString(id);</span>
+<span class="fc" id="L76">    String name = randomName();</span>
 
-<span class="fc" id="L75">    double xPos = min + (range) * generator.nextDouble();</span>
-<span class="fc" id="L76">    double yPos = min + (range) * generator.nextDouble();</span>
-<span class="fc" id="L77">    double zPos = min + (range) * generator.nextDouble();</span>
+<span class="fc" id="L78">    double xPos = min + (range) * generator.nextDouble();</span>
+<span class="fc" id="L79">    double yPos = min + (range) * generator.nextDouble();</span>
+<span class="fc" id="L80">    double zPos = min + (range) * generator.nextDouble();</span>
 
-<span class="fc" id="L79">    return new Star(starID, name, Arrays.asList(xPos, yPos, zPos));</span>
+<span class="fc" id="L82">    return new Star(starID, name, Arrays.asList(xPos, yPos, zPos));</span>
   }
 
   /**
@@ -85,13 +88,128 @@ public class StarsGenerator {
    * @return  - A randomly generated name.
    */
   public String randomName() {
-<span class="fc" id="L88">    String name = &quot;&quot;;</span>
-<span class="fc" id="L89">    int nameLength = generator.nextInt(maxNameLength) + 1;</span>
+<span class="fc" id="L91">    String name = &quot;&quot;;</span>
+<span class="fc" id="L92">    int nameLength = generator.nextInt(maxNameLength) + 1;</span>
 
-<span class="fc bfc" id="L91" title="All 2 branches covered.">    for (int i = 0; i &lt; nameLength; i++) {</span>
-<span class="fc" id="L92">      name += (char) (generator.nextInt(wordRange) + 'a');</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">    for (int i = 0; i &lt; nameLength; i++) {</span>
+<span class="fc" id="L95">      name += (char) (generator.nextInt(wordRange) + 'a');</span>
     }
-<span class="fc" id="L94">    return name;</span>
+<span class="fc" id="L97">    return name;</span>
+  }
+
+  /**
+   * Determines if the two given stars lists both satisfy the same properties:
+   * 1. That all stars when converted to the distance from the coordiante specified,
+   * is the same
+   * 2. The distances are in Ascending Order and below the radius
+   * 3. All the stars selected in the lists are all in the original list.
+   * @param radius - the radius of the search
+   * @param originalList - the original list
+   * @param cord - the coordinates of the search
+   * @param starList1 - the first list generated
+   * @param starList2 - the second list generated
+   * @return  - A randomly generated name.
+   */
+  public Boolean areRadiusListsValid(
+      double radius, ArrayList&lt;Star&gt; originalList, ArrayList&lt;Double&gt; cord,
+      ArrayList&lt;Star&gt; starList1, ArrayList&lt;Star&gt; starList2) {
+
+<span class="fc" id="L117">    List&lt;Double&gt; distList1 = starList1.stream()</span>
+<span class="fc" id="L118">        .map(star -&gt; star.distanceTo(cord))</span>
+<span class="fc" id="L119">        .collect(Collectors.toList());</span>
+<span class="fc" id="L120">    List&lt;Double&gt; distList2 = starList2.stream()</span>
+<span class="fc" id="L121">        .map(star -&gt; star.distanceTo(cord))</span>
+<span class="fc" id="L122">        .collect(Collectors.toList());</span>
+
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">    return distList1.equals(distList2)</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        &amp;&amp; isListInRange(distList1, radius)</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        &amp;&amp; isListInRange(distList2, radius)</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        &amp;&amp; isAscending(distList1)</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        &amp;&amp; isAscending(distList2)</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">        &amp;&amp; isSubList(starList1, originalList)</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">        &amp;&amp; isSubList(starList2, originalList);</span>
+
+  }
+
+  /**
+   * Determines if the two given stars lists both satisfy the same properties:
+   * 1. That all stars when converted to the distance from the coordiante specified,
+   * is the same
+   * 2. The size of both lists are the count specified
+   * 3. Both lists are in ascending order of distances
+   * 4. All the stars selected in the lists are all in the original list.
+   * @param count - the count of the search
+   * @param originalList - the original list
+   * @param cord - the coordinates of the search
+   * @param starList1 - the first list generated
+   * @param starList2 - the second list generated
+   * @return  - A randomly generated name.
+   */
+  public boolean areNeighborsListValid(
+      int count, ArrayList&lt;Star&gt; originalList, ArrayList&lt;Double&gt; cord,
+      ArrayList&lt;Star&gt; starList1, ArrayList&lt;Star&gt; starList2) {
+
+<span class="fc" id="L152">    List&lt;Double&gt; distList1 = starList1.stream()</span>
+<span class="fc" id="L153">        .map(star -&gt; star.distanceTo(cord))</span>
+<span class="fc" id="L154">        .collect(Collectors.toList());</span>
+<span class="fc" id="L155">    List&lt;Double&gt; distList2 = starList2.stream()</span>
+<span class="fc" id="L156">        .map(star -&gt; star.distanceTo(cord))</span>
+<span class="fc" id="L157">        .collect(Collectors.toList());</span>
+
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">    return (distList1.size() == count)</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        &amp;&amp; (distList2.size() == count)</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        &amp;&amp; distList1.equals(distList2)</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">        &amp;&amp; isAscending(distList1)</span>
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">        &amp;&amp; isAscending(distList2)</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">        &amp;&amp; isSubList(starList1, originalList)</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        &amp;&amp; isSubList(starList2, originalList);</span>
+  }
+
+  /**
+   * Checks if the first list is a subset of the second list.
+   *
+   * @param &lt;T&gt; - the generic type of the list
+   * @param sublist - the sublist
+   * @param list    - the main list
+   * @return if the list is a sublist of the second or not.
+   */
+  public &lt;T&gt; boolean isSubList(List&lt;T&gt; sublist, List&lt;T&gt; list) {
+<span class="fc" id="L177">    return list.containsAll(sublist);</span>
+  }
+
+  /**
+   * Checks if all values in the list of doubles or less than or equal to the bound radius.
+   *
+   * @param list   - the list
+   * @param radius - the bound
+   * @return if the list is a sublist of the second or not.
+   */
+  public boolean isListInRange(List&lt;Double&gt; list, double radius) {
+<span class="fc" id="L188">    boolean result = true;</span>
+
+<span class="fc bfc" id="L190" title="All 2 branches covered.">    for (double dist : list) {</span>
+<span class="pc bpc" id="L191" title="2 of 4 branches missed.">      result = result &amp;&amp; (Math.abs(dist) &lt;= radius);</span>
+<span class="fc" id="L192">    }</span>
+
+<span class="fc" id="L194">    return result;</span>
+  }
+
+  /**
+   * Checks if the given list of doubles is in ascending order.
+   *
+   * @param list - the list of doubles given
+   * @return if the list is ascending or not
+   */
+  public boolean isAscending(List&lt;Double&gt; list) {
+<span class="fc" id="L204">    boolean result = true;</span>
+
+<span class="fc bfc" id="L206" title="All 2 branches covered.">    for (int i = 0; i &lt; list.size() - 1; i++) {</span>
+<span class="fc" id="L207">      double currentItem = list.get(i);</span>
+<span class="fc" id="L208">      double nextItem = list.get(i + 1);</span>
+<span class="pc bpc" id="L209" title="2 of 4 branches missed.">      result = result &amp;&amp; (currentItem &lt;= nextItem);</span>
+    }
+
+<span class="fc" id="L212">    return result;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

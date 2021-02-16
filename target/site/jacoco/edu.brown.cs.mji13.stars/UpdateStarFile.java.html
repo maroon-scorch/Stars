@@ -27,19 +27,19 @@ public class UpdateStarFile implements Command, StringValFunctions {
   /**
    * The parser to handle parsing of the CSV File.
    */
-<span class="pc" id="L30">  private final CSVParser parser = new CSVParser();</span>
+<span class="fc" id="L30">  private final CSVParser parser = new CSVParser();</span>
 
   /**
    * Expected Headers of the CSV File.
    */
-<span class="pc" id="L35">  private final String[] expectedHeaders = {&quot;StarID&quot;, &quot;ProperName&quot;, &quot;X&quot;, &quot;Y&quot;, &quot;Z&quot;};</span>
+<span class="fc" id="L35">  private final String[] expectedHeaders = {&quot;StarID&quot;, &quot;ProperName&quot;, &quot;X&quot;, &quot;Y&quot;, &quot;Z&quot;};</span>
 
   /**
    * Specifications on the requirements on the argument passed to the command.
    * filepath - any string.
    */
-<span class="pc" id="L41">  private final Map&lt;Integer, ArgsInformation[]&gt; reqInfoMaps = Map.ofEntries(</span>
-<span class="pc" id="L42">      entry(1, new ArgsInformation[] {new ArgsInformation(</span>
+<span class="fc" id="L41">  private final Map&lt;Integer, ArgsInformation[]&gt; reqInfoMaps = Map.ofEntries(</span>
+<span class="fc" id="L42">      entry(1, new ArgsInformation[] {new ArgsInformation(</span>
           &quot;stars_1&quot;,
           new String[] {&quot;filepath: any&quot;},
           new StringValidation[] {this::pass},
@@ -49,7 +49,7 @@ public class UpdateStarFile implements Command, StringValFunctions {
   /**
    * The argument validator for the arguments of the star filepath command.
    */
-<span class="pc" id="L52">  private final ArgsValidator argsValidator</span>
+<span class="fc" id="L52">  private final ArgsValidator argsValidator</span>
       = new ArgsValidator(&quot;stars&quot;, reqInfoMaps);
 
   /**
@@ -60,9 +60,9 @@ public class UpdateStarFile implements Command, StringValFunctions {
    * y - numeric
    * z - numeric.
    */
-<span class="pc" id="L63">  private final Map&lt;Integer, ArgsInformation[]&gt; starDataValidation</span>
-<span class="pc" id="L64">      = Map.ofEntries(</span>
-<span class="pc" id="L65">      entry(5, new ArgsInformation[] {new ArgsInformation(</span>
+<span class="fc" id="L63">  private final Map&lt;Integer, ArgsInformation[]&gt; starDataValidation</span>
+<span class="fc" id="L64">      = Map.ofEntries(</span>
+<span class="fc" id="L65">      entry(5, new ArgsInformation[] {new ArgsInformation(</span>
           &quot;star_x_y_z&quot;,
           new String[] {&quot;starID: any string&quot;, &quot;starName: any string&quot;, &quot;x: number&quot;,
               &quot;y: number&quot;, &quot;z: number&quot;},
@@ -79,7 +79,7 @@ public class UpdateStarFile implements Command, StringValFunctions {
   /**
    * The argument validator for the arguments of the stars filepath command.
    */
-<span class="pc" id="L82">  private final ArgsValidator starsValidator</span>
+<span class="fc" id="L82">  private final ArgsValidator starsValidator</span>
       = new ArgsValidator(&quot;star:&quot;, starDataValidation);
 
   /**
@@ -88,9 +88,9 @@ public class UpdateStarFile implements Command, StringValFunctions {
    * @param starStorage - the storage of relevant stars data shared by files
    */
   public UpdateStarFile(
-<span class="nc" id="L91">      StarStorage starStorage) {</span>
-<span class="nc" id="L92">    this.starStorage = starStorage;</span>
-<span class="nc" id="L93">  }</span>
+<span class="fc" id="L91">      StarStorage starStorage) {</span>
+<span class="fc" id="L92">    this.starStorage = starStorage;</span>
+<span class="fc" id="L93">  }</span>
 
   /**
    * Creates an empty UpdateStarFile object.
@@ -100,29 +100,35 @@ public class UpdateStarFile implements Command, StringValFunctions {
 
   /**
    * Executes the stars Command.
-   * If successful, prints out every line of the MockPerson converted in String.
+   * If successful, prints out how many stars were loaded in the file.
    *
    * @param args - the list of arguments to be operated on
+   * @return the message of the command if successful, the error if unsuccessful.
    */
-  public void execute(ArrayList&lt;String&gt; args) {
-<span class="nc" id="L108">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
-<span class="nc bnc" id="L109" title="All 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
-<span class="nc" id="L110">      return;</span>
+  public ArrayList&lt;String&gt; execute(ArrayList&lt;String&gt; args) {
+<span class="fc" id="L109">    ArrayList&lt;String&gt; messages = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L110">    Optional&lt;String&gt; opMethodName = matchArgsToMethod(args);</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
+<span class="nc" id="L112">      messages.add(argsValidator.getErrorMessage());</span>
+<span class="nc" id="L113">      return messages;</span>
     }
 
-<span class="nc" id="L113">    String filepath = args.get(0);</span>
-<span class="nc" id="L114">    ArrayList&lt;Star&gt; tempStarsList = new ArrayList&lt;Star&gt;();</span>
-<span class="nc" id="L115">    boolean isSuccessful =</span>
-<span class="nc" id="L116">        parser.parse(filepath, tempStarsList, expectedHeaders, this::lineToStar);</span>
-<span class="nc bnc" id="L117" title="All 2 branches missed.">    if (isSuccessful) {</span>
+<span class="fc" id="L116">    String filepath = args.get(0);</span>
+<span class="fc" id="L117">    ArrayList&lt;Star&gt; tempStarsList = new ArrayList&lt;Star&gt;();</span>
+<span class="fc" id="L118">    boolean isSuccessful =</span>
+<span class="fc" id="L119">        parser.parse(filepath, tempStarsList, expectedHeaders, this::lineToStar);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">    if (isSuccessful) {</span>
       // If parsing was successful, update the starsList and the currentFile name
-<span class="nc" id="L119">      starStorage.setList(tempStarsList);</span>
-<span class="nc" id="L120">      starStorage.setListToTree(tempStarsList);</span>
-<span class="nc" id="L121">      starStorage.setListToStarsMap(tempStarsList);</span>
-<span class="nc" id="L122">      starStorage.setName(filepath);</span>
-<span class="nc" id="L123">      System.out.printf(&quot;Read %d stars from %s%n&quot;, tempStarsList.size(), filepath);</span>
+<span class="fc" id="L122">      starStorage.setList(tempStarsList);</span>
+<span class="fc" id="L123">      starStorage.setListToTree(tempStarsList);</span>
+<span class="fc" id="L124">      starStorage.setListToStarsMap(tempStarsList);</span>
+<span class="fc" id="L125">      starStorage.setName(filepath);</span>
+<span class="fc" id="L126">      messages.add(String.format(&quot;Read %d stars from %s&quot;, tempStarsList.size(), filepath));</span>
+<span class="fc" id="L127">      return messages;</span>
     }
-<span class="nc" id="L125">  }</span>
+<span class="fc" id="L129">    messages.addAll(parser.getMessages());</span>
+<span class="fc" id="L130">    return messages;</span>
+  }
 
   /**
    * Match the arguments given to which method (if any) the Command Object should execute,
@@ -133,7 +139,7 @@ public class UpdateStarFile implements Command, StringValFunctions {
    * @return Option of String - empty if the arguments are invalid, a String if match is found.
    */
   public Optional&lt;String&gt; matchArgsToMethod(ArrayList&lt;String&gt; args) {
-<span class="fc" id="L136">    return argsValidator.testArgs(args);</span>
+<span class="fc" id="L142">    return argsValidator.testArgs(args);</span>
   }
 
   /**
@@ -143,32 +149,32 @@ public class UpdateStarFile implements Command, StringValFunctions {
    * @return Star if no errors or illegal arguments were present.
    */
   public Star lineToStar(String line) {
-<span class="fc" id="L146">    String[] starArgsArray = line.split(&quot;,&quot;);</span>
-<span class="pc bpc" id="L147" title="1 of 2 branches missed.">    if (starArgsArray.length != 5) {</span>
-<span class="nc" id="L148">      throw new IllegalArgumentException(&quot;The file's rows are malformed, &quot;</span>
+<span class="fc" id="L152">    String[] starArgsArray = line.split(&quot;,&quot;);</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">    if (starArgsArray.length != 5) {</span>
+<span class="nc" id="L154">      throw new IllegalArgumentException(&quot;The file's rows are malformed, &quot;</span>
           + &quot;they have inconsistent number of entries per row&quot;);
     }
 
     // Check to see if the arguments are valid
     // ie. first two fields are string and the last three are numeric
-<span class="fc" id="L154">    ArrayList&lt;String&gt; stringArgs = new ArrayList&lt;&gt;(Arrays.asList(starArgsArray));</span>
-<span class="fc" id="L155">    Optional&lt;String&gt; opMethodName = starsValidator.testArgs(stringArgs);</span>
-<span class="pc bpc" id="L156" title="1 of 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
-<span class="nc" id="L157">      throw new IllegalArgumentException(&quot;ERROR: The fields of the row does not&quot;</span>
+<span class="fc" id="L160">    ArrayList&lt;String&gt; stringArgs = new ArrayList&lt;&gt;(Arrays.asList(starArgsArray));</span>
+<span class="fc" id="L161">    Optional&lt;String&gt; opMethodName = starsValidator.testArgs(stringArgs);</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">    if (opMethodName.isEmpty()) {</span>
+<span class="nc" id="L163">      throw new IllegalArgumentException(&quot;ERROR: The fields of the row does not&quot;</span>
           + &quot;match the specifications of stars&quot;);
     }
 
     // Adding the coordinates together as an ArrayList
-<span class="fc" id="L162">    double xPos = Double.parseDouble(starArgsArray[2]);</span>
-<span class="fc" id="L163">    double yPos = Double.parseDouble(starArgsArray[3]);</span>
-<span class="fc" id="L164">    double zPos = Double.parseDouble(starArgsArray[4]);</span>
+<span class="fc" id="L168">    double xPos = Double.parseDouble(starArgsArray[2]);</span>
+<span class="fc" id="L169">    double yPos = Double.parseDouble(starArgsArray[3]);</span>
+<span class="fc" id="L170">    double zPos = Double.parseDouble(starArgsArray[4]);</span>
 
-<span class="fc" id="L166">    ArrayList&lt;Double&gt; coordinates = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L167">    coordinates.add(xPos);</span>
-<span class="fc" id="L168">    coordinates.add(yPos);</span>
-<span class="fc" id="L169">    coordinates.add(zPos);</span>
+<span class="fc" id="L172">    ArrayList&lt;Double&gt; coordinates = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L173">    coordinates.add(xPos);</span>
+<span class="fc" id="L174">    coordinates.add(yPos);</span>
+<span class="fc" id="L175">    coordinates.add(zPos);</span>
 
-<span class="fc" id="L171">    return new Star(starArgsArray[0],</span>
+<span class="fc" id="L177">    return new Star(starArgsArray[0],</span>
         starArgsArray[1],
         coordinates);
   }
