@@ -16,24 +16,29 @@ The error would appear twice in **mvn package** and when you run the program or 
 This bug may cause intended tests to timeout, ./run to not execute properly, however, repeated executions of the system tests should resolve the issue.
 
 ## Design details:
-The packages in the source code are subdivided into 5 packages:
+The packages in the source code are subdivided into 7 packages:
 - Command
 - Validations
 - CSVParse
 - Stars
 - kdTree
 - People
+- gui
 
 ### Command -----
 #### Command.java
 Rrather than connecting the logic of the comands directly to the REPLRunner, all commands extend from an Interface called "Command" with only two default methods:
 - execute: the actual execution of the command
 - matchArgsToMethod: which uses the arguments passed to determine which method (if any) should be used to execute the command. If no methods are found, the arguments are invalid, and their corresponding errors are printed.
+- executeForGUI: the execution of the command if called by the GUI instead, by default this does nothing,
 A command object can execute multiple different types of command (ex. A NaiveRadius Command could handle 2 arguments and 4 arguments without needing to create Two Separate Command Objects for each case), and how they decide which method to execute is handled under Validations.
 
 #### REPLRunner.java
 For the runner, a Hashmap is set up to keys to whatever command object the input matches too (ex. "naive_radius" to the Naive Radius Command).
 For each line passed to the BufferedReader, the string is split by space (excluding that inside of doulbe quotes) and the first string is passed to the Hashmap to see if a key for it exists. If there is such a key for the first string, then the rest of the strings are passed into its corresponding Command Object.
+
+Execute gives back a list of strings to be outputed sequentially line by line by the REPL.
+
 
 ### Validations -----
 For each command object, whenever the rest of the strings is passed into them, these arguments will be checked by the validation packages for whether or not they are valid and, if they are valid, which method in the command should the command execute. The central idea of Validations is to use Anonmynous (Lambda) Methods to check if each String in the argument is valid. The main process of validation is **ArgsValidator.java**, but there are several building blocks contributing to it.
@@ -103,8 +108,49 @@ The Object representation of a MockPerson, stores their first name, last name, e
 #### MockCSV.java:
 This is the "mock csv" command, similar to UpdateStarFile.java
 
+### GUI ------
+#### CommandHandler.java:
+The Handler of GUI GET Request for the Command Datatype. This is responsible for handling all front end forms request to the backend. More to GUI will be explained below.
+
 * ArrayLists are chosen over Linked Lists for stars because the specific tie breakers of NaiveNeighbors required indexing of the ArrayList, this is best done with ArrayList because accessing each component has a time complexity of Constant Time whereas a linked list would require traveling from either the beginning or the end of the list to that point. In addition, ArrayLists were also better suited, personally, for Functional Methods such as .forEach and .removeIf, they also offer general compatibility towards Arrays (which ArrayLists are just extendible Arrays) which is another data structure commonly used in the implementation.
 
+### Front End and Back End Interaction:
+For Front End and Back End interaction, ftl templates are used so that they call the specific addresses whenever a GET request is submitted in the front end forms.
+When the request is passed to Main.java under spark servers, the specific Handler created in CommandHandler is used to handle the specific request.
+
+The REPL and the CommandHandler share the same identicial command objects because the Hashmap of Commands are in Main, therefore, loading in files in the back end is synchronized with the front end.
+
+## Front End Design Details:
+Front End Design can be split into the 4 Following Categories. They can found under src\main\resources:
+1. FTL Templates
+2. CSS
+3. Javascript
+4. Custom Assets
+
+### FTL Templates:
+main.ftl is the main page of the website, query.ftl is chaned to this level.
+In query.ftl there are 3 sections - one for which form is displayed, one for the background of the GUI, and one of the selector between Light and Dark Mode.
+In modal.ftl, the output of the command for the GUI is displayed here as a Modal.
+
+### CSS and Javascript:
+main.css and js -
+#### Light and Dark Mode Transition:
+All css files (except for the ones from lab) extend from main.css and use a set of variables defined in main.css. Light and Dark Mode is enabled by changing the class name of the body. Under body when class name is "light", they have one set of variable values. Under body when class name is "dark", they have another set of variable values.
+
+form.css and js -
+#### Switching Between Name and Coordinate:
+By default there're 2*4 = 8 forms in the ftl, however, they are default as display none. When the user selects which form they want, their display is set to block./
+
+modal.css and js -
+By default modal is also hidden in none, when the user submit, it is invoked to appear.
+
+#### Custom Assets:
+The images used for this project.
+Disclaimer: All Pixel Arts here are custom assets made by me for the Stars Project, you can find them under
+https://www.pixilart.com/maroon-scorch/gallery on Pixilart with the same username as my github username,
+the account on Pixilart is also anonymous.
+
+More details are explained in the code. 
 ## Answers to design questions:
 ### Stars2 Questions:
 1. What are some problems you would run into if you wanted to use your k-d tree to find points that are close to each other on the earth's surface? You do not need to explain how to solve these problems.
