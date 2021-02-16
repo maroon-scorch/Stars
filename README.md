@@ -168,7 +168,23 @@ In Property Based Testing, I decided to improve upon the idea I had previously i
 
 I believe the following properties best summarize the main points to check for:
 
-For Neighbors Command, I check if the output lists satisfy the 
+For Neighbors Command, I check if the output lists satisfy:
+   * 1. That all stars when converted to the distance from the coordiante specified,
+   * is the same
+   * 2. The size of both lists are the count specified
+   * 3. Both lists are in ascending order of distances
+   * 4. All the stars selected in the lists are all in the original list.
+
+For Radius Command, I check if the output lists satisfy:
+   * 1. That all stars when converted to the distance from the coordiante specified,
+   * is the same
+   * 2. The distances are in Ascending Order and below the radius
+   * 3. All the stars selected in the lists are all in the original list.
+  
+Additionally, for names, I also check that the name specified is not in the output list.
+
+Relevant files for Property Based Testing can be found under JUNIT Testing for PropertyBasedNeighborsTest and PropertyBasedRadiusTest
+and under the star package for StarsGenerator.java
 
 ## How to build/run your program:
 To build the program and start, run the following command in the root directory of the Project:
