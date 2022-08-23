@@ -1,6 +1,9 @@
-# README
+# Stars
 
-## Stars
+> 昨夜星辰昨夜风，画楼西畔桂堂东。 -李商隐《无题》
+
+This is my first project in [CS0320](https://github.com/cs0320-2021) taken in Spring 2021.
+
 ## Known bugs:
 When running the program for the first time, a warning for **illegal reflective access** similar to the following would occur
 ```
